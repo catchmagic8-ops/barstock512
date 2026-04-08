@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo } from "react";
 import { AlertTriangle, RotateCcw, Truck, Settings, FileText, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
-import logo from "@/assets/logo.png";
+import logo from "@/assets/bar-logo.png";
 import { Button } from "@/components/ui/button";
 import CategoryTabs from "@/components/CategoryTabs";
 import InventoryTable from "@/components/InventoryTable";
