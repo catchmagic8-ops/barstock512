@@ -133,7 +133,7 @@ export default function Index() {
       <main className="mx-auto max-w-5xl px-4 py-6">
         <div className="flex gap-6">
           <div className="hidden lg:flex flex-col items-center justify-center pt-4">
-            <img src={logo} alt="Logo" className="w-64 h-auto opacity-20" loading="lazy" />
+            <img src={logo} alt="Logo" className="w-64 h-auto opacity-80" loading="lazy" />
           </div>
 
           <div className="flex-1 space-y-6">
