@@ -2,6 +2,7 @@ import { ArrowLeft, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import OptionsPasswordGate from "@/components/OptionsPasswordGate";
+import StockManager from "@/components/StockManager";
 
 export default function Options() {
   const handleReset = () => {
@@ -14,7 +15,7 @@ export default function Options() {
   return (
     <OptionsPasswordGate>
       <div className="min-h-screen bg-background p-6">
-        <div className="mx-auto max-w-lg">
+        <div className="mx-auto max-w-2xl">
           <div className="mb-8 flex items-center gap-3">
             <Link to="/">
               <Button variant="ghost" size="icon">
@@ -25,6 +26,10 @@ export default function Options() {
           </div>
 
           <div className="space-y-4">
+            <div className="rounded-lg border border-border bg-card p-4">
+              <StockManager />
+            </div>
+
             <div className="rounded-lg border border-border bg-card p-4">
               <h2 className="font-heading text-lg font-semibold text-foreground mb-2">Data Management</h2>
               <p className="text-sm text-muted-foreground mb-4">
