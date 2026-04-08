@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from "react";
-import { AlertTriangle, RotateCcw, Truck, Settings, FileText } from "lucide-react";
+import { AlertTriangle, RotateCcw, Truck, Settings, FileText, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import logo from "@/assets/logo.png";
 import { Button } from "@/components/ui/button";
@@ -7,49 +7,45 @@ import CategoryTabs from "@/components/CategoryTabs";
 import InventoryTable from "@/components/InventoryTable";
 import RestockDialog from "@/components/RestockDialog";
 import { generateReport } from "@/lib/generateReport";
-import {
-  type Category,
-  type InventoryItem,
-  loadInventory,
-  saveInventory,
-} from "@/lib/inventory";
+import type { Category } from "@/lib/inventory";
+import { useInventory } from "@/hooks/useInventory";
 
 export default function Index() {
-  const [items, setItems] = useState(loadInventory);
+  const { items, isLoading, updateItem, updateMany } = useInventory();
   const [activeCategory, setActiveCategory] = useState<Category>("spirits");
   const [restockOpen, setRestockOpen] = useState(false);
 
-  const persist = useCallback((updated: InventoryItem[]) => {
-    setItems(updated);
-    saveInventory(updated);
-  }, []);
-
   const handleUse = useCallback(
     (id: string, qty: number = 1) => {
-      persist(
-        items.map((i) =>
-          i.id === id && i.quantity > 0
-            ? { ...i, quantity: Math.max(0, i.quantity - qty), usedThisShift: (i.usedThisShift ?? 0) + qty }
-            : i
-        )
-      );
+      const item = items.find((i) => i.id === id);
+      if (!item || item.quantity <= 0) return;
+      updateItem.mutate({
+        ...item,
+        quantity: Math.max(0, item.quantity - qty),
+        usedThisShift: (item.usedThisShift ?? 0) + qty,
+      });
     },
-    [items, persist]
+    [items, updateItem]
   );
 
   const handleResetShift = useCallback(() => {
-    persist(items.map((i) => ({ ...i, usedThisShift: 0 })));
-  }, [items, persist]);
+    updateMany.mutate(
+      items.map((i) => ({ id: i.id, quantity: i.quantity, used_this_shift: 0 }))
+    );
+  }, [items, updateMany]);
 
   const handleRestock = useCallback(
     (restockMap: Record<string, number>) => {
-      persist(
-        items.map((i) =>
-          restockMap[i.id] ? { ...i, quantity: i.quantity + restockMap[i.id] } : i
-        )
-      );
+      const updates = items
+        .filter((i) => restockMap[i.id])
+        .map((i) => ({
+          id: i.id,
+          quantity: i.quantity + restockMap[i.id],
+          used_this_shift: i.usedThisShift,
+        }));
+      updateMany.mutate(updates);
     },
-    [items, persist]
+    [items, updateMany]
   );
 
   const counts = useMemo(
@@ -81,9 +77,16 @@ export default function Index() {
     [items]
   );
 
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <header className="sticky top-0 z-30 border-b border-border bg-card/80 backdrop-blur-md">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
           <div className="flex items-center gap-3">
@@ -127,15 +130,12 @@ export default function Index() {
         </div>
       </header>
 
-      {/* Main */}
       <main className="mx-auto max-w-5xl px-4 py-6">
         <div className="flex gap-6">
-          {/* Logo sidebar */}
           <div className="hidden lg:flex flex-col items-center pt-4">
             <img src={logo} alt="Logo" className="w-16 h-16 opacity-30" loading="lazy" width={64} height={64} />
           </div>
 
-          {/* Content */}
           <div className="flex-1 space-y-6">
             <CategoryTabs active={activeCategory} onSelect={setActiveCategory} counts={counts} />
             <div className="rounded-lg border border-border bg-card p-4">
