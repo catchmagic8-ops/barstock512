@@ -14,7 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      inventory_items: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          min_stock: number
+          name: string
+          quantity: number
+          unit: string
+          updated_at: string
+          used_this_shift: number
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id: string
+          min_stock?: number
+          name: string
+          quantity?: number
+          unit: string
+          updated_at?: string
+          used_this_shift?: number
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          min_stock?: number
+          name?: string
+          quantity?: number
+          unit?: string
+          updated_at?: string
+          used_this_shift?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
