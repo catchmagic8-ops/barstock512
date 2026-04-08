@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { rowToItem, type InventoryItem } from "@/lib/inventory";
+import { rowToItem, type InventoryItem, type Category } from "@/lib/inventory";
 
 const QUERY_KEY = ["inventory"];
 
@@ -46,5 +46,32 @@ export function useInventory() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
   });
 
-  return { items, isLoading, updateItem, updateMany };
+  const addItem = useMutation({
+    mutationFn: async (item: { id: string; name: string; category: Category; unit: string; quantity: number; min_stock: number }) => {
+      const { error } = await supabase.from("inventory_items").insert(item);
+      if (error) throw error;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
+  });
+
+  const editItem = useMutation({
+    mutationFn: async (item: { id: string; name: string; category: Category; unit: string; quantity: number; min_stock: number }) => {
+      const { error } = await supabase
+        .from("inventory_items")
+        .update({ name: item.name, category: item.category, unit: item.unit, quantity: item.quantity, min_stock: item.min_stock })
+        .eq("id", item.id);
+      if (error) throw error;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
+  });
+
+  const deleteItem = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("inventory_items").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
+  });
+
+  return { items, isLoading, updateItem, updateMany, addItem, editItem, deleteItem };
 }
