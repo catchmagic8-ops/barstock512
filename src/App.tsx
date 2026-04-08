@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index.tsx";
 import Options from "./pages/Options.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import PasswordGate from "./components/PasswordGate";
 
 const queryClient = new QueryClient();
 
