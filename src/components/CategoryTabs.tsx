@@ -19,23 +19,23 @@ interface Props {
 
 export default function CategoryTabs({ active, onSelect, counts }: Props) {
   return (
-    <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
+    <div className="flex gap-1.5 overflow-x-auto pb-2 -mx-1 px-1 snap-x snap-mandatory scrollbar-hide">
       {categories.map(({ key, label, icon: Icon }) => (
         <button
           key={key}
           onClick={() => onSelect(key)}
           className={cn(
-            "flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-all whitespace-nowrap",
+            "flex items-center gap-1 sm:gap-1.5 rounded-lg px-2.5 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm font-medium transition-all whitespace-nowrap snap-start flex-shrink-0",
             active === key
               ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
               : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
           )}
         >
-          <Icon className="h-4 w-4" />
+          <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           <span>{label}</span>
           <span
             className={cn(
-              "ml-1 rounded-full px-1.5 py-0.5 text-xs font-semibold",
+              "ml-0.5 sm:ml-1 rounded-full px-1.5 py-0.5 text-[10px] sm:text-xs font-semibold",
               active === key
                 ? "bg-primary-foreground/20 text-primary-foreground"
                 : "bg-muted text-muted-foreground"
