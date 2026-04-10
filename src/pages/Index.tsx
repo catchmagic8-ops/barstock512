@@ -86,59 +86,59 @@ export default function Index() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="flex min-h-screen flex-col bg-background">
       <header className="sticky top-0 z-30 border-b border-border bg-card/80 backdrop-blur-md">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-3">
-            <img src={logo} alt="Logo" className="h-8 w-8" width={32} height={32} />
+        <div className="mx-auto flex max-w-5xl items-center justify-between px-3 py-2 sm:px-4 sm:py-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <img src={logo} alt="Logo" className="h-7 w-7 sm:h-8 sm:w-8" width={32} height={32} />
             <div>
-              <h1 className="font-heading text-lg font-bold leading-tight text-foreground">
+              <h1 className="font-heading text-base font-bold leading-tight text-foreground sm:text-lg">
                 BAR INVENTORY
               </h1>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-[10px] text-muted-foreground sm:text-xs">
                 {items.length} items tracked
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-0.5 sm:gap-1.5">
             {lowStockCount > 0 && (
-              <span className="flex items-center gap-1 rounded-full bg-warning/20 px-2.5 py-1 text-xs font-semibold text-warning">
-                <AlertTriangle className="h-3.5 w-3.5" />
+              <span className="flex items-center gap-1 rounded-full bg-warning/20 px-2 py-0.5 text-[10px] font-semibold text-warning sm:px-2.5 sm:py-1 sm:text-xs">
+                <AlertTriangle className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                 {lowStockCount}
               </span>
             )}
-            <Button variant="ghost" size="sm" onClick={handleResetShift} title="Reset shift counters" className="gap-1.5 text-muted-foreground hover:text-foreground">
+            <Button variant="ghost" size="icon" onClick={handleResetShift} title="Reset shift counters" className="h-8 w-8 text-muted-foreground hover:text-foreground sm:h-9 sm:w-auto sm:px-3 sm:gap-1.5">
               <RotateCcw className="h-4 w-4" />
-              <span className="hidden sm:inline">Reset Shift</span>
+              <span className="hidden sm:inline text-sm">Reset Shift</span>
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => setRestockOpen(true)} title="Add delivery stock" className="gap-1.5 text-muted-foreground hover:text-foreground">
+            <Button variant="ghost" size="icon" onClick={() => setRestockOpen(true)} title="Add delivery stock" className="h-8 w-8 text-muted-foreground hover:text-foreground sm:h-9 sm:w-auto sm:px-3 sm:gap-1.5">
               <Truck className="h-4 w-4" />
-              <span className="hidden sm:inline">Restock</span>
+              <span className="hidden sm:inline text-sm">Restock</span>
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => generateReport(items)} title="Generate report" className="gap-1.5 text-muted-foreground hover:text-foreground">
+            <Button variant="ghost" size="icon" onClick={() => generateReport(items)} title="Generate report" className="h-8 w-8 text-muted-foreground hover:text-foreground sm:h-9 sm:w-auto sm:px-3 sm:gap-1.5">
               <FileText className="h-4 w-4" />
-              <span className="hidden sm:inline">Report</span>
+              <span className="hidden sm:inline text-sm">Report</span>
             </Button>
             <Link to="/options">
-              <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground hover:text-foreground">
+              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground sm:h-9 sm:w-auto sm:px-3 sm:gap-1.5">
                 <Settings className="h-4 w-4" />
-                <span className="hidden sm:inline">Options</span>
+                <span className="hidden sm:inline text-sm">Options</span>
               </Button>
             </Link>
           </div>
         </div>
       </header>
 
-      <main className="mx-auto max-w-5xl px-4 py-6">
+      <main className="mx-auto w-full max-w-5xl flex-1 px-3 py-3 sm:px-4 sm:py-6">
         <div className="flex gap-6">
           <div className="hidden lg:flex flex-col items-center justify-center pt-4">
             <img src={logo} alt="Logo" className="w-64 h-auto opacity-80" loading="lazy" />
           </div>
 
-          <div className="flex-1 space-y-6">
+          <div className="flex-1 space-y-3 sm:space-y-6">
             <CategoryTabs active={activeCategory} onSelect={setActiveCategory} counts={counts} />
-            <div className="rounded-lg border border-border bg-card p-4">
+            <div className="rounded-lg border border-border bg-card p-2 sm:p-4">
               <InventoryTable items={filtered} onUse={handleUse} />
             </div>
           </div>

@@ -18,15 +18,15 @@ export default function InventoryTable({ items, onUse }: Props) {
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-sm">
+    <div className="overflow-x-auto -mx-1">
+      <table className="w-full text-xs sm:text-sm">
         <thead>
           <tr className="border-b border-border text-left text-muted-foreground">
-            <th className="pb-3 pr-4 font-medium">Item</th>
-            <th className="pb-3 pr-4 font-medium text-center">Stock</th>
-            <th className="pb-3 pr-4 font-medium text-center">Min</th>
-            <th className="pb-3 pr-4 font-medium text-center">Used</th>
-            <th className="pb-3 font-medium text-right">Actions</th>
+            <th className="pb-2 sm:pb-3 pr-2 sm:pr-4 font-medium">Item</th>
+            <th className="pb-2 sm:pb-3 pr-2 sm:pr-4 font-medium text-center">Stock</th>
+            <th className="pb-2 sm:pb-3 pr-2 sm:pr-4 font-medium text-center hidden sm:table-cell">Min</th>
+            <th className="pb-2 sm:pb-3 pr-2 sm:pr-4 font-medium text-center hidden sm:table-cell">Used</th>
+            <th className="pb-2 sm:pb-3 font-medium text-right">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -43,26 +43,26 @@ export default function InventoryTable({ items, onUse }: Props) {
                   isLow && !isEmpty && "bg-warning/5"
                 )}
               >
-                <td className="py-3 pr-4">
-                  <div className="flex items-center gap-2">
+                <td className="py-2 sm:py-3 pr-2 sm:pr-4">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
                     {isLow && (
                       <AlertTriangle
                         className={cn(
-                          "h-4 w-4 flex-shrink-0",
+                          "h-3.5 w-3.5 flex-shrink-0",
                           isEmpty ? "text-destructive animate-pulse-warning" : "text-warning"
                         )}
                       />
                     )}
-                    <div>
-                      <span className="font-medium text-foreground">{item.name}</span>
-                      <span className="ml-2 text-xs text-muted-foreground">{item.unit}</span>
+                    <div className="min-w-0">
+                      <span className="font-medium text-foreground text-xs sm:text-sm block truncate">{item.name}</span>
+                      <span className="text-[10px] sm:text-xs text-muted-foreground">{item.unit}</span>
                     </div>
                   </div>
                 </td>
-                <td className="py-3 pr-4 text-center">
+                <td className="py-2 sm:py-3 pr-2 sm:pr-4 text-center">
                   <span
                     className={cn(
-                      "inline-block min-w-[2.5rem] rounded-md px-2 py-1 font-heading font-bold",
+                      "inline-block min-w-[2rem] sm:min-w-[2.5rem] rounded-md px-1.5 sm:px-2 py-0.5 sm:py-1 font-heading font-bold text-xs sm:text-sm",
                       isEmpty
                         ? "bg-destructive/20 text-destructive"
                         : isLow
@@ -73,24 +73,22 @@ export default function InventoryTable({ items, onUse }: Props) {
                     {item.quantity}
                   </span>
                 </td>
-                <td className="py-3 pr-4 text-center text-muted-foreground">{item.minStock}</td>
-                <td className="py-3 pr-4 text-center">
+                <td className="py-2 sm:py-3 pr-2 sm:pr-4 text-center text-muted-foreground hidden sm:table-cell">{item.minStock}</td>
+                <td className="py-2 sm:py-3 pr-2 sm:pr-4 text-center hidden sm:table-cell">
                   <span className={cn("font-medium", (item.usedThisShift ?? 0) > 0 ? "text-primary" : "text-muted-foreground")}>
                     {item.usedThisShift ?? 0}
                   </span>
                 </td>
-                <td className="py-3 text-right">
-                  <div className="flex items-center justify-end gap-1">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className="h-8 w-8"
-                      onClick={() => onUse(item.id, 1)}
-                      disabled={item.quantity === 0}
-                    >
-                      <Minus className="h-3.5 w-3.5" />
-                    </Button>
-                  </div>
+                <td className="py-2 sm:py-3 text-right">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-7 w-7 sm:h-8 sm:w-8"
+                    onClick={() => onUse(item.id, 1)}
+                    disabled={item.quantity === 0}
+                  >
+                    <Minus className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                  </Button>
                 </td>
               </tr>
             );
