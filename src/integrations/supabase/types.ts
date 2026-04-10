@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      events: {
+        Row: {
+          created_at: string
+          description: string | null
+          event_date: string
+          id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          event_date: string
+          id?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          event_date?: string
+          id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       inventory_items: {
         Row: {
           category: string
@@ -47,6 +74,36 @@ export type Database = {
           unit?: string
           updated_at?: string
           used_this_shift?: number
+        }
+        Relationships: []
+      }
+      recipes: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          ingredients: string
+          instructions: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          id?: string
+          ingredients: string
+          instructions: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          ingredients?: string
+          instructions?: string
+          name?: string
+          updated_at?: string
         }
         Relationships: []
       }
