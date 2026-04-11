@@ -86,7 +86,7 @@ export default function Index() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="flex min-h-screen flex-col bg-background overflow-hidden">
       <header className="sticky top-0 z-30 border-b border-border bg-card/80 backdrop-blur-md">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-3 py-2 sm:px-4 sm:py-3">
           <div className="flex items-center gap-2 sm:gap-3">
@@ -130,7 +130,7 @@ export default function Index() {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-5xl flex-1 px-3 py-3 sm:px-4 sm:py-6">
+      <main className="mx-auto w-full max-w-5xl flex-1 px-2 py-2 sm:px-4 sm:py-6">
         <div className="flex gap-6">
           <div className="hidden lg:flex flex-col items-center justify-center pt-4">
             <img src={logo} alt="Logo" className="w-64 h-auto opacity-80" loading="lazy" />
