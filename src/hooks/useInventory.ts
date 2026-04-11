@@ -47,18 +47,20 @@ export function useInventory() {
   });
 
   const addItem = useMutation({
-    mutationFn: async (item: { id: string; name: string; category: Category; unit: string; quantity: number; min_stock: number }) => {
-      const { error } = await supabase.from("inventory_items").insert(item);
+    mutationFn: async (item: { id: string; name: string; category: Category; subcategory?: string | null; unit: string; quantity: number; min_stock: number }) => {
+      const { error } = await supabase.from("inventory_items").insert({
+        id: item.id, name: item.name, category: item.category, subcategory: item.subcategory ?? null, unit: item.unit, quantity: item.quantity, min_stock: item.min_stock,
+      });
       if (error) throw error;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
   });
 
   const editItem = useMutation({
-    mutationFn: async (item: { id: string; name: string; category: Category; unit: string; quantity: number; min_stock: number }) => {
+    mutationFn: async (item: { id: string; name: string; category: Category; subcategory?: string | null; unit: string; quantity: number; min_stock: number }) => {
       const { error } = await supabase
         .from("inventory_items")
-        .update({ name: item.name, category: item.category, unit: item.unit, quantity: item.quantity, min_stock: item.min_stock })
+        .update({ name: item.name, category: item.category, subcategory: item.subcategory ?? null, unit: item.unit, quantity: item.quantity, min_stock: item.min_stock })
         .eq("id", item.id);
       if (error) throw error;
     },

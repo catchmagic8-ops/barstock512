@@ -55,7 +55,9 @@ export default function InventoryTable({ items, onUse }: Props) {
                     )}
                     <div className="min-w-0">
                       <span className="font-medium text-foreground text-xs sm:text-sm block truncate">{item.name}</span>
-                      <span className="text-[10px] sm:text-xs text-muted-foreground">{item.unit}</span>
+                      <span className="text-[10px] sm:text-xs text-muted-foreground">
+                        {item.subcategory ? `${item.subcategory} · ${item.unit}` : item.unit}
+                      </span>
                     </div>
                   </div>
                 </td>
