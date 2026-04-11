@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from "react";
-import { AlertTriangle, RotateCcw, Truck, Settings, FileText, Loader2 } from "lucide-react";
+import { AlertTriangle, RotateCcw, Truck, Settings, FileText, Loader2, Home } from "lucide-react";
 import { Link } from "react-router-dom";
 import logo from "@/assets/bar-logo.png";
 import { Button } from "@/components/ui/button";
@@ -102,6 +102,12 @@ export default function Index() {
           </div>
 
           <div className="flex items-center gap-0.5 sm:gap-1.5">
+            <Link to="/home">
+              <Button variant="ghost" size="icon" title="Back to Home" className="h-8 w-8 text-muted-foreground hover:text-foreground sm:h-9 sm:w-auto sm:px-3 sm:gap-1.5">
+                <Home className="h-4 w-4" />
+                <span className="hidden sm:inline text-sm">Home</span>
+              </Button>
+            </Link>
             {lowStockCount > 0 && (
               <span className="flex items-center gap-1 rounded-full bg-warning/20 px-2 py-0.5 text-[10px] font-semibold text-warning sm:px-2.5 sm:py-1 sm:text-xs">
                 <AlertTriangle className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
