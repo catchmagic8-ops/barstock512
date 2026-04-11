@@ -49,6 +49,7 @@ export type Database = {
           min_stock: number
           name: string
           quantity: number
+          subcategory: string | null
           unit: string
           updated_at: string
           used_this_shift: number
@@ -60,6 +61,7 @@ export type Database = {
           min_stock?: number
           name: string
           quantity?: number
+          subcategory?: string | null
           unit: string
           updated_at?: string
           used_this_shift?: number
@@ -71,6 +73,7 @@ export type Database = {
           min_stock?: number
           name?: string
           quantity?: number
+          subcategory?: string | null
           unit?: string
           updated_at?: string
           used_this_shift?: number
@@ -104,6 +107,27 @@ export type Database = {
           instructions?: string
           name?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      subcategories: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          name: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          name?: string
         }
         Relationships: []
       }
