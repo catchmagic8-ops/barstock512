@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import OptionsPasswordGate from "@/components/OptionsPasswordGate";
 import StockManager from "@/components/StockManager";
+import SubcategoryManager from "@/components/SubcategoryManager";
 
 export default function Options() {
   const handleReset = () => {
@@ -26,6 +27,10 @@ export default function Options() {
           </div>
 
           <div className="space-y-4">
+            <div className="rounded-lg border border-border bg-card p-4">
+              <SubcategoryManager />
+            </div>
+
             <div className="rounded-lg border border-border bg-card p-4">
               <StockManager />
             </div>
