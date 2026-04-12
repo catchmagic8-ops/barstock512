@@ -2,6 +2,8 @@ import { useNavigate } from "react-router-dom";
 import { Package, Calendar, BookOpen, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 function getGreeting(): string {
   const h = new Date().getHours();
@@ -19,26 +21,58 @@ function getFormattedDate(): string {
   });
 }
 
-interface NavCard {
-  title: string;
-  icon: React.ElementType;
-  subtitle: string;
-  to: string;
-  badge: () => React.ReactNode;
+function useLowStockCount() {
+  return useQuery({
+    queryKey: ["low-stock-count"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("inventory_items")
+        .select("id, quantity, min_stock");
+      if (error) throw error;
+      return (data ?? []).filter((i) => i.quantity <= i.min_stock).length;
+    },
+  });
+}
+
+function useNextEvent() {
+  return useQuery({
+    queryKey: ["next-event"],
+    queryFn: async () => {
+      const today = new Date().toISOString().split("T")[0];
+      const { data, error } = await supabase
+        .from("events")
+        .select("title, event_date")
+        .gte("event_date", today)
+        .order("event_date", { ascending: true })
+        .limit(1);
+      if (error) throw error;
+      return data?.[0] ?? null;
+    },
+  });
+}
+
+function useRecipeCount() {
+  return useQuery({
+    queryKey: ["recipe-count"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("recipes")
+        .select("id");
+      if (error) throw error;
+      return data?.length ?? 0;
+    },
+  });
 }
 
 function LowStockBadge() {
-  try {
-    const raw = localStorage.getItem("low-stock-count");
-    const count = raw ? parseInt(raw, 10) : 0;
-    if (count > 0) {
-      return (
-        <span className="rounded-full bg-amber-500/20 px-2.5 py-0.5 text-xs font-semibold text-amber-400">
-          {count} low
-        </span>
-      );
-    }
-  } catch {}
+  const { data: count = 0 } = useLowStockCount();
+  if (count > 0) {
+    return (
+      <span className="rounded-full bg-amber-500/20 px-2.5 py-0.5 text-xs font-semibold text-amber-400">
+        {count} low
+      </span>
+    );
+  }
   return (
     <span className="rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-xs font-semibold text-emerald-400">
       All good
@@ -47,17 +81,15 @@ function LowStockBadge() {
 }
 
 function EventsBadge() {
-  try {
-    const raw = localStorage.getItem("next-event");
-    if (raw) {
-      const { name, date } = JSON.parse(raw);
-      return (
-        <span className="rounded-full bg-primary/20 px-2.5 py-0.5 text-xs font-semibold text-primary">
-          {name} · {date}
-        </span>
-      );
-    }
-  } catch {}
+  const { data: event } = useNextEvent();
+  if (event) {
+    const d = new Date(event.event_date).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+    return (
+      <span className="rounded-full bg-primary/20 px-2.5 py-0.5 text-xs font-semibold text-primary">
+        {event.title} · {d}
+      </span>
+    );
+  }
   return (
     <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs text-muted-foreground">
       No events yet
@@ -66,22 +98,27 @@ function EventsBadge() {
 }
 
 function RecipesBadge() {
-  try {
-    const raw = localStorage.getItem("recipe-count");
-    const count = raw ? parseInt(raw, 10) : 0;
-    if (count > 0) {
-      return (
-        <span className="rounded-full bg-primary/20 px-2.5 py-0.5 text-xs font-semibold text-primary">
-          {count} cocktails
-        </span>
-      );
-    }
-  } catch {}
+  const { data: count = 0 } = useRecipeCount();
+  if (count > 0) {
+    return (
+      <span className="rounded-full bg-primary/20 px-2.5 py-0.5 text-xs font-semibold text-primary">
+        {count} cocktails
+      </span>
+    );
+  }
   return (
     <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs text-muted-foreground">
       0 cocktails
     </span>
   );
+}
+
+interface NavCard {
+  title: string;
+  icon: React.ElementType;
+  subtitle: string;
+  to: string;
+  badge: () => React.ReactNode;
 }
 
 const cards: NavCard[] = [
