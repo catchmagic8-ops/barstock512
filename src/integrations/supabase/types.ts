@@ -16,26 +16,41 @@ export type Database = {
     Tables: {
       events: {
         Row: {
+          category: string | null
           created_at: string
           description: string | null
           event_date: string
+          event_time: string | null
           id: string
+          is_recurring: boolean
+          price: number | null
+          recurrence_rule: string | null
           title: string
           updated_at: string
         }
         Insert: {
+          category?: string | null
           created_at?: string
           description?: string | null
           event_date: string
+          event_time?: string | null
           id?: string
+          is_recurring?: boolean
+          price?: number | null
+          recurrence_rule?: string | null
           title: string
           updated_at?: string
         }
         Update: {
+          category?: string | null
           created_at?: string
           description?: string | null
           event_date?: string
+          event_time?: string | null
           id?: string
+          is_recurring?: boolean
+          price?: number | null
+          recurrence_rule?: string | null
           title?: string
           updated_at?: string
         }
