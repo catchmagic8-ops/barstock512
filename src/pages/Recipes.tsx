@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Plus, Trash2, Loader2, BookOpen, ChevronDown, ChevronUp } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, Loader2, BookOpen, ChevronDown, ChevronUp, ImagePlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -14,7 +14,15 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
+
+async function uploadRecipeImage(file: File): Promise<string> {
+  const ext = file.name.split(".").pop();
+  const path = `${crypto.randomUUID()}.${ext}`;
+  const { error } = await supabase.storage.from("recipe-images").upload(path, file);
+  if (error) throw error;
+  const { data } = supabase.storage.from("recipe-images").getPublicUrl(path);
+  return data.publicUrl;
+}
 
 export default function Recipes() {
   const qc = useQueryClient();
@@ -24,6 +32,9 @@ export default function Recipes() {
   const [category, setCategory] = useState("cocktail");
   const [ingredients, setIngredients] = useState("");
   const [instructions, setInstructions] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const { data: recipes = [], isLoading } = useQuery({
     queryKey: ["recipes"],
@@ -39,9 +50,13 @@ export default function Recipes() {
 
   const addRecipe = useMutation({
     mutationFn: async () => {
+      let image_url: string | null = null;
+      if (imageFile) {
+        image_url = await uploadRecipeImage(imageFile);
+      }
       const { error } = await supabase
         .from("recipes")
-        .insert({ name, category, ingredients, instructions });
+        .insert({ name, category, ingredients, instructions, image_url });
       if (error) throw error;
     },
     onSuccess: () => {
@@ -51,6 +66,8 @@ export default function Recipes() {
       setCategory("cocktail");
       setIngredients("");
       setInstructions("");
+      setImageFile(null);
+      setImagePreview(null);
       toast.success("Recipe added");
     },
     onError: () => toast.error("Failed to add recipe"),
@@ -66,6 +83,15 @@ export default function Recipes() {
       toast.success("Recipe deleted");
     },
   });
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImageFile(file);
+    const reader = new FileReader();
+    reader.onloadend = () => setImagePreview(reader.result as string);
+    reader.readAsDataURL(file);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -108,9 +134,18 @@ export default function Recipes() {
                   onClick={() => setExpanded(isOpen ? null : r.id)}
                   className="flex w-full items-center justify-between gap-3 p-4 text-left"
                 >
-                  <div className="min-w-0">
-                    <h3 className="font-heading font-bold text-foreground">{r.name}</h3>
-                    <span className="text-xs text-primary capitalize">{r.category}</span>
+                  <div className="flex items-center gap-3 min-w-0">
+                    {r.image_url && (
+                      <img
+                        src={r.image_url}
+                        alt={r.name}
+                        className="h-10 w-10 rounded-lg object-cover flex-shrink-0"
+                      />
+                    )}
+                    <div className="min-w-0">
+                      <h3 className="font-heading font-bold text-foreground">{r.name}</h3>
+                      <span className="text-xs text-primary capitalize">{r.category}</span>
+                    </div>
                   </div>
                   {isOpen ? (
                     <ChevronUp className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
@@ -121,6 +156,13 @@ export default function Recipes() {
 
                 {isOpen && (
                   <div className="border-t border-border px-4 pb-4 pt-3 space-y-3">
+                    {r.image_url && (
+                      <img
+                        src={r.image_url}
+                        alt={r.name}
+                        className="w-full max-h-64 rounded-lg object-cover"
+                      />
+                    )}
                     <div>
                       <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">
                         Ingredients
@@ -183,6 +225,39 @@ export default function Recipes() {
               rows={4}
               className="bg-secondary border-border"
             />
+            {/* Image upload */}
+            <div>
+              <input
+                ref={fileRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleFileChange}
+              />
+              {imagePreview ? (
+                <div className="relative">
+                  <img src={imagePreview} alt="Preview" className="w-full max-h-48 rounded-lg object-cover" />
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="sm"
+                    className="absolute top-2 right-2"
+                    onClick={() => { setImageFile(null); setImagePreview(null); }}
+                  >
+                    Remove
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full gap-2 border-dashed border-border text-muted-foreground"
+                  onClick={() => fileRef.current?.click()}
+                >
+                  <ImagePlus className="h-4 w-4" /> Add Photo
+                </Button>
+              )}
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
