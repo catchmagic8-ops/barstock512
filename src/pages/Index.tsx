@@ -1,6 +1,8 @@
 import { useState, useCallback, useMemo } from "react";
 import { AlertTriangle, RotateCcw, Truck, Settings, FileText, Loader2, Home } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/bar-logo.png";
 import { Button } from "@/components/ui/button";
 import CategoryTabs from "@/components/CategoryTabs";
@@ -13,7 +15,27 @@ import { useInventory } from "@/hooks/useInventory";
 export default function Index() {
   const { items, isLoading, updateItem, updateMany } = useInventory();
   const [activeCategory, setActiveCategory] = useState<Category>("spirits");
+  const [activeSubcategory, setActiveSubcategory] = useState<string | null>(null);
   const [restockOpen, setRestockOpen] = useState(false);
+
+  const { data: subcategories = [] } = useQuery({
+    queryKey: ["subcategories"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("subcategories").select("*").order("name");
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const currentSubs = useMemo(
+    () => subcategories.filter((s) => s.category === activeCategory),
+    [subcategories, activeCategory]
+  );
+
+  const handleCategoryChange = useCallback((cat: Category) => {
+    setActiveCategory(cat);
+    setActiveSubcategory(null);
+  }, []);
 
   const handleUse = useCallback(
     (id: string, qty: number = 1) => {
@@ -64,12 +86,13 @@ export default function Index() {
     () =>
       items
         .filter((i) => i.category === activeCategory)
+        .filter((i) => !activeSubcategory || i.subcategory === activeSubcategory)
         .sort((a, b) => {
           const aLow = a.quantity <= a.minStock ? 0 : 1;
           const bLow = b.quantity <= b.minStock ? 0 : 1;
           return aLow - bLow;
         }),
-    [items, activeCategory]
+    [items, activeCategory, activeSubcategory]
   );
 
   const lowStockCount = useMemo(
@@ -143,7 +166,34 @@ export default function Index() {
           </div>
 
           <div className="flex-1 space-y-3 sm:space-y-6">
-            <CategoryTabs active={activeCategory} onSelect={setActiveCategory} counts={counts} />
+            <CategoryTabs active={activeCategory} onSelect={handleCategoryChange} counts={counts} />
+            {currentSubs.length > 0 && (
+              <div className="flex gap-1.5 overflow-x-auto scrollbar-hide snap-x snap-mandatory -mx-1 px-1 pb-1">
+                <button
+                  onClick={() => setActiveSubcategory(null)}
+                  className={`rounded-full px-3 py-1 text-xs font-medium whitespace-nowrap snap-start flex-shrink-0 transition-all ${
+                    activeSubcategory === null
+                      ? "bg-primary/20 text-primary border border-primary/40"
+                      : "bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-transparent"
+                  }`}
+                >
+                  All
+                </button>
+                {currentSubs.map((sub) => (
+                  <button
+                    key={sub.id}
+                    onClick={() => setActiveSubcategory(sub.name)}
+                    className={`rounded-full px-3 py-1 text-xs font-medium whitespace-nowrap snap-start flex-shrink-0 transition-all ${
+                      activeSubcategory === sub.name
+                        ? "bg-primary/20 text-primary border border-primary/40"
+                        : "bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-transparent"
+                    }`}
+                  >
+                    {sub.name}
+                  </button>
+                ))}
+              </div>
+            )}
             <div className="rounded-lg border border-border bg-card p-2 sm:p-4">
               <InventoryTable items={filtered} onUse={handleUse} />
             </div>
