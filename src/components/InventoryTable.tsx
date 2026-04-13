@@ -82,36 +82,15 @@ export default function InventoryTable({ items, onUse }: Props) {
                   </span>
                 </td>
                 <td className="py-2 sm:py-3 text-right">
-                  <div className="flex items-center justify-end gap-1">
-                    <Button
-                      variant="outline"
-                      className="h-9 w-9 sm:h-10 sm:w-10 text-muted-foreground hover:text-foreground"
-                      size="icon"
-                      onClick={() => onUse(item.id, 1)}
-                      disabled={item.quantity === 0}
-                      title="Remove 1"
-                    >
-                      <Minus className="h-4 w-4 sm:h-5 sm:w-5" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="h-9 sm:h-10 px-2.5 sm:px-3 text-xs sm:text-sm font-semibold text-muted-foreground hover:text-foreground"
-                      onClick={() => onUse(item.id, 5)}
-                      disabled={item.quantity === 0}
-                      title="Remove 5"
-                    >
-                      -5
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="h-9 sm:h-10 px-2.5 sm:px-3 text-xs sm:text-sm font-semibold text-muted-foreground hover:text-foreground"
-                      onClick={() => onUse(item.id, 10)}
-                      disabled={item.quantity === 0}
-                      title="Remove 10"
-                    >
-                      -10
-                    </Button>
-                  </div>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-7 w-7 sm:h-8 sm:w-8"
+                    onClick={() => onUse(item.id, 1)}
+                    disabled={item.quantity === 0}
+                  >
+                    <Minus className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                  </Button>
                 </td>
               </tr>
             );
