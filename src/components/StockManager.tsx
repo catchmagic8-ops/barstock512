@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Pencil, Trash2, Save, X } from "lucide-react";
+import { Plus, Pencil, Trash2, Save, X, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -36,8 +36,11 @@ export default function StockManager() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<ItemForm>(emptyForm);
   const [filterCat, setFilterCat] = useState<Category | "all">("all");
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const filtered = filterCat === "all" ? items : items.filter((i) => i.category === filterCat);
+  const filtered = items
+    .filter((i) => filterCat === "all" || i.category === filterCat)
+    .filter((i) => !searchQuery || i.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
   const getSubsForCategory = (cat: Category) => subcategories.filter((s) => s.category === cat);
 
@@ -130,6 +133,16 @@ export default function StockManager() {
           {CATEGORIES.map((c) => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}
         </SelectContent>
       </Select>
+
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input
+          placeholder="Search items..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="pl-9 bg-card border-border rounded-lg"
+        />
+      </div>
 
       <div className="space-y-2 max-h-[50vh] overflow-y-auto">
         {filtered.map((item) => (
