@@ -36,8 +36,11 @@ export default function StockManager() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<ItemForm>(emptyForm);
   const [filterCat, setFilterCat] = useState<Category | "all">("all");
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const filtered = filterCat === "all" ? items : items.filter((i) => i.category === filterCat);
+  const filtered = items
+    .filter((i) => filterCat === "all" || i.category === filterCat)
+    .filter((i) => !searchQuery || i.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
   const getSubsForCategory = (cat: Category) => subcategories.filter((s) => s.category === cat);
 
