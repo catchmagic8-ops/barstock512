@@ -20,7 +20,7 @@ interface Props {
 export default function RestockDialog({ open, onClose, items, onRestock }: Props) {
   const [quantities, setQuantities] = useState<Record<string, string>>({});
 
-  const lowItems = items.filter((i) => i.quantity <= i.minStock);
+  const lowItems = items.filter((i) => i.quantity < i.minStock);
   const displayItems = lowItems.length > 0 ? lowItems : items;
 
   const handleSubmit = () => {
