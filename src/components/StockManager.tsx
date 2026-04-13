@@ -134,6 +134,16 @@ export default function StockManager() {
         </SelectContent>
       </Select>
 
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input
+          placeholder="Search items..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="pl-9 bg-card border-border rounded-lg"
+        />
+      </div>
+
       <div className="space-y-2 max-h-[50vh] overflow-y-auto">
         {filtered.map((item) => (
           <div key={item.id} className="rounded-lg border border-border bg-card p-3">
