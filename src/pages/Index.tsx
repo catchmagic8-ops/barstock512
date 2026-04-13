@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from "react";
-import { AlertTriangle, RotateCcw, Truck, Settings, FileText, Loader2, Home } from "lucide-react";
+import { AlertTriangle, RotateCcw, Truck, Settings, FileText, Loader2, Home, Search } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,6 +7,7 @@ import logo from "@/assets/bar-logo.png";
 import { Button } from "@/components/ui/button";
 import CategoryTabs from "@/components/CategoryTabs";
 import InventoryTable from "@/components/InventoryTable";
+import { Input } from "@/components/ui/input";
 import RestockDialog from "@/components/RestockDialog";
 import { generateReport } from "@/lib/generateReport";
 import type { Category } from "@/lib/inventory";
@@ -17,6 +18,7 @@ export default function Index() {
   const [activeCategory, setActiveCategory] = useState<Category>("spirits");
   const [activeSubcategory, setActiveSubcategory] = useState<string | null>(null);
   const [restockOpen, setRestockOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const { data: subcategories = [] } = useQuery({
     queryKey: ["subcategories"],
@@ -85,14 +87,16 @@ export default function Index() {
   const filtered = useMemo(
     () =>
       items
-        .filter((i) => i.category === activeCategory)
-        .filter((i) => !activeSubcategory || i.subcategory === activeSubcategory)
+        .filter((i) => searchQuery
+          ? i.name.toLowerCase().includes(searchQuery.toLowerCase())
+          : i.category === activeCategory && (!activeSubcategory || i.subcategory === activeSubcategory)
+        )
         .sort((a, b) => {
           const aLow = a.quantity < a.minStock ? 0 : 1;
           const bLow = b.quantity < b.minStock ? 0 : 1;
           return aLow - bLow;
         }),
-    [items, activeCategory, activeSubcategory]
+    [items, activeCategory, activeSubcategory, searchQuery]
   );
 
   const lowStockCount = useMemo(
@@ -166,6 +170,15 @@ export default function Index() {
           </div>
 
           <div className="flex-1 space-y-3 sm:space-y-6">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search items..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9 bg-card border-border rounded-lg"
+              />
+            </div>
             <CategoryTabs active={activeCategory} onSelect={handleCategoryChange} counts={counts} />
             {currentSubs.length > 0 && (
               <div className="flex gap-1.5 overflow-x-auto scrollbar-hide snap-x snap-mandatory -mx-1 px-1 pb-1">
