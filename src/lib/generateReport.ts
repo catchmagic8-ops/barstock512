@@ -4,7 +4,7 @@ import type { InventoryItem } from "./inventory";
 
 export function generateReport(items: InventoryItem[]) {
   const now = new Date().toLocaleString();
-  const lowStock = items.filter((i) => i.quantity <= i.minStock);
+  const lowStock = items.filter((i) => i.quantity < i.minStock);
   const doc = new jsPDF();
 
   // Title
@@ -65,7 +65,7 @@ export function generateReport(items: InventoryItem[]) {
         i.unit,
         String(i.minStock),
         String(i.usedThisShift || 0),
-        i.quantity <= i.minStock ? "⚠ LOW" : "OK",
+        i.quantity < i.minStock ? "⚠ LOW" : "OK",
       ]),
       theme: "grid",
       headStyles: { fillColor: [40, 44, 58], textColor: 255 },

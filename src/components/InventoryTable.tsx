@@ -31,7 +31,7 @@ export default function InventoryTable({ items, onUse }: Props) {
         </thead>
         <tbody>
           {items.map((item) => {
-            const isLow = item.quantity <= item.minStock;
+            const isLow = item.quantity < item.minStock;
             const isEmpty = item.quantity === 0;
 
             return (

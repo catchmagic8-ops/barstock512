@@ -88,15 +88,15 @@ export default function Index() {
         .filter((i) => i.category === activeCategory)
         .filter((i) => !activeSubcategory || i.subcategory === activeSubcategory)
         .sort((a, b) => {
-          const aLow = a.quantity <= a.minStock ? 0 : 1;
-          const bLow = b.quantity <= b.minStock ? 0 : 1;
+          const aLow = a.quantity < a.minStock ? 0 : 1;
+          const bLow = b.quantity < b.minStock ? 0 : 1;
           return aLow - bLow;
         }),
     [items, activeCategory, activeSubcategory]
   );
 
   const lowStockCount = useMemo(
-    () => items.filter((i) => i.quantity <= i.minStock).length,
+    () => items.filter((i) => i.quantity < i.minStock).length,
     [items]
   );
 

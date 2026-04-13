@@ -175,7 +175,7 @@ export default function StockManager() {
                   <span className="ml-2 text-sm text-muted-foreground">
                     {item.quantity} {item.unit} · min {item.minStock}
                   </span>
-                  {item.quantity <= item.minStock && (
+                  {item.quantity < item.minStock && (
                     <span className="ml-2 text-xs font-semibold text-primary">LOW</span>
                   )}
                 </div>
