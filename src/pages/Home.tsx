@@ -156,7 +156,7 @@ const cards: NavCard[] = [
     badge: LowStockBadge,
   },
   {
-    title: "WHAT'S NEW",
+    title: "EVENTS",
     icon: Calendar,
     subtitle: "Upcoming events & promotions",
     to: "/events",

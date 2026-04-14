@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from "react";
-import { AlertTriangle, RotateCcw, Truck, Settings, FileText, Loader2, Home, Search } from "lucide-react";
+import { AlertTriangle, RotateCcw, FileText, Loader2, Home, Search } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import CategoryTabs from "@/components/CategoryTabs";
 import InventoryTable from "@/components/InventoryTable";
 import { Input } from "@/components/ui/input";
-import RestockDialog from "@/components/RestockDialog";
 import { generateReport } from "@/lib/generateReport";
 import type { Category } from "@/lib/inventory";
 import { useInventory } from "@/hooks/useInventory";
@@ -17,7 +16,6 @@ export default function Index() {
   const { items, isLoading, updateItem, updateMany } = useInventory();
   const [activeCategory, setActiveCategory] = useState<Category>("spirits");
   const [activeSubcategory, setActiveSubcategory] = useState<string | null>(null);
-  const [restockOpen, setRestockOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   const { data: subcategories = [] } = useQuery({
@@ -57,20 +55,6 @@ export default function Index() {
       items.map((i) => ({ id: i.id, quantity: i.quantity, used_this_shift: 0 }))
     );
   }, [items, updateMany]);
-
-  const handleRestock = useCallback(
-    (restockMap: Record<string, number>) => {
-      const updates = items
-        .filter((i) => restockMap[i.id])
-        .map((i) => ({
-          id: i.id,
-          quantity: i.quantity + restockMap[i.id],
-          used_this_shift: i.usedThisShift,
-        }));
-      updateMany.mutate(updates);
-    },
-    [items, updateMany]
-  );
 
   const counts = useMemo(
     () => ({
@@ -145,20 +129,10 @@ export default function Index() {
               <RotateCcw className="h-4 w-4" />
               <span className="hidden sm:inline text-sm">Reset Shift</span>
             </Button>
-            <Button variant="ghost" size="icon" onClick={() => setRestockOpen(true)} title="Add delivery stock" className="h-8 w-8 text-muted-foreground hover:text-foreground sm:h-9 sm:w-auto sm:px-3 sm:gap-1.5">
-              <Truck className="h-4 w-4" />
-              <span className="hidden sm:inline text-sm">Restock</span>
-            </Button>
             <Button variant="ghost" size="icon" onClick={() => generateReport(items)} title="Generate report" className="h-8 w-8 text-muted-foreground hover:text-foreground sm:h-9 sm:w-auto sm:px-3 sm:gap-1.5">
               <FileText className="h-4 w-4" />
               <span className="hidden sm:inline text-sm">Report</span>
             </Button>
-            <Link to="/options">
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground sm:h-9 sm:w-auto sm:px-3 sm:gap-1.5">
-                <Settings className="h-4 w-4" />
-                <span className="hidden sm:inline text-sm">Options</span>
-              </Button>
-            </Link>
           </div>
         </div>
       </header>
@@ -213,13 +187,6 @@ export default function Index() {
           </div>
         </div>
       </main>
-
-      <RestockDialog
-        open={restockOpen}
-        onClose={() => setRestockOpen(false)}
-        items={items}
-        onRestock={handleRestock}
-      />
     </div>
   );
 }
