@@ -29,7 +29,7 @@ function useLowStockCount() {
         .from("inventory_items")
         .select("id, quantity, min_stock");
       if (error) throw error;
-      return (data ?? []).filter((i) => i.quantity <= i.min_stock).length;
+      return (data ?? []).filter((i) => i.quantity < i.min_stock).length;
     },
   });
 }
