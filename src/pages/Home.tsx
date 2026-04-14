@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Package, Calendar, BookOpen, LogOut } from "lucide-react";
+import { Package, Calendar, BookOpen, Phone, Shield, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
@@ -55,9 +55,18 @@ function useRecipeCount() {
   return useQuery({
     queryKey: ["recipe-count"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("recipes")
-        .select("id");
+      const { data, error } = await supabase.from("recipes").select("id");
+      if (error) throw error;
+      return data?.length ?? 0;
+    },
+  });
+}
+
+function useContactCount() {
+  return useQuery({
+    queryKey: ["contact-count"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("contacts").select("id");
       if (error) throw error;
       return data?.length ?? 0;
     },
@@ -113,6 +122,23 @@ function RecipesBadge() {
   );
 }
 
+function ContactsBadge() {
+  const { data: count = 0 } = useContactCount();
+  return (
+    <span className="rounded-full bg-primary/20 px-2.5 py-0.5 text-xs font-semibold text-primary">
+      {count} contacts
+    </span>
+  );
+}
+
+function AdminBadge() {
+  return (
+    <span className="rounded-full bg-amber-500/20 px-2.5 py-0.5 text-xs font-semibold text-amber-400">
+      Password protected
+    </span>
+  );
+}
+
 interface NavCard {
   title: string;
   icon: React.ElementType;
@@ -143,6 +169,20 @@ const cards: NavCard[] = [
     to: "/recipes",
     badge: RecipesBadge,
   },
+  {
+    title: "TELEPHONE",
+    icon: Phone,
+    subtitle: "Useful contacts & numbers",
+    to: "/telephone",
+    badge: ContactsBadge,
+  },
+  {
+    title: "ADMIN",
+    icon: Shield,
+    subtitle: "Manage all app content",
+    to: "/admin",
+    badge: AdminBadge,
+  },
 ];
 
 export default function Home() {
@@ -155,7 +195,6 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen flex-col" style={{ background: "#0f0e0c" }}>
-      {/* Top bar */}
       <header className="flex items-center justify-between px-5 py-4 sm:px-8">
         <h1
           className="text-xl font-bold tracking-wide sm:text-2xl"
@@ -174,9 +213,7 @@ export default function Home() {
         </Button>
       </header>
 
-      {/* Main content */}
       <main className="flex flex-1 flex-col items-center justify-center px-5 pb-16 sm:px-8">
-        {/* Greeting */}
         <div className="mb-10 text-center sm:mb-14">
           <h2
             className="text-3xl font-bold sm:text-4xl lg:text-5xl"
@@ -187,7 +224,6 @@ export default function Home() {
           <p className="mt-2 text-sm text-muted-foreground">{getFormattedDate()}</p>
         </div>
 
-        {/* Navigation cards */}
         <div className="grid w-full max-w-4xl grid-cols-1 gap-5 sm:grid-cols-3 sm:gap-6">
           {cards.map(({ title, icon: Icon, subtitle, to, badge: Badge }) => (
             <button

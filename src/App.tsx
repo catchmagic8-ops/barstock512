@@ -8,6 +8,8 @@ import Home from "./pages/Home.tsx";
 import Events from "./pages/Events.tsx";
 import Recipes from "./pages/Recipes.tsx";
 import Options from "./pages/Options.tsx";
+import Telephone from "./pages/Telephone.tsx";
+import Admin from "./pages/Admin.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import PasswordGate from "./components/PasswordGate";
 
@@ -27,6 +29,8 @@ const App = () => (
             <Route path="/events" element={<Events />} />
             <Route path="/recipes" element={<Recipes />} />
             <Route path="/options" element={<Options />} />
+            <Route path="/telephone" element={<Telephone />} />
+            <Route path="/admin" element={<Admin />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
