@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from "react";
-import { AlertTriangle, RotateCcw, FileText, Loader2, Home, Search } from "lucide-react";
+import { AlertTriangle, FileText, Loader2, Home, Search, BellRing } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,9 +13,10 @@ import type { Category } from "@/lib/inventory";
 import { useInventory } from "@/hooks/useInventory";
 import { useDepartment } from "@/contexts/DepartmentContext";
 import { deptHomePath } from "@/lib/department";
+import { toast } from "sonner";
 
 export default function Index() {
-  const { items, isLoading, updateItem, updateMany } = useInventory();
+  const { items, isLoading, flagItem, clearFlag } = useInventory();
   const { tables, department, meta } = useDepartment();
   const [activeCategory, setActiveCategory] = useState<Category>("spirits");
   const [activeSubcategory, setActiveSubcategory] = useState<string | null>(null);
@@ -40,24 +41,28 @@ export default function Index() {
     setActiveSubcategory(null);
   }, []);
 
-  const handleUse = useCallback(
-    (id: string, qty: number = 1) => {
-      const item = items.find((i) => i.id === id);
-      if (!item || item.quantity <= 0) return;
-      updateItem.mutate({
-        ...item,
-        quantity: Math.max(0, item.quantity - qty),
-        usedThisShift: (item.usedThisShift ?? 0) + qty,
-      });
+  const handleFlag = useCallback(
+    (id: string, note?: string) => {
+      flagItem.mutate(
+        { id, note },
+        {
+          onSuccess: () => toast.success("Manager notified"),
+          onError: () => toast.error("Failed to notify"),
+        }
+      );
     },
-    [items, updateItem]
+    [flagItem]
   );
 
-  const handleResetShift = useCallback(() => {
-    updateMany.mutate(
-      items.map((i) => ({ id: i.id, quantity: i.quantity, used_this_shift: 0 }))
-    );
-  }, [items, updateMany]);
+  const handleClear = useCallback(
+    (id: string) => {
+      clearFlag.mutate(id, {
+        onSuccess: () => toast.success("Marked as restocked"),
+        onError: () => toast.error("Failed to update"),
+      });
+    },
+    [clearFlag]
+  );
 
   const counts = useMemo(
     () => ({
@@ -78,16 +83,12 @@ export default function Index() {
           ? i.name.toLowerCase().includes(searchQuery.toLowerCase())
           : i.category === activeCategory && (!activeSubcategory || i.subcategory === activeSubcategory)
         )
-        .sort((a, b) => {
-          const aLow = a.quantity < a.minStock ? 0 : 1;
-          const bLow = b.quantity < b.minStock ? 0 : 1;
-          return aLow - bLow;
-        }),
+        .sort((a, b) => Number(b.needsRestock) - Number(a.needsRestock)),
     [items, activeCategory, activeSubcategory, searchQuery]
   );
 
-  const lowStockCount = useMemo(
-    () => items.filter((i) => i.quantity < i.minStock).length,
+  const flaggedCount = useMemo(
+    () => items.filter((i) => i.needsRestock).length,
     [items]
   );
 
@@ -122,16 +123,12 @@ export default function Index() {
                 <span className="hidden sm:inline text-sm">Home</span>
               </Button>
             </Link>
-            {lowStockCount > 0 && (
+            {flaggedCount > 0 && (
               <span className="flex items-center gap-1 rounded-full bg-warning/20 px-2 py-0.5 text-[10px] font-semibold text-warning sm:px-2.5 sm:py-1 sm:text-xs">
-                <AlertTriangle className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-                {lowStockCount}
+                <BellRing className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                {flaggedCount}
               </span>
             )}
-            <Button variant="ghost" size="icon" onClick={handleResetShift} title="Reset shift counters" className="h-8 w-8 text-muted-foreground hover:text-foreground sm:h-9 sm:w-auto sm:px-3 sm:gap-1.5">
-              <RotateCcw className="h-4 w-4" />
-              <span className="hidden sm:inline text-sm">Reset Shift</span>
-            </Button>
             <Button variant="ghost" size="icon" onClick={() => generateReport(items)} title="Generate report" className="h-8 w-8 text-muted-foreground hover:text-foreground sm:h-9 sm:w-auto sm:px-3 sm:gap-1.5">
               <FileText className="h-4 w-4" />
               <span className="hidden sm:inline text-sm">Report</span>
@@ -184,8 +181,14 @@ export default function Index() {
                 ))}
               </div>
             )}
+            {flaggedCount > 0 && (
+              <div className="flex items-center gap-2 rounded-lg border border-warning/30 bg-warning/5 px-3 py-2 text-xs text-warning">
+                <AlertTriangle className="h-3.5 w-3.5 flex-shrink-0" />
+                <span>{flaggedCount} item{flaggedCount === 1 ? "" : "s"} flagged for restock — managers have been notified.</span>
+              </div>
+            )}
             <div className="rounded-lg border border-border bg-card p-2 sm:p-4">
-              <InventoryTable items={filtered} onUse={handleUse} />
+              <InventoryTable items={filtered} onFlag={handleFlag} onClear={handleClear} />
             </div>
           </div>
         </div>
