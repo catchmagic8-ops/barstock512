@@ -63,16 +63,51 @@ export default function Telephone() {
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-30 border-b border-border bg-card/80 backdrop-blur-md">
-        <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-3">
+        <div className="mx-auto flex max-w-3xl items-center justify-between gap-2 px-4 py-3">
+          <div className="flex items-center gap-3 min-w-0">
             <Link to={deptHomePath(department)}>
               <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
                 <ArrowLeft className="h-5 w-5" />
               </Button>
             </Link>
-            <h1 className="font-heading text-lg font-bold text-foreground">Useful Contacts</h1>
+            <h1 className="font-heading text-lg font-bold text-foreground truncate">Useful Contacts</h1>
             <span className="text-xs text-muted-foreground hidden sm:inline">· {meta.label}</span>
           </div>
+          {grouped.length > 0 && (
+            <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
+              <SheetTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="lg:hidden gap-1.5 flex-shrink-0"
+                  aria-label="Jump to category"
+                >
+                  <List className="h-4 w-4" />
+                  <span className="hidden sm:inline">Categories</span>
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-72 bg-card border-border p-0 flex flex-col">
+                <SheetHeader className="px-4 py-3 border-b border-border">
+                  <SheetTitle className="font-heading text-foreground text-left">Jump to category</SheetTitle>
+                </SheetHeader>
+                <nav className="flex-1 overflow-y-auto p-2">
+                  <ul className="space-y-0.5">
+                    {grouped.map(([category, items]) => (
+                      <li key={category}>
+                        <button
+                          onClick={() => jumpTo(category)}
+                          className="flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-left text-sm text-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
+                        >
+                          <span className="truncate">{category}</span>
+                          <span className="text-xs opacity-70 flex-shrink-0">{items.length}</span>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </nav>
+              </SheetContent>
+            </Sheet>
+          )}
         </div>
         <div className="mx-auto max-w-3xl px-4 pb-3">
           <div className="relative">
