@@ -302,6 +302,7 @@ function EventsManager() {
   const [recurrenceRule, setRecurrenceRule] = useState("weekly");
   const [scanning, setScanning] = useState(false);
   const scanInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   const resetForm = () => {
     setTitle(""); setDescription(""); setEventDate(""); setEventTime("");
