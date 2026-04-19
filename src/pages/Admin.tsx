@@ -22,6 +22,8 @@ import StockManager from "@/components/StockManager";
 import SubcategoryManager from "@/components/SubcategoryManager";
 import RestockDialog from "@/components/RestockDialog";
 import { useInventory } from "@/hooks/useInventory";
+import { useDepartment } from "@/contexts/DepartmentContext";
+import { deptHomePath } from "@/lib/department";
 
 function AdminSection({
   title,
@@ -90,6 +92,8 @@ function RestockManager() {
 
 function ContactsManager() {
   const qc = useQueryClient();
+  const { tables, department } = useDepartment();
+  const QKEY = ["contacts", department];
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [role, setRole] = useState("");
@@ -98,17 +102,17 @@ function ContactsManager() {
   const [notes, setNotes] = useState("");
 
   const { data: contacts = [], isLoading } = useQuery({
-    queryKey: ["contacts"],
+    queryKey: QKEY,
     queryFn: async () => {
-      const { data, error } = await supabase.from("contacts").select("*").order("name");
+      const { data, error } = await (supabase as any).from(tables.contacts).select("*").order("name");
       if (error) throw error;
-      return data;
+      return data ?? [];
     },
   });
 
   const addContact = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from("contacts").insert({
+      const { error } = await (supabase as any).from(tables.contacts).insert({
         name,
         role: role || null,
         phone: phone || null,
@@ -118,7 +122,7 @@ function ContactsManager() {
       if (error) throw error;
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["contacts"] });
+      qc.invalidateQueries({ queryKey: QKEY });
       setOpen(false);
       setName(""); setRole(""); setPhone(""); setEmail(""); setNotes("");
       toast.success("Contact added");
@@ -128,11 +132,11 @@ function ContactsManager() {
 
   const deleteContact = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("contacts").delete().eq("id", id);
+      const { error } = await (supabase as any).from(tables.contacts).delete().eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["contacts"] });
+      qc.invalidateQueries({ queryKey: QKEY });
       toast.success("Contact deleted");
     },
   });
@@ -152,7 +156,7 @@ function ContactsManager() {
         <p className="text-sm text-muted-foreground text-center py-4">No contacts yet</p>
       ) : (
         <div className="space-y-2">
-          {contacts.map((c) => (
+          {contacts.map((c: any) => (
             <div key={c.id} className="flex items-center justify-between gap-3 rounded-lg border border-border bg-secondary/50 px-3 py-2">
               <div className="min-w-0">
                 <p className="text-sm font-medium text-foreground">{c.name}</p>
@@ -197,6 +201,8 @@ const RECURRENCE_OPTIONS = ["weekly", "biweekly", "monthly"];
 
 function EventsManager() {
   const qc = useQueryClient();
+  const { tables, department } = useDepartment();
+  const QKEY = ["events", department];
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -213,17 +219,17 @@ function EventsManager() {
   };
 
   const { data: events = [], isLoading } = useQuery({
-    queryKey: ["events"],
+    queryKey: QKEY,
     queryFn: async () => {
-      const { data, error } = await supabase.from("events").select("*").order("event_date", { ascending: true });
+      const { data, error } = await (supabase as any).from(tables.events).select("*").order("event_date", { ascending: true });
       if (error) throw error;
-      return data;
+      return data ?? [];
     },
   });
 
   const addEvent = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from("events").insert({
+      const { error } = await (supabase as any).from(tables.events).insert({
         title, description: description || null, event_date: eventDate,
         event_time: eventTime || null, category,
         price: price ? parseFloat(price) : null,
@@ -232,7 +238,7 @@ function EventsManager() {
       if (error) throw error;
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["events"] });
+      qc.invalidateQueries({ queryKey: QKEY });
       setOpen(false); resetForm();
       toast.success("Event added");
     },
@@ -241,11 +247,11 @@ function EventsManager() {
 
   const deleteEvent = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("events").delete().eq("id", id);
+      const { error } = await (supabase as any).from(tables.events).delete().eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["events"] });
+      qc.invalidateQueries({ queryKey: QKEY });
       toast.success("Event deleted");
     },
   });
@@ -265,7 +271,7 @@ function EventsManager() {
         <p className="text-sm text-muted-foreground text-center py-4">No events</p>
       ) : (
         <div className="space-y-2">
-          {events.map((ev) => (
+          {events.map((ev: any) => (
             <div key={ev.id} className="flex items-center justify-between gap-3 rounded-lg border border-border bg-secondary/50 px-3 py-2">
               <div className="min-w-0">
                 <p className="text-sm font-medium text-foreground">{ev.title}</p>
@@ -335,9 +341,9 @@ function EventsManager() {
   );
 }
 
-async function uploadRecipeImage(file: File): Promise<string> {
+async function uploadRecipeImage(file: File, department: string): Promise<string> {
   const ext = file.name.split(".").pop();
-  const path = `${crypto.randomUUID()}.${ext}`;
+  const path = `${department}/${crypto.randomUUID()}.${ext}`;
   const { error } = await supabase.storage.from("recipe-images").upload(path, file);
   if (error) throw error;
   const { data } = supabase.storage.from("recipe-images").getPublicUrl(path);
@@ -346,6 +352,8 @@ async function uploadRecipeImage(file: File): Promise<string> {
 
 function RecipesManager() {
   const qc = useQueryClient();
+  const { tables, department } = useDepartment();
+  const QKEY = ["recipes", department];
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [category, setCategory] = useState("cocktail");
@@ -356,23 +364,23 @@ function RecipesManager() {
   const fileRef = useRef<HTMLInputElement>(null);
 
   const { data: recipes = [], isLoading } = useQuery({
-    queryKey: ["recipes"],
+    queryKey: QKEY,
     queryFn: async () => {
-      const { data, error } = await supabase.from("recipes").select("*").order("name");
+      const { data, error } = await (supabase as any).from(tables.recipes).select("*").order("name");
       if (error) throw error;
-      return data;
+      return data ?? [];
     },
   });
 
   const addRecipe = useMutation({
     mutationFn: async () => {
       let image_url: string | null = null;
-      if (imageFile) image_url = await uploadRecipeImage(imageFile);
-      const { error } = await supabase.from("recipes").insert({ name, category, ingredients, instructions, image_url });
+      if (imageFile) image_url = await uploadRecipeImage(imageFile, department);
+      const { error } = await (supabase as any).from(tables.recipes).insert({ name, category, ingredients, instructions, image_url });
       if (error) throw error;
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["recipes"] });
+      qc.invalidateQueries({ queryKey: QKEY });
       setOpen(false);
       setName(""); setCategory("cocktail"); setIngredients(""); setInstructions("");
       setImageFile(null); setImagePreview(null);
@@ -383,11 +391,11 @@ function RecipesManager() {
 
   const deleteRecipe = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("recipes").delete().eq("id", id);
+      const { error } = await (supabase as any).from(tables.recipes).delete().eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["recipes"] });
+      qc.invalidateQueries({ queryKey: QKEY });
       toast.success("Recipe deleted");
     },
   });
@@ -416,7 +424,7 @@ function RecipesManager() {
         <p className="text-sm text-muted-foreground text-center py-4">No recipes</p>
       ) : (
         <div className="space-y-2">
-          {recipes.map((r) => (
+          {recipes.map((r: any) => (
             <div key={r.id} className="flex items-center justify-between gap-3 rounded-lg border border-border bg-secondary/50 px-3 py-2">
               <div className="min-w-0">
                 <p className="text-sm font-medium text-foreground">{r.name}</p>
@@ -467,18 +475,20 @@ function RecipesManager() {
 }
 
 export default function Admin() {
+  const { department, meta } = useDepartment();
   return (
     <OptionsPasswordGate>
       <div className="min-h-screen bg-background">
         <header className="sticky top-0 z-30 border-b border-border bg-card/80 backdrop-blur-md">
           <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">
             <div className="flex items-center gap-3">
-              <Link to="/home">
+              <Link to={deptHomePath(department)}>
                 <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
                   <ArrowLeft className="h-5 w-5" />
                 </Button>
               </Link>
               <h1 className="font-heading text-lg font-bold text-foreground">Admin Panel</h1>
+              <span className="text-xs text-muted-foreground hidden sm:inline">· {meta.label}</span>
             </div>
           </div>
         </header>
