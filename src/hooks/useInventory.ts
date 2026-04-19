@@ -20,37 +20,47 @@ export function useInventory() {
     },
   });
 
-  const updateItem = useMutation({
-    mutationFn: async (item: InventoryItem) => {
+  const flagItem = useMutation({
+    mutationFn: async ({ id, note }: { id: string; note?: string }) => {
       const { error } = await (supabase as any)
         .from(tables.inventory)
         .update({
-          quantity: item.quantity,
-          used_this_shift: item.usedThisShift,
+          needs_restock: true,
+          restock_note: note ?? null,
+          flagged_at: new Date().toISOString(),
         })
-        .eq("id", item.id);
+        .eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
   });
 
-  const updateMany = useMutation({
-    mutationFn: async (updates: { id: string; quantity: number; used_this_shift: number }[]) => {
-      for (const u of updates) {
-        const { error } = await (supabase as any)
-          .from(tables.inventory)
-          .update({ quantity: u.quantity, used_this_shift: u.used_this_shift })
-          .eq("id", u.id);
-        if (error) throw error;
-      }
+  const clearFlag = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await (supabase as any)
+        .from(tables.inventory)
+        .update({ needs_restock: false, restock_note: null, flagged_at: null })
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
+  });
+
+  const clearAllFlags = useMutation({
+    mutationFn: async () => {
+      const { error } = await (supabase as any)
+        .from(tables.inventory)
+        .update({ needs_restock: false, restock_note: null, flagged_at: null })
+        .eq("needs_restock", true);
+      if (error) throw error;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
   });
 
   const addItem = useMutation({
-    mutationFn: async (item: { id: string; name: string; category: Category; subcategory?: string | null; unit: string; quantity: number; min_stock: number }) => {
+    mutationFn: async (item: { id: string; name: string; category: Category; subcategory?: string | null; unit: string }) => {
       const { error } = await (supabase as any).from(tables.inventory).insert({
-        id: item.id, name: item.name, category: item.category, subcategory: item.subcategory ?? null, unit: item.unit, quantity: item.quantity, min_stock: item.min_stock,
+        id: item.id, name: item.name, category: item.category, subcategory: item.subcategory ?? null, unit: item.unit,
       });
       if (error) throw error;
     },
@@ -58,10 +68,10 @@ export function useInventory() {
   });
 
   const editItem = useMutation({
-    mutationFn: async (item: { id: string; name: string; category: Category; subcategory?: string | null; unit: string; quantity: number; min_stock: number }) => {
+    mutationFn: async (item: { id: string; name: string; category: Category; subcategory?: string | null; unit: string }) => {
       const { error } = await (supabase as any)
         .from(tables.inventory)
-        .update({ name: item.name, category: item.category, subcategory: item.subcategory ?? null, unit: item.unit, quantity: item.quantity, min_stock: item.min_stock })
+        .update({ name: item.name, category: item.category, subcategory: item.subcategory ?? null, unit: item.unit })
         .eq("id", item.id);
       if (error) throw error;
     },
@@ -76,5 +86,7 @@ export function useInventory() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
   });
 
-  return { items, isLoading, updateItem, updateMany, addItem, editItem, deleteItem };
+  return { items, isLoading, flagItem, clearFlag, clearAllFlags, addItem, editItem, deleteItem };
 }
+
+export type { InventoryItem };
