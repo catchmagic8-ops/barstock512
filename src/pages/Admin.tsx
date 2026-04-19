@@ -388,6 +388,13 @@ function EventsManager() {
         ref={scanInputRef}
         type="file"
         accept="image/*"
+        className="hidden"
+        onChange={(e) => e.target.files?.[0] && handleScanFile(e.target.files[0])}
+      />
+      <input
+        ref={cameraInputRef}
+        type="file"
+        accept="image/*"
         capture="environment"
         className="hidden"
         onChange={(e) => e.target.files?.[0] && handleScanFile(e.target.files[0])}
