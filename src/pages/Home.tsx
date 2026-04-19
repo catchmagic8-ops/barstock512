@@ -1,9 +1,11 @@
 import { useNavigate } from "react-router-dom";
-import { Package, Calendar, BookOpen, Phone, Shield, LogOut } from "lucide-react";
+import { Package, Calendar, BookOpen, Phone, Shield, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useDepartment } from "@/contexts/DepartmentContext";
+import { deptSubPath } from "@/lib/department";
 
 function getGreeting(): string {
   const h = new Date().getHours();
@@ -21,60 +23,18 @@ function getFormattedDate(): string {
   });
 }
 
-function useLowStockCount() {
-  return useQuery({
-    queryKey: ["low-stock-count"],
+function LowStockBadge() {
+  const { tables, department } = useDepartment();
+  const { data: count = 0 } = useQuery({
+    queryKey: ["low-stock-count", department],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("inventory_items")
+      const { data, error } = await (supabase as any)
+        .from(tables.inventory)
         .select("id, quantity, min_stock");
       if (error) throw error;
-      return (data ?? []).filter((i) => i.quantity < i.min_stock).length;
+      return (data ?? []).filter((i: any) => i.quantity < i.min_stock).length;
     },
   });
-}
-
-function useNextEvent() {
-  return useQuery({
-    queryKey: ["next-event"],
-    queryFn: async () => {
-      const today = new Date().toISOString().split("T")[0];
-      const { data, error } = await supabase
-        .from("events")
-        .select("title, event_date")
-        .gte("event_date", today)
-        .order("event_date", { ascending: true })
-        .limit(1);
-      if (error) throw error;
-      return data?.[0] ?? null;
-    },
-  });
-}
-
-function useRecipeCount() {
-  return useQuery({
-    queryKey: ["recipe-count"],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("recipes").select("id");
-      if (error) throw error;
-      return data?.length ?? 0;
-    },
-  });
-}
-
-function useContactCount() {
-  return useQuery({
-    queryKey: ["contact-count"],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("contacts").select("id");
-      if (error) throw error;
-      return data?.length ?? 0;
-    },
-  });
-}
-
-function LowStockBadge() {
-  const { data: count = 0 } = useLowStockCount();
   if (count > 0) {
     return (
       <span className="rounded-full bg-amber-500/20 px-2.5 py-0.5 text-xs font-semibold text-amber-400">
@@ -90,7 +50,21 @@ function LowStockBadge() {
 }
 
 function EventsBadge() {
-  const { data: event } = useNextEvent();
+  const { tables, department } = useDepartment();
+  const { data: event } = useQuery({
+    queryKey: ["next-event", department],
+    queryFn: async () => {
+      const today = new Date().toISOString().split("T")[0];
+      const { data, error } = await (supabase as any)
+        .from(tables.events)
+        .select("title, event_date")
+        .gte("event_date", today)
+        .order("event_date", { ascending: true })
+        .limit(1);
+      if (error) throw error;
+      return data?.[0] ?? null;
+    },
+  });
   if (event) {
     const d = new Date(event.event_date).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
     return (
@@ -107,23 +81,39 @@ function EventsBadge() {
 }
 
 function RecipesBadge() {
-  const { data: count = 0 } = useRecipeCount();
+  const { tables, department } = useDepartment();
+  const { data: count = 0 } = useQuery({
+    queryKey: ["recipe-count", department],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any).from(tables.recipes).select("id");
+      if (error) throw error;
+      return data?.length ?? 0;
+    },
+  });
   if (count > 0) {
     return (
       <span className="rounded-full bg-primary/20 px-2.5 py-0.5 text-xs font-semibold text-primary">
-        {count} cocktails
+        {count} recipes
       </span>
     );
   }
   return (
     <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs text-muted-foreground">
-      0 cocktails
+      0 recipes
     </span>
   );
 }
 
 function ContactsBadge() {
-  const { data: count = 0 } = useContactCount();
+  const { tables, department } = useDepartment();
+  const { data: count = 0 } = useQuery({
+    queryKey: ["contact-count", department],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any).from(tables.contacts).select("id");
+      if (error) throw error;
+      return data?.length ?? 0;
+    },
+  });
   return (
     <span className="rounded-full bg-primary/20 px-2.5 py-0.5 text-xs font-semibold text-primary">
       {count} contacts
@@ -143,74 +133,42 @@ interface NavCard {
   title: string;
   icon: React.ElementType;
   subtitle: string;
-  to: string;
+  sub: "inventory" | "events" | "recipes" | "telephone" | "admin";
   badge: () => React.ReactNode;
 }
 
 const cards: NavCard[] = [
-  {
-    title: "INVENTORY",
-    icon: Package,
-    subtitle: "Track stock levels & low alerts",
-    to: "/inventory",
-    badge: LowStockBadge,
-  },
-  {
-    title: "EVENTS",
-    icon: Calendar,
-    subtitle: "Upcoming events & promotions",
-    to: "/events",
-    badge: EventsBadge,
-  },
-  {
-    title: "RECIPES",
-    icon: BookOpen,
-    subtitle: "Cocktail library & instructions",
-    to: "/recipes",
-    badge: RecipesBadge,
-  },
-  {
-    title: "TELEPHONE",
-    icon: Phone,
-    subtitle: "Useful contacts & numbers",
-    to: "/telephone",
-    badge: ContactsBadge,
-  },
-  {
-    title: "ADMIN",
-    icon: Shield,
-    subtitle: "Manage all app content",
-    to: "/admin",
-    badge: AdminBadge,
-  },
+  { title: "INVENTORY", icon: Package, subtitle: "Track stock levels & low alerts", sub: "inventory", badge: LowStockBadge },
+  { title: "EVENTS", icon: Calendar, subtitle: "Upcoming events & promotions", sub: "events", badge: EventsBadge },
+  { title: "RECIPES", icon: BookOpen, subtitle: "Recipe library & instructions", sub: "recipes", badge: RecipesBadge },
+  { title: "TELEPHONE", icon: Phone, subtitle: "Useful contacts & numbers", sub: "telephone", badge: ContactsBadge },
+  { title: "ADMIN", icon: Shield, subtitle: "Manage all content for this dept.", sub: "admin", badge: AdminBadge },
 ];
 
 export default function Home() {
   const navigate = useNavigate();
-
-  const handleLogout = () => {
-    sessionStorage.removeItem("bar-unlocked");
-    window.location.href = "/";
-  };
+  const { department, meta } = useDepartment();
 
   return (
     <div className="flex min-h-screen flex-col" style={{ background: "#0f0e0c" }}>
       <header className="flex items-center justify-between px-5 py-4 sm:px-8">
-        <h1
-          className="text-xl font-bold tracking-wide sm:text-2xl"
-          style={{ fontFamily: "'Playfair Display', serif", color: "#d74c5a" }}
-        >
-          Bar Manager
-        </h1>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={handleLogout}
-          title="Logout"
-          className="text-muted-foreground hover:text-foreground"
-        >
-          <LogOut className="h-5 w-5" />
-        </Button>
+        <div className="flex items-center gap-3">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate("/")}
+            title="Back to Departments"
+            className="text-muted-foreground hover:text-foreground"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <h1
+            className="text-xl font-bold tracking-wide sm:text-2xl"
+            style={{ fontFamily: "'Playfair Display', serif", color: "#d74c5a" }}
+          >
+            {meta.label}
+          </h1>
+        </div>
       </header>
 
       <main className="flex flex-1 flex-col items-center justify-center px-5 pb-16 sm:px-8">
@@ -219,16 +177,16 @@ export default function Home() {
             className="text-3xl font-bold sm:text-4xl lg:text-5xl"
             style={{ fontFamily: "'Playfair Display', serif", color: "#e8e3d5" }}
           >
-            {getGreeting()}, Mathew
+            {getGreeting()}
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">{getFormattedDate()}</p>
         </div>
 
         <div className="grid w-full max-w-4xl grid-cols-1 gap-5 sm:grid-cols-3 sm:gap-6">
-          {cards.map(({ title, icon: Icon, subtitle, to, badge: Badge }) => (
+          {cards.map(({ title, icon: Icon, subtitle, sub, badge: Badge }) => (
             <button
               key={title}
-              onClick={() => navigate(to)}
+              onClick={() => navigate(deptSubPath(department, sub))}
               className={cn(
                 "group flex flex-col items-center gap-3 rounded-xl border px-6 py-8 text-center transition-all duration-300",
                 "hover:scale-[1.03]"

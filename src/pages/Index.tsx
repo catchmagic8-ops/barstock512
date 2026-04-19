@@ -11,24 +11,27 @@ import { Input } from "@/components/ui/input";
 import { generateReport } from "@/lib/generateReport";
 import type { Category } from "@/lib/inventory";
 import { useInventory } from "@/hooks/useInventory";
+import { useDepartment } from "@/contexts/DepartmentContext";
+import { deptHomePath } from "@/lib/department";
 
 export default function Index() {
   const { items, isLoading, updateItem, updateMany } = useInventory();
+  const { tables, department, meta } = useDepartment();
   const [activeCategory, setActiveCategory] = useState<Category>("spirits");
   const [activeSubcategory, setActiveSubcategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 
   const { data: subcategories = [] } = useQuery({
-    queryKey: ["subcategories"],
+    queryKey: ["subcategories", department],
     queryFn: async () => {
-      const { data, error } = await supabase.from("subcategories").select("*").order("name");
+      const { data, error } = await (supabase as any).from(tables.subcategories).select("*").order("name");
       if (error) throw error;
       return data ?? [];
     },
   });
 
   const currentSubs = useMemo(
-    () => subcategories.filter((s) => s.category === activeCategory),
+    () => subcategories.filter((s: any) => s.category === activeCategory),
     [subcategories, activeCategory]
   );
 
@@ -104,7 +107,7 @@ export default function Index() {
             <img src={logo} alt="Logo" className="h-7 w-7 sm:h-8 sm:w-8" width={32} height={32} />
             <div>
               <h1 className="font-heading text-base font-bold leading-tight text-foreground sm:text-lg">
-                BAR INVENTORY
+                {meta.label.toUpperCase()} INVENTORY
               </h1>
               <p className="text-[10px] text-muted-foreground sm:text-xs">
                 {items.length} items tracked
@@ -113,7 +116,7 @@ export default function Index() {
           </div>
 
           <div className="flex items-center gap-0.5 sm:gap-1.5">
-            <Link to="/home">
+            <Link to={deptHomePath(department)}>
               <Button variant="ghost" size="icon" title="Back to Home" className="h-8 w-8 text-muted-foreground hover:text-foreground sm:h-9 sm:w-auto sm:px-3 sm:gap-1.5">
                 <Home className="h-4 w-4" />
                 <span className="hidden sm:inline text-sm">Home</span>
@@ -166,7 +169,7 @@ export default function Index() {
                 >
                   All
                 </button>
-                {currentSubs.map((sub) => (
+                {currentSubs.map((sub: any) => (
                   <button
                     key={sub.id}
                     onClick={() => setActiveSubcategory(sub.name)}

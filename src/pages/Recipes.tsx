@@ -4,19 +4,22 @@ import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Loader2, BookOpen, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useDepartment } from "@/contexts/DepartmentContext";
+import { deptHomePath } from "@/lib/department";
 
 export default function Recipes() {
   const [expanded, setExpanded] = useState<string | null>(null);
+  const { tables, department, meta } = useDepartment();
 
   const { data: recipes = [], isLoading } = useQuery({
-    queryKey: ["recipes"],
+    queryKey: ["recipes", department],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("recipes")
+      const { data, error } = await (supabase as any)
+        .from(tables.recipes)
         .select("*")
         .order("name", { ascending: true });
       if (error) throw error;
-      return data;
+      return data ?? [];
     },
   });
 
@@ -25,12 +28,13 @@ export default function Recipes() {
       <header className="sticky top-0 z-30 border-b border-border bg-card/80 backdrop-blur-md">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">
           <div className="flex items-center gap-3">
-            <Link to="/home">
+            <Link to={deptHomePath(department)}>
               <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
                 <ArrowLeft className="h-5 w-5" />
               </Button>
             </Link>
             <h1 className="font-heading text-lg font-bold text-foreground">Recipes</h1>
+            <span className="text-xs text-muted-foreground hidden sm:inline">· {meta.label}</span>
           </div>
         </div>
       </header>
@@ -47,7 +51,7 @@ export default function Recipes() {
             <p className="text-sm">Recipes are managed from the Admin panel</p>
           </div>
         ) : (
-          recipes.map((r) => {
+          recipes.map((r: any) => {
             const isOpen = expanded === r.id;
             return (
               <div key={r.id} className="rounded-xl border border-border bg-card overflow-hidden">
