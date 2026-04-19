@@ -169,7 +169,7 @@ function ContactsManager() {
               <div className="min-w-0">
                 <p className="text-sm font-medium text-foreground">{c.name}</p>
                 <p className="text-xs text-muted-foreground">
-                  {[c.role, c.phone, c.email].filter(Boolean).join(" · ")}
+                  {[c.category, c.role, c.extension && `Ext ${c.extension}`, c.phone, c.email].filter(Boolean).join(" · ")}
                 </p>
               </div>
               <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive flex-shrink-0 h-8 w-8" onClick={() => deleteContact.mutate(c.id)}>
@@ -186,9 +186,11 @@ function ContactsManager() {
             <DialogTitle className="font-heading text-foreground">Add Contact</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 py-2">
+            <Input placeholder="Category (e.g. Front Desk, Kitchen)" value={category} onChange={(e) => setCategory(e.target.value)} className="bg-secondary border-border" />
+            <Input placeholder="Role / Title (e.g. Manager)" value={role} onChange={(e) => setRole(e.target.value)} className="bg-secondary border-border" />
             <Input placeholder="Name *" value={name} onChange={(e) => setName(e.target.value)} className="bg-secondary border-border" />
-            <Input placeholder="Role (e.g. Manager, Supplier)" value={role} onChange={(e) => setRole(e.target.value)} className="bg-secondary border-border" />
-            <Input placeholder="Phone number" value={phone} onChange={(e) => setPhone(e.target.value)} className="bg-secondary border-border" />
+            <Input placeholder="Extension (e.g. 1700)" value={extension} onChange={(e) => setExtension(e.target.value)} className="bg-secondary border-border" />
+            <Input placeholder="Mobile number" value={phone} onChange={(e) => setPhone(e.target.value)} className="bg-secondary border-border" />
             <Input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className="bg-secondary border-border" />
             <Textarea placeholder="Notes (optional)" value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} className="bg-secondary border-border" />
           </div>
