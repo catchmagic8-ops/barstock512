@@ -22,11 +22,9 @@ interface ItemForm {
   category: Category;
   subcategory: string;
   unit: string;
-  quantity: string;
-  minStock: string;
 }
 
-const emptyForm: ItemForm = { name: "", category: "spirits", subcategory: "", unit: "bottles", quantity: "0", minStock: "2" };
+const emptyForm: ItemForm = { name: "", category: "spirits", subcategory: "", unit: "bottles" };
 
 export default function StockManager() {
   const { items, addItem, editItem, deleteItem } = useInventory();
@@ -48,7 +46,7 @@ export default function StockManager() {
     if (!form.name.trim()) { toast.error("Name is required"); return; }
     const id = form.name.toLowerCase().replace(/\s+/g, "-") + "-" + Date.now();
     addItem.mutate(
-      { id, name: form.name.trim(), category: form.category, subcategory: form.subcategory || null, unit: form.unit.trim() || "units", quantity: parseInt(form.quantity) || 0, min_stock: parseInt(form.minStock) || 0 },
+      { id, name: form.name.trim(), category: form.category, subcategory: form.subcategory || null, unit: form.unit.trim() || "units" },
       {
         onSuccess: () => { setForm(emptyForm); setShowAdd(false); toast.success("Item added"); },
         onError: () => toast.error("Failed to add item"),
@@ -58,13 +56,13 @@ export default function StockManager() {
 
   const startEdit = (item: InventoryItem) => {
     setEditingId(item.id);
-    setEditForm({ name: item.name, category: item.category, subcategory: item.subcategory || "", unit: item.unit, quantity: String(item.quantity), minStock: String(item.minStock) });
+    setEditForm({ name: item.name, category: item.category, subcategory: item.subcategory || "", unit: item.unit });
   };
 
   const handleEdit = () => {
     if (!editingId || !editForm.name.trim()) return;
     editItem.mutate(
-      { id: editingId, name: editForm.name.trim(), category: editForm.category, subcategory: editForm.subcategory || null, unit: editForm.unit.trim(), quantity: parseInt(editForm.quantity) || 0, min_stock: parseInt(editForm.minStock) || 0 },
+      { id: editingId, name: editForm.name.trim(), category: editForm.category, subcategory: editForm.subcategory || null, unit: editForm.unit.trim() },
       {
         onSuccess: () => { setEditingId(null); toast.success("Item updated"); },
         onError: () => toast.error("Failed to update"),
@@ -116,8 +114,6 @@ export default function StockManager() {
             </Select>
             <SubcategorySelect value={form.subcategory} onChange={(v) => setForm({ ...form, subcategory: v })} category={form.category} />
             <Input placeholder="Unit (e.g. bottles)" value={form.unit} onChange={(e) => setForm({ ...form, unit: e.target.value })} className="bg-card" />
-            <Input placeholder="Quantity" type="number" value={form.quantity} onChange={(e) => setForm({ ...form, quantity: e.target.value })} className="bg-card" />
-            <Input placeholder="Min stock" type="number" value={form.minStock} onChange={(e) => setForm({ ...form, minStock: e.target.value })} className="bg-card" />
           </div>
           <div className="flex gap-2">
             <Button size="sm" onClick={handleAdd} disabled={addItem.isPending}>Save</Button>
@@ -159,8 +155,6 @@ export default function StockManager() {
                   </Select>
                   <SubcategorySelect value={editForm.subcategory} onChange={(v) => setEditForm({ ...editForm, subcategory: v })} category={editForm.category} />
                   <Input value={editForm.unit} onChange={(e) => setEditForm({ ...editForm, unit: e.target.value })} className="bg-muted" />
-                  <Input type="number" value={editForm.quantity} onChange={(e) => setEditForm({ ...editForm, quantity: e.target.value })} className="bg-muted" />
-                  <Input type="number" value={editForm.minStock} onChange={(e) => setEditForm({ ...editForm, minStock: e.target.value })} className="bg-muted" placeholder="Min stock" />
                 </div>
                 <div className="flex gap-2">
                   <Button size="sm" onClick={handleEdit} disabled={editItem.isPending} className="gap-1"><Save className="h-3.5 w-3.5" />Save</Button>
@@ -172,11 +166,9 @@ export default function StockManager() {
                 <div>
                   <span className="font-medium text-foreground">{item.name}</span>
                   {item.subcategory && <span className="ml-1.5 text-xs text-primary/80">({item.subcategory})</span>}
-                  <span className="ml-2 text-sm text-muted-foreground">
-                    {item.quantity} {item.unit} · min {item.minStock}
-                  </span>
-                  {item.quantity < item.minStock && (
-                    <span className="ml-2 text-xs font-semibold text-primary">LOW</span>
+                  <span className="ml-2 text-sm text-muted-foreground">{item.unit}</span>
+                  {item.needsRestock && (
+                    <span className="ml-2 text-xs font-semibold text-warning">FLAGGED</span>
                   )}
                 </div>
                 <div className="flex gap-1">

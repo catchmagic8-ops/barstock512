@@ -6,9 +6,9 @@ export interface InventoryItem {
   category: Category;
   subcategory?: string;
   unit: string;
-  quantity: number;
-  minStock: number;
-  usedThisShift: number;
+  needsRestock: boolean;
+  restockNote?: string;
+  flaggedAt?: string;
 }
 
 // Map DB row to app model
@@ -18,9 +18,9 @@ export function rowToItem(row: {
   category: string;
   subcategory?: string | null;
   unit: string;
-  quantity: number;
-  min_stock: number;
-  used_this_shift: number;
+  needs_restock?: boolean | null;
+  restock_note?: string | null;
+  flagged_at?: string | null;
 }): InventoryItem {
   return {
     id: row.id,
@@ -28,8 +28,8 @@ export function rowToItem(row: {
     category: row.category as Category,
     subcategory: row.subcategory ?? undefined,
     unit: row.unit,
-    quantity: row.quantity,
-    minStock: row.min_stock,
-    usedThisShift: row.used_this_shift,
+    needsRestock: !!row.needs_restock,
+    restockNote: row.restock_note ?? undefined,
+    flaggedAt: row.flagged_at ?? undefined,
   };
 }
