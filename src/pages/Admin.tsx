@@ -300,10 +300,48 @@ function EventsManager() {
   const [price, setPrice] = useState("");
   const [isRecurring, setIsRecurring] = useState(false);
   const [recurrenceRule, setRecurrenceRule] = useState("weekly");
+  const [scanning, setScanning] = useState(false);
+  const scanInputRef = useRef<HTMLInputElement>(null);
 
   const resetForm = () => {
     setTitle(""); setDescription(""); setEventDate(""); setEventTime("");
     setCategory("General"); setPrice(""); setIsRecurring(false); setRecurrenceRule("weekly");
+  };
+
+  const handleScanFile = async (file: File) => {
+    if (!file) return;
+    setScanning(true);
+    try {
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+      const { data, error } = await supabase.functions.invoke("scan-event-sheet", {
+        body: { imageBase64: base64 },
+      });
+      if (error) throw error;
+      const ev = data?.event;
+      if (!ev) throw new Error("No event returned");
+      setTitle(ev.title ?? "");
+      setDescription(ev.description ?? "");
+      setEventDate(ev.event_date ?? "");
+      setEventTime(ev.event_time ?? "");
+      setCategory(EVENT_CATEGORIES.includes(ev.category) ? ev.category : "General");
+      setPrice(ev.price != null ? String(ev.price) : "");
+      setIsRecurring(!!ev.is_recurring);
+      setRecurrenceRule(ev.recurrence_rule ?? "weekly");
+      setOpen(true);
+      toast.success("Event sheet scanned — review and save");
+    } catch (err: any) {
+      console.error(err);
+      const msg = err?.context?.error || err?.message || "Failed to scan sheet";
+      toast.error(msg);
+    } finally {
+      setScanning(false);
+      if (scanInputRef.current) scanInputRef.current.value = "";
+    }
   };
 
   const { data: events = [], isLoading } = useQuery({
