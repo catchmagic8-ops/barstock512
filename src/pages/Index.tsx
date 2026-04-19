@@ -31,7 +31,7 @@ export default function Index() {
   });
 
   const currentSubs = useMemo(
-    () => subcategories.filter((s) => s.category === activeCategory),
+    () => subcategories.filter((s: any) => s.category === activeCategory),
     [subcategories, activeCategory]
   );
 
@@ -107,7 +107,7 @@ export default function Index() {
             <img src={logo} alt="Logo" className="h-7 w-7 sm:h-8 sm:w-8" width={32} height={32} />
             <div>
               <h1 className="font-heading text-base font-bold leading-tight text-foreground sm:text-lg">
-                BAR INVENTORY
+                {meta.label.toUpperCase()} INVENTORY
               </h1>
               <p className="text-[10px] text-muted-foreground sm:text-xs">
                 {items.length} items tracked
@@ -116,7 +116,7 @@ export default function Index() {
           </div>
 
           <div className="flex items-center gap-0.5 sm:gap-1.5">
-            <Link to="/home">
+            <Link to={deptHomePath(department)}>
               <Button variant="ghost" size="icon" title="Back to Home" className="h-8 w-8 text-muted-foreground hover:text-foreground sm:h-9 sm:w-auto sm:px-3 sm:gap-1.5">
                 <Home className="h-4 w-4" />
                 <span className="hidden sm:inline text-sm">Home</span>
@@ -169,7 +169,7 @@ export default function Index() {
                 >
                   All
                 </button>
-                {currentSubs.map((sub) => (
+                {currentSubs.map((sub: any) => (
                   <button
                     key={sub.id}
                     onClick={() => setActiveSubcategory(sub.name)}
