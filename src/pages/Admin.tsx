@@ -384,11 +384,31 @@ function EventsManager() {
 
   return (
     <div className="space-y-3">
-      <div className="flex justify-between items-center">
-        <p className="text-sm text-muted-foreground">Add, view and delete events.</p>
-        <Button size="sm" onClick={() => setOpen(true)} className="gap-1.5">
-          <Plus className="h-4 w-4" /> Add Event
-        </Button>
+      <input
+        ref={scanInputRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        className="hidden"
+        onChange={(e) => e.target.files?.[0] && handleScanFile(e.target.files[0])}
+      />
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+        <p className="text-sm text-muted-foreground">Add, view and delete events. Scan a physical sheet to auto-fill.</p>
+        <div className="flex gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => scanInputRef.current?.click()}
+            disabled={scanning}
+            className="gap-1.5"
+          >
+            {scanning ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+            {scanning ? "Scanning…" : "Scan Sheet"}
+          </Button>
+          <Button size="sm" onClick={() => setOpen(true)} className="gap-1.5">
+            <Plus className="h-4 w-4" /> Add Event
+          </Button>
+        </div>
       </div>
 
       {isLoading ? (
