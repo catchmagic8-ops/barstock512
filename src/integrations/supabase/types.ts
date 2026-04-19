@@ -16,8 +16,10 @@ export type Database = {
     Tables: {
       contacts: {
         Row: {
+          category: string | null
           created_at: string
           email: string | null
+          extension: string | null
           id: string
           name: string
           notes: string | null
@@ -26,8 +28,10 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          category?: string | null
           created_at?: string
           email?: string | null
+          extension?: string | null
           id?: string
           name: string
           notes?: string | null
@@ -36,8 +40,10 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          category?: string | null
           created_at?: string
           email?: string | null
+          extension?: string | null
           id?: string
           name?: string
           notes?: string | null
@@ -49,8 +55,10 @@ export type Database = {
       }
       contacts_konferencje: {
         Row: {
+          category: string | null
           created_at: string
           email: string | null
+          extension: string | null
           id: string
           name: string
           notes: string | null
@@ -59,8 +67,10 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          category?: string | null
           created_at?: string
           email?: string | null
+          extension?: string | null
           id?: string
           name: string
           notes?: string | null
@@ -69,8 +79,10 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          category?: string | null
           created_at?: string
           email?: string | null
+          extension?: string | null
           id?: string
           name?: string
           notes?: string | null
@@ -82,8 +94,10 @@ export type Database = {
       }
       contacts_polskie_smaki: {
         Row: {
+          category: string | null
           created_at: string
           email: string | null
+          extension: string | null
           id: string
           name: string
           notes: string | null
@@ -92,8 +106,10 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          category?: string | null
           created_at?: string
           email?: string | null
+          extension?: string | null
           id?: string
           name: string
           notes?: string | null
@@ -102,8 +118,10 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          category?: string | null
           created_at?: string
           email?: string | null
+          extension?: string | null
           id?: string
           name?: string
           notes?: string | null
