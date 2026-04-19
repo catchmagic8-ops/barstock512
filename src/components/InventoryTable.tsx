@@ -35,13 +35,85 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
 
   return (
     <>
-      <div className="overflow-x-auto -mx-1">
-        <table className="w-full text-xs sm:text-sm">
+      {/* MOBILE: stacked card list — keeps the action button always visible */}
+      <ul className="sm:hidden divide-y divide-border/50">
+        {items.map((item) => {
+          const flagged = item.needsRestock;
+          return (
+            <li
+              key={item.id}
+              className={cn(
+                "flex items-center justify-between gap-2 py-2.5 px-1 transition-colors",
+                flagged && "bg-warning/5"
+              )}
+            >
+              <div className="flex min-w-0 flex-1 items-center gap-2">
+                {flagged && (
+                  <AlertTriangle className="h-3.5 w-3.5 flex-shrink-0 text-warning animate-pulse-warning" />
+                )}
+                <div className="min-w-0">
+                  <p className="font-medium text-foreground text-sm truncate">{item.name}</p>
+                  <p className="text-[11px] text-muted-foreground truncate">
+                    {item.subcategory ? `${item.subcategory} · ${item.unit}` : item.unit}
+                  </p>
+                  {flagged && item.restockNote && (
+                    <p className="mt-0.5 text-[11px] text-warning/90 italic truncate">
+                      "{item.restockNote}"
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex-shrink-0">
+                {flagged ? (
+                  onClear ? (
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="h-8 w-8 border-warning/40 text-warning"
+                      onClick={() => onClear(item.id)}
+                      title="Mark as restocked"
+                    >
+                      <Check className="h-4 w-4" />
+                    </Button>
+                  ) : (
+                    <span className="inline-flex items-center rounded-full bg-warning/20 px-2 py-0.5 text-[10px] font-semibold text-warning">
+                      NOTIFIED
+                    </span>
+                  )
+                ) : (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8 text-[11px] gap-1 px-2.5 border-warning/40 text-warning hover:bg-warning/10 hover:text-warning"
+                    onClick={() => {
+                      setFlagging(item);
+                      setNote("");
+                    }}
+                  >
+                    <BellRing className="h-3.5 w-3.5" />
+                    Low
+                  </Button>
+                )}
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+
+      {/* DESKTOP / TABLET (sm+): full table layout */}
+      <div className="hidden sm:block overflow-x-auto -mx-1">
+        <table className="w-full text-sm table-fixed">
+          <colgroup>
+            <col className="w-[45%]" />
+            <col className="w-[35%]" />
+            <col className="w-[20%]" />
+          </colgroup>
           <thead>
             <tr className="border-b border-border text-left text-muted-foreground">
-              <th className="pb-2 sm:pb-3 pr-2 sm:pr-4 font-medium">Item</th>
-              <th className="pb-2 sm:pb-3 pr-2 sm:pr-4 font-medium hidden md:table-cell">Note</th>
-              <th className="pb-2 sm:pb-3 font-medium text-right">Status</th>
+              <th className="pb-3 pr-4 font-medium">Item</th>
+              <th className="pb-3 pr-4 font-medium hidden md:table-cell">Note</th>
+              <th className="pb-3 font-medium text-right">Status</th>
             </tr>
           </thead>
           <tbody>
@@ -55,44 +127,39 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
                     flagged && "bg-warning/5"
                   )}
                 >
-                  <td className="py-2 sm:py-3 pr-2 sm:pr-4">
-                    <div className="flex items-center gap-1.5 sm:gap-2">
+                  <td className="py-3 pr-4">
+                    <div className="flex items-center gap-2">
                       {flagged && (
                         <AlertTriangle className="h-3.5 w-3.5 flex-shrink-0 text-warning animate-pulse-warning" />
                       )}
                       <div className="min-w-0">
-                        <span className="font-medium text-foreground text-xs sm:text-sm block truncate">
+                        <span className="font-medium text-foreground text-sm block truncate">
                           {item.name}
                         </span>
-                        <span className="text-[10px] sm:text-xs text-muted-foreground">
+                        <span className="text-xs text-muted-foreground">
                           {item.subcategory ? `${item.subcategory} · ${item.unit}` : item.unit}
                         </span>
                       </div>
                     </div>
-                    {flagged && item.restockNote && (
-                      <p className="mt-1 text-[11px] text-warning/90 italic md:hidden">
-                        “{item.restockNote}”
-                      </p>
-                    )}
                   </td>
-                  <td className="py-2 sm:py-3 pr-2 sm:pr-4 hidden md:table-cell">
+                  <td className="py-3 pr-4 hidden md:table-cell">
                     {flagged && item.restockNote ? (
-                      <span className="text-xs text-warning/90 italic">“{item.restockNote}”</span>
+                      <span className="text-xs text-warning/90 italic">"{item.restockNote}"</span>
                     ) : (
                       <span className="text-xs text-muted-foreground">—</span>
                     )}
                   </td>
-                  <td className="py-2 sm:py-3 text-right">
+                  <td className="py-3 text-right">
                     {flagged ? (
                       <div className="flex justify-end gap-1.5">
-                        <span className="hidden sm:inline-flex items-center rounded-full bg-warning/20 px-2 py-0.5 text-[10px] font-semibold text-warning">
+                        <span className="inline-flex items-center rounded-full bg-warning/20 px-2 py-0.5 text-[10px] font-semibold text-warning">
                           NOTIFIED
                         </span>
                         {onClear && (
                           <Button
                             variant="outline"
                             size="icon"
-                            className="h-7 w-7 sm:h-8 sm:w-8"
+                            className="h-8 w-8"
                             onClick={() => onClear(item.id)}
                             title="Mark as restocked"
                           >
@@ -104,15 +171,14 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
                       <Button
                         variant="outline"
                         size="sm"
-                        className="h-7 sm:h-8 text-[11px] sm:text-xs gap-1 px-2 sm:px-3 border-warning/40 text-warning hover:bg-warning/10 hover:text-warning"
+                        className="h-8 text-xs gap-1 px-3 border-warning/40 text-warning hover:bg-warning/10 hover:text-warning"
                         onClick={() => {
                           setFlagging(item);
                           setNote("");
                         }}
                       >
-                        <BellRing className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-                        <span className="hidden sm:inline">Low Stock</span>
-                        <span className="sm:hidden">Low</span>
+                        <BellRing className="h-3.5 w-3.5" />
+                        Low Stock
                       </Button>
                     )}
                   </td>
@@ -124,7 +190,7 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
       </div>
 
       <Dialog open={!!flagging} onOpenChange={(o) => !o && setFlagging(null)}>
-        <DialogContent>
+        <DialogContent className="max-w-[calc(100vw-2rem)] sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>Notify manager: low stock</DialogTitle>
             <DialogDescription>
@@ -138,7 +204,7 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
             autoFocus
             onKeyDown={(e) => e.key === "Enter" && submitFlag()}
           />
-          <DialogFooter>
+          <DialogFooter className="flex-row justify-end gap-2">
             <Button variant="ghost" onClick={() => setFlagging(null)}>Cancel</Button>
             <Button onClick={submitFlag} className="gap-1.5">
               <BellRing className="h-4 w-4" /> Notify

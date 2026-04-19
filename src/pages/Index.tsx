@@ -143,7 +143,7 @@ export default function Index() {
             <img src={logo} alt="Logo" className="w-64 h-auto opacity-80" loading="lazy" />
           </div>
 
-          <div className="flex-1 space-y-3 sm:space-y-6">
+          <div className="flex-1 min-w-0 space-y-3 sm:space-y-6">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input

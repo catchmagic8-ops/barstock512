@@ -30,9 +30,10 @@ function LowStockBadge() {
     queryFn: async () => {
       const { data, error } = await (supabase as any)
         .from(tables.inventory)
-        .select("id, quantity, min_stock");
+        .select("id, needs_restock")
+        .eq("needs_restock", true);
       if (error) throw error;
-      return (data ?? []).filter((i: any) => i.quantity < i.min_stock).length;
+      return data?.length ?? 0;
     },
   });
   if (count > 0) {
