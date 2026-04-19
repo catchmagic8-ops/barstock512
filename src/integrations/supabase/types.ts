@@ -47,7 +47,157 @@ export type Database = {
         }
         Relationships: []
       }
+      contacts_konferencje: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          name: string
+          notes: string | null
+          phone: string | null
+          role: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          phone?: string | null
+          role?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          role?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      contacts_polskie_smaki: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          name: string
+          notes: string | null
+          phone: string | null
+          role: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          phone?: string | null
+          role?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          role?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       events: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: string | null
+          event_date: string
+          event_time: string | null
+          id: string
+          is_recurring: boolean
+          price: number | null
+          recurrence_rule: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          event_date: string
+          event_time?: string | null
+          id?: string
+          is_recurring?: boolean
+          price?: number | null
+          recurrence_rule?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          event_date?: string
+          event_time?: string | null
+          id?: string
+          is_recurring?: boolean
+          price?: number | null
+          recurrence_rule?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      events_konferencje: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: string | null
+          event_date: string
+          event_time: string | null
+          id: string
+          is_recurring: boolean
+          price: number | null
+          recurrence_rule: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          event_date: string
+          event_time?: string | null
+          id?: string
+          is_recurring?: boolean
+          price?: number | null
+          recurrence_rule?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          event_date?: string
+          event_time?: string | null
+          id?: string
+          is_recurring?: boolean
+          price?: number | null
+          recurrence_rule?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      events_polskie_smaki: {
         Row: {
           category: string | null
           created_at: string
@@ -128,6 +278,84 @@ export type Database = {
         }
         Relationships: []
       }
+      inventory_items_konferencje: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          min_stock: number
+          name: string
+          quantity: number
+          subcategory: string | null
+          unit: string
+          updated_at: string
+          used_this_shift: number
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id: string
+          min_stock?: number
+          name: string
+          quantity?: number
+          subcategory?: string | null
+          unit: string
+          updated_at?: string
+          used_this_shift?: number
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          min_stock?: number
+          name?: string
+          quantity?: number
+          subcategory?: string | null
+          unit?: string
+          updated_at?: string
+          used_this_shift?: number
+        }
+        Relationships: []
+      }
+      inventory_items_polskie_smaki: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          min_stock: number
+          name: string
+          quantity: number
+          subcategory: string | null
+          unit: string
+          updated_at: string
+          used_this_shift: number
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id: string
+          min_stock?: number
+          name: string
+          quantity?: number
+          subcategory?: string | null
+          unit: string
+          updated_at?: string
+          used_this_shift?: number
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          min_stock?: number
+          name?: string
+          quantity?: number
+          subcategory?: string | null
+          unit?: string
+          updated_at?: string
+          used_this_shift?: number
+        }
+        Relationships: []
+      }
       recipes: {
         Row: {
           category: string
@@ -161,7 +389,115 @@ export type Database = {
         }
         Relationships: []
       }
+      recipes_konferencje: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          image_url: string | null
+          ingredients: string
+          instructions: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          ingredients: string
+          instructions: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          ingredients?: string
+          instructions?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      recipes_polskie_smaki: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          image_url: string | null
+          ingredients: string
+          instructions: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          ingredients: string
+          instructions: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          ingredients?: string
+          instructions?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       subcategories: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          name: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      subcategories_konferencje: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          name: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      subcategories_polskie_smaki: {
         Row: {
           category: string
           created_at: string
