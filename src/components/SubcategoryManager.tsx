@@ -7,6 +7,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Category } from "@/lib/inventory";
 import { toast } from "sonner";
+import { useDepartment } from "@/contexts/DepartmentContext";
 
 const CATEGORIES: { value: Category; label: string }[] = [
   { value: "spirits", label: "Spirits" },
@@ -17,14 +18,13 @@ const CATEGORIES: { value: Category; label: string }[] = [
   { value: "reusables", label: "Reusables" },
 ];
 
-export const SUBCATEGORIES_KEY = ["subcategories"];
-
 export function useSubcategories() {
+  const { tables, department } = useDepartment();
   return useQuery({
-    queryKey: SUBCATEGORIES_KEY,
+    queryKey: ["subcategories", department],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("subcategories")
+      const { data, error } = await (supabase as any)
+        .from(tables.subcategories)
         .select("*")
         .order("category")
         .order("name");
@@ -36,20 +36,22 @@ export function useSubcategories() {
 
 export default function SubcategoryManager() {
   const queryClient = useQueryClient();
+  const { tables, department } = useDepartment();
+  const QUERY_KEY = ["subcategories", department];
   const { data: subcategories = [] } = useSubcategories();
   const [name, setName] = useState("");
   const [category, setCategory] = useState<Category>("spirits");
   const [filterCat, setFilterCat] = useState<Category | "all">("all");
 
-  const filtered = filterCat === "all" ? subcategories : subcategories.filter((s) => s.category === filterCat);
+  const filtered = filterCat === "all" ? subcategories : subcategories.filter((s: any) => s.category === filterCat);
 
   const addSub = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from("subcategories").insert({ name: name.trim(), category });
+      const { error } = await (supabase as any).from(tables.subcategories).insert({ name: name.trim(), category });
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: SUBCATEGORIES_KEY });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEY });
       setName("");
       toast.success("Subcategory added");
     },
@@ -58,11 +60,11 @@ export default function SubcategoryManager() {
 
   const deleteSub = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("subcategories").delete().eq("id", id);
+      const { error } = await (supabase as any).from(tables.subcategories).delete().eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: SUBCATEGORIES_KEY });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEY });
       toast.success("Deleted");
     },
     onError: () => toast.error("Failed to delete"),
@@ -107,7 +109,7 @@ export default function SubcategoryManager() {
         {filtered.length === 0 && (
           <p className="text-sm text-muted-foreground py-4 text-center">No subcategories yet</p>
         )}
-        {filtered.map((sub) => (
+        {filtered.map((sub: any) => (
           <div key={sub.id} className="flex items-center justify-between rounded-lg border border-border bg-card px-3 py-2">
             <div>
               <span className="font-medium text-foreground text-sm">{sub.name}</span>

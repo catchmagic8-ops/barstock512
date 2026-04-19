@@ -1,20 +1,22 @@
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Phone, Mail, Loader2, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useDepartment } from "@/contexts/DepartmentContext";
+import { deptHomePath } from "@/lib/department";
 
 export default function Telephone() {
+  const { tables, department, meta } = useDepartment();
   const { data: contacts = [], isLoading } = useQuery({
-    queryKey: ["contacts"],
+    queryKey: ["contacts", department],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("contacts")
+      const { data, error } = await (supabase as any)
+        .from(tables.contacts)
         .select("*")
         .order("name");
       if (error) throw error;
-      return data;
+      return data ?? [];
     },
   });
 
@@ -23,12 +25,13 @@ export default function Telephone() {
       <header className="sticky top-0 z-30 border-b border-border bg-card/80 backdrop-blur-md">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">
           <div className="flex items-center gap-3">
-            <Link to="/home">
+            <Link to={deptHomePath(department)}>
               <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
                 <ArrowLeft className="h-5 w-5" />
               </Button>
             </Link>
             <h1 className="font-heading text-lg font-bold text-foreground">Useful Contacts</h1>
+            <span className="text-xs text-muted-foreground hidden sm:inline">· {meta.label}</span>
           </div>
         </div>
       </header>
@@ -45,7 +48,7 @@ export default function Telephone() {
             <p className="text-sm">Contacts can be added from the Admin panel</p>
           </div>
         ) : (
-          contacts.map((c) => (
+          contacts.map((c: any) => (
             <div
               key={c.id}
               className="rounded-xl border border-border bg-card p-4 space-y-2"

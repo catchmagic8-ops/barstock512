@@ -5,6 +5,8 @@ import { ArrowLeft, Loader2, Calendar, Clock, DollarSign, Tag, Repeat } from "lu
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
+import { useDepartment } from "@/contexts/DepartmentContext";
+import { deptHomePath } from "@/lib/department";
 
 const categoryColor = (cat: string) => {
   const colors: Record<string, string> = {
@@ -18,15 +20,16 @@ const categoryColor = (cat: string) => {
 };
 
 export default function Events() {
+  const { tables, department, meta } = useDepartment();
   const { data: events = [], isLoading } = useQuery({
-    queryKey: ["events"],
+    queryKey: ["events", department],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("events")
+      const { data, error } = await (supabase as any)
+        .from(tables.events)
         .select("*")
         .order("event_date", { ascending: true });
       if (error) throw error;
-      return data;
+      return data ?? [];
     },
   });
 
@@ -35,12 +38,13 @@ export default function Events() {
       <header className="sticky top-0 z-30 border-b border-border bg-card/80 backdrop-blur-md">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">
           <div className="flex items-center gap-3">
-            <Link to="/home">
+            <Link to={deptHomePath(department)}>
               <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
                 <ArrowLeft className="h-5 w-5" />
               </Button>
             </Link>
             <h1 className="font-heading text-lg font-bold text-foreground">Events</h1>
+            <span className="text-xs text-muted-foreground hidden sm:inline">· {meta.label}</span>
           </div>
         </div>
       </header>
@@ -57,7 +61,7 @@ export default function Events() {
             <p className="text-sm">Events are managed from the Admin panel</p>
           </div>
         ) : (
-          events.map((ev) => (
+          events.map((ev: any) => (
             <div key={ev.id} className="rounded-xl border border-border bg-card p-4 space-y-3">
               <div className="min-w-0">
                 <h3 className="font-heading font-bold text-foreground text-base">{ev.title}</h3>
