@@ -302,6 +302,7 @@ function EventsManager() {
   const [recurrenceRule, setRecurrenceRule] = useState("weekly");
   const [scanning, setScanning] = useState(false);
   const scanInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   const resetForm = () => {
     setTitle(""); setDescription(""); setEventDate(""); setEventTime("");
@@ -388,6 +389,13 @@ function EventsManager() {
         ref={scanInputRef}
         type="file"
         accept="image/*"
+        className="hidden"
+        onChange={(e) => e.target.files?.[0] && handleScanFile(e.target.files[0])}
+      />
+      <input
+        ref={cameraInputRef}
+        type="file"
+        accept="image/*"
         capture="environment"
         className="hidden"
         onChange={(e) => e.target.files?.[0] && handleScanFile(e.target.files[0])}
@@ -398,12 +406,23 @@ function EventsManager() {
           <Button
             size="sm"
             variant="outline"
+            onClick={() => cameraInputRef.current?.click()}
+            disabled={scanning}
+            className="gap-1.5 sm:hidden"
+          >
+            {scanning ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+            {scanning ? "Scanning…" : "Camera"}
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
             onClick={() => scanInputRef.current?.click()}
             disabled={scanning}
             className="gap-1.5"
           >
-            {scanning ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-            {scanning ? "Scanning…" : "Scan Sheet"}
+            {scanning ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+            <span className="sm:hidden">Upload</span>
+            <span className="hidden sm:inline">{scanning ? "Scanning…" : "Scan Sheet"}</span>
           </Button>
           <Button size="sm" onClick={() => setOpen(true)} className="gap-1.5">
             <Plus className="h-4 w-4" /> Add Event
