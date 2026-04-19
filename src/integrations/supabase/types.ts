@@ -261,38 +261,38 @@ export type Database = {
         Row: {
           category: string
           created_at: string
+          flagged_at: string | null
           id: string
-          min_stock: number
           name: string
-          quantity: number
+          needs_restock: boolean
+          restock_note: string | null
           subcategory: string | null
           unit: string
           updated_at: string
-          used_this_shift: number
         }
         Insert: {
           category: string
           created_at?: string
+          flagged_at?: string | null
           id: string
-          min_stock?: number
           name: string
-          quantity?: number
+          needs_restock?: boolean
+          restock_note?: string | null
           subcategory?: string | null
           unit: string
           updated_at?: string
-          used_this_shift?: number
         }
         Update: {
           category?: string
           created_at?: string
+          flagged_at?: string | null
           id?: string
-          min_stock?: number
           name?: string
-          quantity?: number
+          needs_restock?: boolean
+          restock_note?: string | null
           subcategory?: string | null
           unit?: string
           updated_at?: string
-          used_this_shift?: number
         }
         Relationships: []
       }
@@ -300,38 +300,38 @@ export type Database = {
         Row: {
           category: string
           created_at: string
+          flagged_at: string | null
           id: string
-          min_stock: number
           name: string
-          quantity: number
+          needs_restock: boolean
+          restock_note: string | null
           subcategory: string | null
           unit: string
           updated_at: string
-          used_this_shift: number
         }
         Insert: {
           category: string
           created_at?: string
+          flagged_at?: string | null
           id: string
-          min_stock?: number
           name: string
-          quantity?: number
+          needs_restock?: boolean
+          restock_note?: string | null
           subcategory?: string | null
           unit: string
           updated_at?: string
-          used_this_shift?: number
         }
         Update: {
           category?: string
           created_at?: string
+          flagged_at?: string | null
           id?: string
-          min_stock?: number
           name?: string
-          quantity?: number
+          needs_restock?: boolean
+          restock_note?: string | null
           subcategory?: string | null
           unit?: string
           updated_at?: string
-          used_this_shift?: number
         }
         Relationships: []
       }
@@ -339,38 +339,38 @@ export type Database = {
         Row: {
           category: string
           created_at: string
+          flagged_at: string | null
           id: string
-          min_stock: number
           name: string
-          quantity: number
+          needs_restock: boolean
+          restock_note: string | null
           subcategory: string | null
           unit: string
           updated_at: string
-          used_this_shift: number
         }
         Insert: {
           category: string
           created_at?: string
+          flagged_at?: string | null
           id: string
-          min_stock?: number
           name: string
-          quantity?: number
+          needs_restock?: boolean
+          restock_note?: string | null
           subcategory?: string | null
           unit: string
           updated_at?: string
-          used_this_shift?: number
         }
         Update: {
           category?: string
           created_at?: string
+          flagged_at?: string | null
           id?: string
-          min_stock?: number
           name?: string
-          quantity?: number
+          needs_restock?: boolean
+          restock_note?: string | null
           subcategory?: string | null
           unit?: string
           updated_at?: string
-          used_this_shift?: number
         }
         Relationships: []
       }
