@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
 import {
-  ArrowLeft, Plus, Trash2, Loader2, Phone, Package, Calendar, BookOpen, ChevronDown, ChevronUp, BellRing, Check, ImagePlus, Repeat, Pencil,
+  ArrowLeft, Plus, Trash2, Loader2, Phone, Package, Calendar, BookOpen, ChevronDown, ChevronUp, BellRing, Check, ImagePlus, Repeat, Pencil, Sparkles, Upload,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -300,10 +300,48 @@ function EventsManager() {
   const [price, setPrice] = useState("");
   const [isRecurring, setIsRecurring] = useState(false);
   const [recurrenceRule, setRecurrenceRule] = useState("weekly");
+  const [scanning, setScanning] = useState(false);
+  const scanInputRef = useRef<HTMLInputElement>(null);
 
   const resetForm = () => {
     setTitle(""); setDescription(""); setEventDate(""); setEventTime("");
     setCategory("General"); setPrice(""); setIsRecurring(false); setRecurrenceRule("weekly");
+  };
+
+  const handleScanFile = async (file: File) => {
+    if (!file) return;
+    setScanning(true);
+    try {
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+      const { data, error } = await supabase.functions.invoke("scan-event-sheet", {
+        body: { imageBase64: base64 },
+      });
+      if (error) throw error;
+      const ev = data?.event;
+      if (!ev) throw new Error("No event returned");
+      setTitle(ev.title ?? "");
+      setDescription(ev.description ?? "");
+      setEventDate(ev.event_date ?? "");
+      setEventTime(ev.event_time ?? "");
+      setCategory(EVENT_CATEGORIES.includes(ev.category) ? ev.category : "General");
+      setPrice(ev.price != null ? String(ev.price) : "");
+      setIsRecurring(!!ev.is_recurring);
+      setRecurrenceRule(ev.recurrence_rule ?? "weekly");
+      setOpen(true);
+      toast.success("Event sheet scanned — review and save");
+    } catch (err: any) {
+      console.error(err);
+      const msg = err?.context?.error || err?.message || "Failed to scan sheet";
+      toast.error(msg);
+    } finally {
+      setScanning(false);
+      if (scanInputRef.current) scanInputRef.current.value = "";
+    }
   };
 
   const { data: events = [], isLoading } = useQuery({
@@ -346,11 +384,31 @@ function EventsManager() {
 
   return (
     <div className="space-y-3">
-      <div className="flex justify-between items-center">
-        <p className="text-sm text-muted-foreground">Add, view and delete events.</p>
-        <Button size="sm" onClick={() => setOpen(true)} className="gap-1.5">
-          <Plus className="h-4 w-4" /> Add Event
-        </Button>
+      <input
+        ref={scanInputRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        className="hidden"
+        onChange={(e) => e.target.files?.[0] && handleScanFile(e.target.files[0])}
+      />
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+        <p className="text-sm text-muted-foreground">Add, view and delete events. Scan a physical sheet to auto-fill.</p>
+        <div className="flex gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => scanInputRef.current?.click()}
+            disabled={scanning}
+            className="gap-1.5"
+          >
+            {scanning ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+            {scanning ? "Scanning…" : "Scan Sheet"}
+          </Button>
+          <Button size="sm" onClick={() => setOpen(true)} className="gap-1.5">
+            <Plus className="h-4 w-4" /> Add Event
+          </Button>
+        </div>
       </div>
 
       {isLoading ? (
