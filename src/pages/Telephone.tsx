@@ -52,10 +52,13 @@ export default function Telephone() {
   const jumpTo = (cat: string) => {
     const el = document.getElementById(slugify(cat));
     if (!el) return;
-    const headerOffset = 130; // sticky header height
+    const headerOffset = 140; // sticky header height (title + search)
     const top = el.getBoundingClientRect().top + window.scrollY - headerOffset;
     window.scrollTo({ top, behavior: "smooth" });
+    setMobileNavOpen(false);
   };
+
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-background">
