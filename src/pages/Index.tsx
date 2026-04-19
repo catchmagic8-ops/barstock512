@@ -11,17 +11,20 @@ import { Input } from "@/components/ui/input";
 import { generateReport } from "@/lib/generateReport";
 import type { Category } from "@/lib/inventory";
 import { useInventory } from "@/hooks/useInventory";
+import { useDepartment } from "@/contexts/DepartmentContext";
+import { deptHomePath } from "@/lib/department";
 
 export default function Index() {
   const { items, isLoading, updateItem, updateMany } = useInventory();
+  const { tables, department, meta } = useDepartment();
   const [activeCategory, setActiveCategory] = useState<Category>("spirits");
   const [activeSubcategory, setActiveSubcategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 
   const { data: subcategories = [] } = useQuery({
-    queryKey: ["subcategories"],
+    queryKey: ["subcategories", department],
     queryFn: async () => {
-      const { data, error } = await supabase.from("subcategories").select("*").order("name");
+      const { data, error } = await (supabase as any).from(tables.subcategories).select("*").order("name");
       if (error) throw error;
       return data ?? [];
     },
