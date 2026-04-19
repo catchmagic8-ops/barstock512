@@ -97,6 +97,8 @@ function ContactsManager() {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [role, setRole] = useState("");
+  const [category, setCategory] = useState("");
+  const [extension, setExtension] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [notes, setNotes] = useState("");
@@ -104,7 +106,11 @@ function ContactsManager() {
   const { data: contacts = [], isLoading } = useQuery({
     queryKey: QKEY,
     queryFn: async () => {
-      const { data, error } = await (supabase as any).from(tables.contacts).select("*").order("name");
+      const { data, error } = await (supabase as any)
+        .from(tables.contacts)
+        .select("*")
+        .order("category", { ascending: true })
+        .order("name", { ascending: true });
       if (error) throw error;
       return data ?? [];
     },
@@ -115,6 +121,8 @@ function ContactsManager() {
       const { error } = await (supabase as any).from(tables.contacts).insert({
         name,
         role: role || null,
+        category: category || null,
+        extension: extension || null,
         phone: phone || null,
         email: email || null,
         notes: notes || null,
@@ -124,7 +132,7 @@ function ContactsManager() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: QKEY });
       setOpen(false);
-      setName(""); setRole(""); setPhone(""); setEmail(""); setNotes("");
+      setName(""); setRole(""); setCategory(""); setExtension(""); setPhone(""); setEmail(""); setNotes("");
       toast.success("Contact added");
     },
     onError: () => toast.error("Failed to add contact"),
