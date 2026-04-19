@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
 import {
-  ArrowLeft, Plus, Trash2, Loader2, Phone, Package, Calendar, BookOpen, ChevronDown, ChevronUp, Truck, ImagePlus, Repeat, Pencil,
+  ArrowLeft, Plus, Trash2, Loader2, Phone, Package, Calendar, BookOpen, ChevronDown, ChevronUp, BellRing, Check, ImagePlus, Repeat, Pencil,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,7 +20,6 @@ import { toast } from "sonner";
 import OptionsPasswordGate from "@/components/OptionsPasswordGate";
 import StockManager from "@/components/StockManager";
 import SubcategoryManager from "@/components/SubcategoryManager";
-import RestockDialog from "@/components/RestockDialog";
 import { useInventory } from "@/hooks/useInventory";
 import { useDepartment } from "@/contexts/DepartmentContext";
 import { deptHomePath } from "@/lib/department";
@@ -54,38 +53,81 @@ function AdminSection({
   );
 }
 
-function RestockManager() {
-  const { items, updateMany } = useInventory();
-  const [restockOpen, setRestockOpen] = useState(false);
-
-  const handleRestock = useCallback(
-    (restockMap: Record<string, number>) => {
-      const updates = items
-        .filter((i) => restockMap[i.id])
-        .map((i) => ({
-          id: i.id,
-          quantity: i.quantity + restockMap[i.id],
-          used_this_shift: i.usedThisShift,
-        }));
-      updateMany.mutate(updates);
-    },
-    [items, updateMany]
-  );
+function LowStockAlerts() {
+  const { items, clearFlag, clearAllFlags } = useInventory();
+  const flagged = items.filter((i: any) => i.needsRestock);
 
   return (
     <div className="space-y-3">
-      <div className="flex justify-between items-center">
-        <p className="text-sm text-muted-foreground">Record a delivery and add stock quantities.</p>
-        <Button size="sm" onClick={() => setRestockOpen(true)} className="gap-1.5">
-          <Truck className="h-4 w-4" /> Restock
-        </Button>
+      <div className="flex justify-between items-center gap-2">
+        <p className="text-sm text-muted-foreground">
+          {flagged.length === 0
+            ? "No low-stock notifications."
+            : `${flagged.length} item${flagged.length === 1 ? "" : "s"} flagged by staff.`}
+        </p>
+        {flagged.length > 0 && (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => {
+              if (window.confirm("Clear all low-stock flags?")) {
+                clearAllFlags.mutate(undefined, {
+                  onSuccess: () => toast.success("All flags cleared"),
+                });
+              }
+            }}
+            className="gap-1.5"
+          >
+            <Check className="h-4 w-4" /> Clear all
+          </Button>
+        )}
       </div>
-      <RestockDialog
-        open={restockOpen}
-        onClose={() => setRestockOpen(false)}
-        items={items}
-        onRestock={handleRestock}
-      />
+
+      {flagged.length > 0 && (
+        <div className="space-y-2 max-h-[40vh] overflow-y-auto">
+          {flagged.map((item: any) => (
+            <div
+              key={item.id}
+              className="flex items-start justify-between gap-3 rounded-lg border border-warning/30 bg-warning/5 p-3"
+            >
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2">
+                  <BellRing className="h-3.5 w-3.5 text-warning flex-shrink-0" />
+                  <span className="font-medium text-foreground text-sm">{item.name}</span>
+                  {item.subcategory && (
+                    <span className="text-xs text-primary/80">({item.subcategory})</span>
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground mt-0.5 ml-5 capitalize">
+                  {item.category} · {item.unit}
+                </p>
+                {item.restockNote && (
+                  <p className="text-xs text-warning/90 italic mt-1 ml-5">
+                    “{item.restockNote}”
+                  </p>
+                )}
+                {item.flaggedAt && (
+                  <p className="text-[10px] text-muted-foreground mt-0.5 ml-5">
+                    Flagged {new Date(item.flaggedAt).toLocaleString()}
+                  </p>
+                )}
+              </div>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="gap-1 text-xs"
+                onClick={() =>
+                  clearFlag.mutate(item.id, {
+                    onSuccess: () => toast.success("Marked as restocked"),
+                  })
+                }
+              >
+                <Check className="h-3.5 w-3.5" /> Done
+              </Button>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -540,12 +582,13 @@ export default function Admin() {
         </header>
 
         <main className="mx-auto max-w-3xl px-4 py-6 space-y-4">
-          <AdminSection title="Inventory Management" icon={Package} defaultOpen>
+          <AdminSection title="Low Stock Alerts" icon={BellRing} defaultOpen>
+            <LowStockAlerts />
+          </AdminSection>
+
+          <AdminSection title="Inventory Management" icon={Package}>
             <div className="space-y-4">
-              <RestockManager />
-              <div className="border-t border-border pt-4">
-                <SubcategoryManager />
-              </div>
+              <SubcategoryManager />
               <div className="border-t border-border pt-4">
                 <StockManager />
               </div>
