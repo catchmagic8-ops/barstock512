@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
 import {
-  ArrowLeft, Plus, Trash2, Loader2, Phone, Package, Calendar, BookOpen, ChevronDown, ChevronUp, BellRing, Check, ImagePlus, Repeat, Pencil,
+  ArrowLeft, Plus, Trash2, Loader2, Phone, Package, Calendar, BookOpen, ChevronDown, ChevronUp, BellRing, Check, ImagePlus, Repeat, Pencil, Sparkles, Upload,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
