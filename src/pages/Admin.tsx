@@ -291,6 +291,19 @@ const DEPT_DEFAULT_CATEGORY: Record<string, (typeof EVENT_CATEGORIES)[number]> =
   polskie_smaki: "Wave",
 };
 const RECURRENCE_OPTIONS = ["weekly", "biweekly", "monthly"];
+const CONFERENCE_ROOMS = [
+  "Roald Amundsen",
+  "Willem Barents",
+  "Vasco Da Gamma",
+  "Christopher Columbus",
+  "Marco Polo",
+  "Baltic Panorama",
+  "Henry Hudson",
+  "James Cook",
+  "Amergio Vespucci",
+  "Ferdinand Magellan",
+] as const;
+const NO_LOCATION = "__none__";
 
 function EventsManager() {
   const qc = useQueryClient();
@@ -298,11 +311,13 @@ function EventsManager() {
   const QKEY = ["events", department];
   const defaultCategory = DEPT_DEFAULT_CATEGORY[department] ?? "Bar512";
   const [open, setOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [eventDate, setEventDate] = useState("");
   const [eventTime, setEventTime] = useState("");
   const [category, setCategory] = useState<string>(defaultCategory);
+  const [location, setLocation] = useState<string>(NO_LOCATION);
   const [foodMenu, setFoodMenu] = useState("");
   const [beverageMenu, setBeverageMenu] = useState("");
   const [guestCount, setGuestCount] = useState("");
@@ -313,10 +328,29 @@ function EventsManager() {
   const cameraInputRef = useRef<HTMLInputElement>(null);
 
   const resetForm = () => {
+    setEditingId(null);
     setTitle(""); setDescription(""); setEventDate(""); setEventTime("");
     setCategory(defaultCategory);
+    setLocation(NO_LOCATION);
     setFoodMenu(""); setBeverageMenu(""); setGuestCount("");
     setIsRecurring(false); setRecurrenceRule("weekly");
+  };
+
+  const openAdd = () => { resetForm(); setOpen(true); };
+  const openEdit = (ev: any) => {
+    setEditingId(ev.id);
+    setTitle(ev.title ?? "");
+    setDescription(ev.description ?? "");
+    setEventDate(ev.event_date ?? "");
+    setEventTime(ev.event_time ? String(ev.event_time).slice(0, 5) : "");
+    setCategory(ev.category ?? defaultCategory);
+    setLocation(ev.location && (CONFERENCE_ROOMS as readonly string[]).includes(ev.location) ? ev.location : NO_LOCATION);
+    setFoodMenu(ev.food_menu ?? "");
+    setBeverageMenu(ev.beverage_menu ?? "");
+    setGuestCount(ev.guest_count != null ? String(ev.guest_count) : "");
+    setIsRecurring(!!ev.is_recurring);
+    setRecurrenceRule(ev.recurrence_rule ?? "weekly");
+    setOpen(true);
   };
 
   const handleScanFile = async (file: File) => {
@@ -343,6 +377,11 @@ function EventsManager() {
         (EVENT_CATEGORIES as readonly string[]).includes(ev.category)
           ? ev.category
           : defaultCategory,
+      );
+      setLocation(
+        ev.location && (CONFERENCE_ROOMS as readonly string[]).includes(ev.location)
+          ? ev.location
+          : NO_LOCATION,
       );
       setFoodMenu(ev.food_menu ?? "");
       setBeverageMenu(ev.beverage_menu ?? "");
