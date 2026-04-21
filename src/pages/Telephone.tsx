@@ -138,6 +138,26 @@ export default function Telephone() {
               className="pl-9 bg-secondary border-border"
             />
           </div>
+          <div className="mt-2 flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1">
+            {ALL_DEPTS.map((d) => {
+              const active = activeDepts.includes(d);
+              return (
+                <button
+                  key={d}
+                  onClick={() => toggleDept(d)}
+                  className={cn(
+                    "flex-shrink-0 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium border whitespace-nowrap transition-colors",
+                    active
+                      ? DEPT_BADGE[d]
+                      : "bg-secondary text-muted-foreground border-border hover:text-foreground"
+                  )}
+                >
+                  <Building2 className="h-3 w-3" />
+                  {DEPT_META[d].label}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </header>
 
@@ -195,7 +215,10 @@ export default function Telephone() {
                     {items.map((c: any) => (
                       <div
                         key={c.id}
-                        className="rounded-xl border border-border bg-card p-4 space-y-2"
+                        className={cn(
+                          "rounded-xl border border-border bg-card p-4 space-y-2 transition-opacity",
+                          c._dept !== department && "opacity-70"
+                        )}
                       >
                         <div className="flex items-start gap-3">
                           <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10">
@@ -205,9 +228,20 @@ export default function Telephone() {
                             {c.role && (
                               <p className="text-xs font-medium text-primary">{c.role}</p>
                             )}
-                            <h3 className="font-heading font-bold text-foreground break-words">
-                              {c.name}
-                            </h3>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <h3 className="font-heading font-bold text-foreground break-words">
+                                {c.name}
+                              </h3>
+                              <span
+                                className={cn(
+                                  "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium border",
+                                  DEPT_BADGE[c._dept as Department]
+                                )}
+                              >
+                                <Building2 className="h-2.5 w-2.5" />
+                                {DEPT_META[c._dept as Department].shortLabel}
+                              </span>
+                            </div>
                           </div>
                         </div>
 
