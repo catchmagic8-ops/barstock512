@@ -2,43 +2,62 @@ import { useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Phone, Mail, Loader2, User, Hash, Search, List } from "lucide-react";
+import { ArrowLeft, Phone, Mail, Loader2, User, Hash, Search, List, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useDepartment } from "@/contexts/DepartmentContext";
-import { deptHomePath } from "@/lib/department";
+import { deptHomePath, DEPT_META, DEPT_TABLES, type Department } from "@/lib/department";
+import { cn } from "@/lib/utils";
+
+const DEPT_BADGE: Record<Department, string> = {
+  bar512: "bg-amber-500/15 text-amber-400 border-amber-500/30",
+  konferencje: "bg-blue-500/15 text-blue-400 border-blue-500/30",
+  polskie_smaki: "bg-cyan-500/15 text-cyan-400 border-cyan-500/30",
+};
+const ALL_DEPTS: Department[] = ["bar512", "konferencje", "polskie_smaki"];
 
 const slugify = (s: string) =>
   "cat-" + s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
 export default function Telephone() {
-  const { tables, department, meta } = useDepartment();
+  const { department, meta } = useDepartment();
   const [search, setSearch] = useState("");
+  const [activeDepts, setActiveDepts] = useState<Department[]>(ALL_DEPTS);
   const scrollRootRef = useRef<HTMLDivElement | null>(null);
 
   const { data: contacts = [], isLoading } = useQuery({
-    queryKey: ["contacts", department],
+    queryKey: ["contacts", "all"],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from(tables.contacts)
-        .select("*")
-        .order("category", { ascending: true })
-        .order("name", { ascending: true });
-      if (error) throw error;
-      return data ?? [];
+      const results = await Promise.all(
+        ALL_DEPTS.map(async (d) => {
+          const { data, error } = await (supabase as any)
+            .from(DEPT_TABLES[d].contacts)
+            .select("*")
+            .order("category", { ascending: true })
+            .order("name", { ascending: true });
+          if (error) throw error;
+          return (data ?? []).map((c: any) => ({ ...c, _dept: d as Department }));
+        }),
+      );
+      return results.flat();
     },
   });
 
+  const toggleDept = (d: Department) =>
+    setActiveDepts((prev) =>
+      prev.includes(d) ? prev.filter((x) => x !== d) : [...prev, d],
+    );
+
   const grouped = useMemo(() => {
     const q = search.trim().toLowerCase();
-    const filtered = q
-      ? contacts.filter((c: any) =>
-          [c.name, c.role, c.phone, c.extension, c.category, c.email]
-            .filter(Boolean)
-            .some((v: string) => v.toLowerCase().includes(q))
-        )
-      : contacts;
+    const filtered = contacts.filter((c: any) => {
+      if (!activeDepts.includes(c._dept)) return false;
+      if (!q) return true;
+      return [c.name, c.role, c.phone, c.extension, c.category, c.email]
+        .filter(Boolean)
+        .some((v: string) => v.toLowerCase().includes(q));
+    });
 
     const map = new Map<string, any[]>();
     for (const c of filtered) {
@@ -47,7 +66,7 @@ export default function Telephone() {
       map.get(key)!.push(c);
     }
     return Array.from(map.entries()).sort(([a], [b]) => a.localeCompare(b));
-  }, [contacts, search]);
+  }, [contacts, search, activeDepts]);
 
   const jumpTo = (cat: string) => {
     const el = document.getElementById(slugify(cat));
@@ -119,6 +138,26 @@ export default function Telephone() {
               className="pl-9 bg-secondary border-border"
             />
           </div>
+          <div className="mt-2 flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1">
+            {ALL_DEPTS.map((d) => {
+              const active = activeDepts.includes(d);
+              return (
+                <button
+                  key={d}
+                  onClick={() => toggleDept(d)}
+                  className={cn(
+                    "flex-shrink-0 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium border whitespace-nowrap transition-colors",
+                    active
+                      ? DEPT_BADGE[d]
+                      : "bg-secondary text-muted-foreground border-border hover:text-foreground"
+                  )}
+                >
+                  <Building2 className="h-3 w-3" />
+                  {DEPT_META[d].label}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </header>
 
@@ -176,7 +215,10 @@ export default function Telephone() {
                     {items.map((c: any) => (
                       <div
                         key={c.id}
-                        className="rounded-xl border border-border bg-card p-4 space-y-2"
+                        className={cn(
+                          "rounded-xl border border-border bg-card p-4 space-y-2 transition-opacity",
+                          c._dept !== department && "opacity-70"
+                        )}
                       >
                         <div className="flex items-start gap-3">
                           <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10">
@@ -186,9 +228,20 @@ export default function Telephone() {
                             {c.role && (
                               <p className="text-xs font-medium text-primary">{c.role}</p>
                             )}
-                            <h3 className="font-heading font-bold text-foreground break-words">
-                              {c.name}
-                            </h3>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <h3 className="font-heading font-bold text-foreground break-words">
+                                {c.name}
+                              </h3>
+                              <span
+                                className={cn(
+                                  "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium border",
+                                  DEPT_BADGE[c._dept as Department]
+                                )}
+                              >
+                                <Building2 className="h-2.5 w-2.5" />
+                                {DEPT_META[c._dept as Department].shortLabel}
+                              </span>
+                            </div>
                           </div>
                         </div>
 

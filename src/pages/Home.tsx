@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useDepartment } from "@/contexts/DepartmentContext";
-import { deptSubPath } from "@/lib/department";
+import { deptSubPath, DEPT_TABLES } from "@/lib/department";
 
 function getGreeting(): string {
   const h = new Date().getHours();
@@ -106,13 +106,19 @@ function RecipesBadge() {
 }
 
 function ContactsBadge() {
-  const { tables, department } = useDepartment();
   const { data: count = 0 } = useQuery({
-    queryKey: ["contact-count", department],
+    queryKey: ["contact-count", "all"],
     queryFn: async () => {
-      const { data, error } = await (supabase as any).from(tables.contacts).select("id");
-      if (error) throw error;
-      return data?.length ?? 0;
+      const results = await Promise.all(
+        (Object.keys(DEPT_TABLES) as Array<keyof typeof DEPT_TABLES>).map(async (d) => {
+          const { data, error } = await (supabase as any)
+            .from(DEPT_TABLES[d].contacts)
+            .select("id");
+          if (error) throw error;
+          return data?.length ?? 0;
+        }),
+      );
+      return results.reduce((a, b) => a + b, 0);
     },
   });
   return (
