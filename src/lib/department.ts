@@ -68,6 +68,9 @@ export function deptHomePath(d: Department): string {
   return d === "bar512" ? "/home" : DEPT_META[d].basePath;
 }
 
-export function deptSubPath(d: Department, sub: "inventory" | "events" | "recipes" | "telephone" | "admin" | "a-la-carte"): string {
+export function deptSubPath(
+  d: Department,
+  sub: "inventory" | "events" | "recipes" | "telephone" | "admin" | "a-la-carte" | "reservations",
+): string {
   return d === "bar512" ? `/${sub}` : `${DEPT_META[d].basePath}/${sub}`;
 }

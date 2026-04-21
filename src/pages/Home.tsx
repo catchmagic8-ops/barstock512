@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Package, Calendar, BookOpen, Phone, Shield, ArrowLeft, Utensils, LogOut } from "lucide-react";
+import { Package, Calendar, BookOpen, Phone, Shield, ArrowLeft, Utensils, LogOut, BookMarked } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
@@ -161,7 +161,7 @@ interface NavCard {
   title: string;
   icon: React.ElementType;
   subtitle: string;
-  sub: "inventory" | "events" | "recipes" | "telephone" | "admin" | "a-la-carte";
+  sub: "inventory" | "events" | "recipes" | "telephone" | "admin" | "a-la-carte" | "reservations";
   badge: () => React.ReactNode;
 }
 
@@ -181,6 +181,36 @@ const aLaCarteCard: NavCard = {
   badge: ALaCarteBadge,
 };
 
+function ReservationsBadge() {
+  const { department } = useDepartment();
+  const { data: count = 0 } = useQuery({
+    queryKey: ["reservations-count", department],
+    queryFn: async () => {
+      const today = new Date().toISOString().split("T")[0];
+      const { data, error } = await (supabase as any)
+        .from("reservations_polskie_smaki")
+        .select("id")
+        .gte("reservation_date", today);
+      if (error) throw error;
+      return data?.length ?? 0;
+    },
+    enabled: department === "polskie_smaki",
+  });
+  return (
+    <span className="rounded-full bg-primary/20 px-2.5 py-0.5 text-xs font-semibold text-primary">
+      {count} upcoming
+    </span>
+  );
+}
+
+const reservationsCard: NavCard = {
+  title: "RESERVATIONS",
+  icon: BookMarked,
+  subtitle: "Table bookings, guests & requests",
+  sub: "reservations",
+  badge: ReservationsBadge,
+};
+
 export default function Home() {
   const navigate = useNavigate();
   const { department, meta } = useDepartment();
@@ -198,6 +228,12 @@ export default function Home() {
     if (department !== "konferencje") {
       const adminIdx = result.findIndex((c) => c.sub === "admin");
       result.splice(adminIdx, 0, aLaCarteCard);
+    }
+    // Reservations: only Polskie Smaki, inserted before Admin
+    if (department === "polskie_smaki") {
+      const adminIdx = result.findIndex((c) => c.sub === "admin");
+      const insertAt = adminIdx === -1 ? result.length : adminIdx;
+      result.splice(insertAt, 0, reservationsCard);
     }
     // Only admins for THIS department see the Admin tile
     if (!canAdmin) result = result.filter((c) => c.sub !== "admin");
