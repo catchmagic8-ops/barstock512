@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -12,12 +12,20 @@ import {
 } from "@/components/ui/dialog";
 import { Loader2, Plus, Trash2, KeyRound, Shield, User as UserIcon } from "lucide-react";
 import { toast } from "sonner";
-import { useAuth, type AppRole } from "@/contexts/AuthContext";
+import { useAuth, type AppRole, type AppDepartment } from "@/contexts/AuthContext";
+
+const DEPT_LABELS: Record<AppDepartment, string> = {
+  all: "All Departments",
+  bar512: "Bar 512",
+  konferencje: "Konferencje",
+  polskie_smaki: "Polskie Smaki",
+};
 
 interface UserRow {
   id: string;
   username: string;
   role: AppRole;
+  department: AppDepartment;
   created_at: string;
 }
 
@@ -31,6 +39,7 @@ export default function UserManagement() {
   const [newUsername, setNewUsername] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [newRole, setNewRole] = useState<AppRole>("staff");
+  const [newDepartment, setNewDepartment] = useState<AppDepartment>("all");
 
   const [pwOpen, setPwOpen] = useState(false);
   const [pwTarget, setPwTarget] = useState<UserRow | null>(null);
@@ -47,6 +56,21 @@ export default function UserManagement() {
     enabled: !!me,
   });
 
+  // Realtime: refresh user list when app_users changes (insert/update/delete)
+  useEffect(() => {
+    const channel = supabase
+      .channel("app-users-changes")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "app_users" },
+        () => qc.invalidateQueries({ queryKey: QKEY }),
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [qc]);
+
   const createUser = useMutation({
     mutationFn: async () => {
       if (!me) throw new Error("Not signed in");
@@ -55,13 +79,14 @@ export default function UserManagement() {
         _username: newUsername.trim(),
         _password: newPassword,
         _role: newRole,
+        _department: newDepartment,
       });
       if (error) throw error;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: QKEY });
       setCreateOpen(false);
-      setNewUsername(""); setNewPassword(""); setNewRole("staff");
+      setNewUsername(""); setNewPassword(""); setNewRole("staff"); setNewDepartment("all");
       toast.success("User created");
     },
     onError: (err: any) => toast.error(err?.message ?? "Failed to create user"),
@@ -85,20 +110,25 @@ export default function UserManagement() {
   });
 
   const updateRole = useMutation({
-    mutationFn: async ({ userId, role }: { userId: string; role: AppRole }) => {
+    mutationFn: async ({ userId, role, department }: { userId: string; role?: AppRole; department?: AppDepartment }) => {
       if (!me) throw new Error("Not signed in");
+      // Find current values to fill in the unchanged side
+      const current = users.find((u) => u.id === userId);
+      const nextRole: AppRole = role ?? current?.role ?? "staff";
+      const nextDept: AppDepartment = department ?? current?.department ?? "all";
       const { error } = await (supabase as any).rpc("admin_update_role", {
         _admin_id: me.id,
         _user_id: userId,
-        _new_role: role,
+        _new_role: nextRole,
+        _new_department: nextDept,
       });
       if (error) throw error;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: QKEY });
-      toast.success("Role updated");
+      toast.success("User updated");
     },
-    onError: (err: any) => toast.error(err?.message ?? "Failed to update role"),
+    onError: (err: any) => toast.error(err?.message ?? "Failed to update user"),
   });
 
   const deleteUser = useMutation({
