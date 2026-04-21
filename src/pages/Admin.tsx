@@ -375,7 +375,9 @@ function EventsManager() {
       const { error } = await (supabase as any).from(tables.events).insert({
         title, description: description || null, event_date: eventDate,
         event_time: eventTime || null, category,
-        price: price ? parseFloat(price) : null,
+        food_menu: foodMenu || null,
+        beverage_menu: beverageMenu || null,
+        guest_count: guestCount ? parseInt(guestCount, 10) : null,
         is_recurring: isRecurring, recurrence_rule: isRecurring ? recurrenceRule : null,
       });
       if (error) throw error;
