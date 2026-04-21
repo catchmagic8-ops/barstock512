@@ -95,6 +95,7 @@ export type Database = {
       app_users: {
         Row: {
           created_at: string
+          department: Database["public"]["Enums"]["app_department"]
           id: string
           password_hash: string
           role: Database["public"]["Enums"]["app_role"]
@@ -103,6 +104,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          department?: Database["public"]["Enums"]["app_department"]
           id?: string
           password_hash: string
           role?: Database["public"]["Enums"]["app_role"]
@@ -111,6 +113,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          department?: Database["public"]["Enums"]["app_department"]
           id?: string
           password_hash?: string
           role?: Database["public"]["Enums"]["app_role"]
@@ -676,6 +679,7 @@ export type Database = {
       admin_create_user: {
         Args: {
           _admin_id: string
+          _department?: Database["public"]["Enums"]["app_department"]
           _password: string
           _role: Database["public"]["Enums"]["app_role"]
           _username: string
@@ -690,6 +694,7 @@ export type Database = {
         Args: { _admin_id: string }
         Returns: {
           created_at: string
+          department: Database["public"]["Enums"]["app_department"]
           id: string
           role: Database["public"]["Enums"]["app_role"]
           username: string
@@ -702,6 +707,7 @@ export type Database = {
       admin_update_role: {
         Args: {
           _admin_id: string
+          _new_department?: Database["public"]["Enums"]["app_department"]
           _new_role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
@@ -710,6 +716,7 @@ export type Database = {
       verify_user_login: {
         Args: { _password: string; _username: string }
         Returns: {
+          department: Database["public"]["Enums"]["app_department"]
           id: string
           role: Database["public"]["Enums"]["app_role"]
           username: string
@@ -717,6 +724,7 @@ export type Database = {
       }
     }
     Enums: {
+      app_department: "all" | "bar512" | "konferencje" | "polskie_smaki"
       app_role: "admin" | "staff"
     }
     CompositeTypes: {
@@ -845,6 +853,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      app_department: ["all", "bar512", "konferencje", "polskie_smaki"],
       app_role: ["admin", "staff"],
     },
   },

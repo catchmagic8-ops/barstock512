@@ -184,7 +184,8 @@ const aLaCarteCard: NavCard = {
 export default function Home() {
   const navigate = useNavigate();
   const { department, meta } = useDepartment();
-  const { isAdmin, user, logout } = useAuth();
+  const { isAdminFor, user, logout } = useAuth();
+  const canAdmin = isAdminFor(department);
 
   const visibleCards: NavCard[] = (() => {
     let base = department === "konferencje" ? [...cards] : [...cards];
@@ -198,8 +199,8 @@ export default function Home() {
       const adminIdx = result.findIndex((c) => c.sub === "admin");
       result.splice(adminIdx, 0, aLaCarteCard);
     }
-    // Staff users don't see the Admin tile
-    if (!isAdmin) result = result.filter((c) => c.sub !== "admin");
+    // Only admins for THIS department see the Admin tile
+    if (!canAdmin) result = result.filter((c) => c.sub !== "admin");
     return result;
   })();
 

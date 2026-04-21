@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -12,12 +12,20 @@ import {
 } from "@/components/ui/dialog";
 import { Loader2, Plus, Trash2, KeyRound, Shield, User as UserIcon } from "lucide-react";
 import { toast } from "sonner";
-import { useAuth, type AppRole } from "@/contexts/AuthContext";
+import { useAuth, type AppRole, type AppDepartment } from "@/contexts/AuthContext";
+
+const DEPT_LABELS: Record<AppDepartment, string> = {
+  all: "All Departments",
+  bar512: "Bar 512",
+  konferencje: "Konferencje",
+  polskie_smaki: "Polskie Smaki",
+};
 
 interface UserRow {
   id: string;
   username: string;
   role: AppRole;
+  department: AppDepartment;
   created_at: string;
 }
 
@@ -31,6 +39,7 @@ export default function UserManagement() {
   const [newUsername, setNewUsername] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [newRole, setNewRole] = useState<AppRole>("staff");
+  const [newDepartment, setNewDepartment] = useState<AppDepartment>("all");
 
   const [pwOpen, setPwOpen] = useState(false);
   const [pwTarget, setPwTarget] = useState<UserRow | null>(null);
@@ -47,6 +56,21 @@ export default function UserManagement() {
     enabled: !!me,
   });
 
+  // Realtime: refresh user list when app_users changes (insert/update/delete)
+  useEffect(() => {
+    const channel = supabase
+      .channel("app-users-changes")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "app_users" },
+        () => qc.invalidateQueries({ queryKey: QKEY }),
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [qc]);
+
   const createUser = useMutation({
     mutationFn: async () => {
       if (!me) throw new Error("Not signed in");
@@ -55,13 +79,14 @@ export default function UserManagement() {
         _username: newUsername.trim(),
         _password: newPassword,
         _role: newRole,
+        _department: newDepartment,
       });
       if (error) throw error;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: QKEY });
       setCreateOpen(false);
-      setNewUsername(""); setNewPassword(""); setNewRole("staff");
+      setNewUsername(""); setNewPassword(""); setNewRole("staff"); setNewDepartment("all");
       toast.success("User created");
     },
     onError: (err: any) => toast.error(err?.message ?? "Failed to create user"),
@@ -85,20 +110,25 @@ export default function UserManagement() {
   });
 
   const updateRole = useMutation({
-    mutationFn: async ({ userId, role }: { userId: string; role: AppRole }) => {
+    mutationFn: async ({ userId, role, department }: { userId: string; role?: AppRole; department?: AppDepartment }) => {
       if (!me) throw new Error("Not signed in");
+      // Find current values to fill in the unchanged side
+      const current = users.find((u) => u.id === userId);
+      const nextRole: AppRole = role ?? current?.role ?? "staff";
+      const nextDept: AppDepartment = department ?? current?.department ?? "all";
       const { error } = await (supabase as any).rpc("admin_update_role", {
         _admin_id: me.id,
         _user_id: userId,
-        _new_role: role,
+        _new_role: nextRole,
+        _new_department: nextDept,
       });
       if (error) throw error;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: QKEY });
-      toast.success("Role updated");
+      toast.success("User updated");
     },
-    onError: (err: any) => toast.error(err?.message ?? "Failed to update role"),
+    onError: (err: any) => toast.error(err?.message ?? "Failed to update user"),
   });
 
   const deleteUser = useMutation({
@@ -150,10 +180,13 @@ export default function UserManagement() {
                       {u.username}
                       {isMe && <span className="text-xs text-muted-foreground ml-2">(you)</span>}
                     </p>
-                    <p className="text-xs text-muted-foreground capitalize">{u.role}</p>
+                    <p className="text-xs text-muted-foreground">
+                      <span className="capitalize">{u.role}</span>
+                      <span> · {DEPT_LABELS[u.department ?? "all"]}</span>
+                    </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-1.5 flex-shrink-0">
+                <div className="flex items-center gap-1.5 flex-shrink-0 flex-wrap justify-end">
                   <Select
                     value={u.role}
                     onValueChange={(v) => updateRole.mutate({ userId: u.id, role: v as AppRole })}
@@ -164,6 +197,20 @@ export default function UserManagement() {
                     <SelectContent>
                       <SelectItem value="staff">Staff</SelectItem>
                       <SelectItem value="admin">Admin</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Select
+                    value={u.department ?? "all"}
+                    onValueChange={(v) => updateRole.mutate({ userId: u.id, department: v as AppDepartment })}
+                  >
+                    <SelectTrigger className="h-8 w-[140px] text-xs bg-card">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Departments</SelectItem>
+                      <SelectItem value="bar512">Bar 512</SelectItem>
+                      <SelectItem value="konferencje">Konferencje</SelectItem>
+                      <SelectItem value="polskie_smaki">Polskie Smaki</SelectItem>
                     </SelectContent>
                   </Select>
                   <Button
@@ -232,6 +279,23 @@ export default function UserManagement() {
                   <SelectItem value="admin">Admin (full access)</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs uppercase tracking-wider text-muted-foreground">Department</Label>
+              <Select value={newDepartment} onValueChange={(v) => setNewDepartment(v as AppDepartment)}>
+                <SelectTrigger className="bg-secondary border-border">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Departments</SelectItem>
+                  <SelectItem value="bar512">Bar 512</SelectItem>
+                  <SelectItem value="konferencje">Konferencje</SelectItem>
+                  <SelectItem value="polskie_smaki">Polskie Smaki</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-[11px] text-muted-foreground">
+                Admins limited to a single department only manage that department.
+              </p>
             </div>
           </div>
           <DialogFooter>
