@@ -149,6 +149,11 @@ function emptyForm(): Partial<Reservation> {
   };
 }
 
+function isCustomOccasion(o: string | null | undefined): boolean {
+  if (!o) return false;
+  return !(OCCASIONS as readonly string[]).includes(o);
+}
+
 function formatTime(t: string | null | undefined): string {
   if (!t) return "";
   // 'HH:MM:SS' or 'HH:MM' -> 'HH:MM'
