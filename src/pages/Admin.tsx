@@ -801,6 +801,12 @@ export default function Admin() {
           <AdminSection title="Recipes Management" icon={BookOpen}>
             <RecipesManager />
           </AdminSection>
+
+          {department !== "konferencje" && (
+            <AdminSection title="A La Carte Menu" icon={Utensils}>
+              <ALaCarteManager />
+            </AdminSection>
+          )}
         </main>
       </div>
     </OptionsPasswordGate>
