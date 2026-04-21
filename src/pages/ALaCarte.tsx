@@ -50,13 +50,12 @@ export default function ALaCarte() {
   const [search, setSearch] = useState("");
   const [activeCat, setActiveCat] = useState<string | null>(null);
 
-  if (!tables.alaCarte) return <Navigate to={deptHomePath(department)} replace />;
-
   const tableName = tables.alaCarte;
 
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["a-la-carte", department],
     queryFn: async () => {
+      if (!tableName) return [] as ALaCarteItem[];
       const { data, error } = await (supabase as any)
         .from(tableName)
         .select("*")
@@ -65,6 +64,7 @@ export default function ALaCarte() {
       if (error) throw error;
       return (data ?? []) as ALaCarteItem[];
     },
+    enabled: !!tableName,
   });
 
   const grouped = useMemo(() => {
@@ -95,6 +95,8 @@ export default function ALaCarte() {
       [...set].filter((c) => !CATEGORY_ORDER.includes(c))
     );
   }, [items]);
+
+  if (!tableName) return <Navigate to={deptHomePath(department)} replace />;
 
   return (
     <div className="min-h-screen bg-background">
