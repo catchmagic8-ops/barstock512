@@ -409,24 +409,39 @@ function EventsManager() {
     },
   });
 
-  const addEvent = useMutation({
+  const saveEvent = useMutation({
     mutationFn: async () => {
-      const { error } = await (supabase as any).from(tables.events).insert({
-        title, description: description || null, event_date: eventDate,
-        event_time: eventTime || null, category,
+      const payload = {
+        title,
+        description: description || null,
+        event_date: eventDate,
+        event_time: eventTime || null,
+        category,
+        location: location && location !== NO_LOCATION ? location : null,
         food_menu: foodMenu || null,
         beverage_menu: beverageMenu || null,
         guest_count: guestCount ? parseInt(guestCount, 10) : null,
-        is_recurring: isRecurring, recurrence_rule: isRecurring ? recurrenceRule : null,
-      });
-      if (error) throw error;
+        is_recurring: isRecurring,
+        recurrence_rule: isRecurring ? recurrenceRule : null,
+      };
+      if (editingId) {
+        const { error } = await (supabase as any)
+          .from(tables.events)
+          .update(payload)
+          .eq("id", editingId);
+        if (error) throw error;
+      } else {
+        const { error } = await (supabase as any).from(tables.events).insert(payload);
+        if (error) throw error;
+      }
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: QKEY });
+      const wasEditing = !!editingId;
       setOpen(false); resetForm();
-      toast.success("Event added");
+      toast.success(wasEditing ? "Event updated" : "Event added");
     },
-    onError: () => toast.error("Failed to add event"),
+    onError: () => toast.error(editingId ? "Failed to update event" : "Failed to add event"),
   });
 
   const deleteEvent = useMutation({
