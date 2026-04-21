@@ -291,6 +291,19 @@ const DEPT_DEFAULT_CATEGORY: Record<string, (typeof EVENT_CATEGORIES)[number]> =
   polskie_smaki: "Wave",
 };
 const RECURRENCE_OPTIONS = ["weekly", "biweekly", "monthly"];
+const CONFERENCE_ROOMS = [
+  "Roald Amundsen",
+  "Willem Barents",
+  "Vasco Da Gamma",
+  "Christopher Columbus",
+  "Marco Polo",
+  "Baltic Panorama",
+  "Henry Hudson",
+  "James Cook",
+  "Amergio Vespucci",
+  "Ferdinand Magellan",
+] as const;
+const NO_LOCATION = "__none__";
 
 function EventsManager() {
   const qc = useQueryClient();
@@ -298,11 +311,13 @@ function EventsManager() {
   const QKEY = ["events", department];
   const defaultCategory = DEPT_DEFAULT_CATEGORY[department] ?? "Bar512";
   const [open, setOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [eventDate, setEventDate] = useState("");
   const [eventTime, setEventTime] = useState("");
   const [category, setCategory] = useState<string>(defaultCategory);
+  const [location, setLocation] = useState<string>(NO_LOCATION);
   const [foodMenu, setFoodMenu] = useState("");
   const [beverageMenu, setBeverageMenu] = useState("");
   const [guestCount, setGuestCount] = useState("");
@@ -313,10 +328,29 @@ function EventsManager() {
   const cameraInputRef = useRef<HTMLInputElement>(null);
 
   const resetForm = () => {
+    setEditingId(null);
     setTitle(""); setDescription(""); setEventDate(""); setEventTime("");
     setCategory(defaultCategory);
+    setLocation(NO_LOCATION);
     setFoodMenu(""); setBeverageMenu(""); setGuestCount("");
     setIsRecurring(false); setRecurrenceRule("weekly");
+  };
+
+  const openAdd = () => { resetForm(); setOpen(true); };
+  const openEdit = (ev: any) => {
+    setEditingId(ev.id);
+    setTitle(ev.title ?? "");
+    setDescription(ev.description ?? "");
+    setEventDate(ev.event_date ?? "");
+    setEventTime(ev.event_time ? String(ev.event_time).slice(0, 5) : "");
+    setCategory(ev.category ?? defaultCategory);
+    setLocation(ev.location && (CONFERENCE_ROOMS as readonly string[]).includes(ev.location) ? ev.location : NO_LOCATION);
+    setFoodMenu(ev.food_menu ?? "");
+    setBeverageMenu(ev.beverage_menu ?? "");
+    setGuestCount(ev.guest_count != null ? String(ev.guest_count) : "");
+    setIsRecurring(!!ev.is_recurring);
+    setRecurrenceRule(ev.recurrence_rule ?? "weekly");
+    setOpen(true);
   };
 
   const handleScanFile = async (file: File) => {
@@ -344,6 +378,11 @@ function EventsManager() {
           ? ev.category
           : defaultCategory,
       );
+      setLocation(
+        ev.location && (CONFERENCE_ROOMS as readonly string[]).includes(ev.location)
+          ? ev.location
+          : NO_LOCATION,
+      );
       setFoodMenu(ev.food_menu ?? "");
       setBeverageMenu(ev.beverage_menu ?? "");
       setGuestCount(ev.guest_count != null ? String(ev.guest_count) : "");
@@ -370,24 +409,39 @@ function EventsManager() {
     },
   });
 
-  const addEvent = useMutation({
+  const saveEvent = useMutation({
     mutationFn: async () => {
-      const { error } = await (supabase as any).from(tables.events).insert({
-        title, description: description || null, event_date: eventDate,
-        event_time: eventTime || null, category,
+      const payload = {
+        title,
+        description: description || null,
+        event_date: eventDate,
+        event_time: eventTime || null,
+        category,
+        location: location && location !== NO_LOCATION ? location : null,
         food_menu: foodMenu || null,
         beverage_menu: beverageMenu || null,
         guest_count: guestCount ? parseInt(guestCount, 10) : null,
-        is_recurring: isRecurring, recurrence_rule: isRecurring ? recurrenceRule : null,
-      });
-      if (error) throw error;
+        is_recurring: isRecurring,
+        recurrence_rule: isRecurring ? recurrenceRule : null,
+      };
+      if (editingId) {
+        const { error } = await (supabase as any)
+          .from(tables.events)
+          .update(payload)
+          .eq("id", editingId);
+        if (error) throw error;
+      } else {
+        const { error } = await (supabase as any).from(tables.events).insert(payload);
+        if (error) throw error;
+      }
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: QKEY });
+      const wasEditing = !!editingId;
       setOpen(false); resetForm();
-      toast.success("Event added");
+      toast.success(wasEditing ? "Event updated" : "Event added");
     },
-    onError: () => toast.error("Failed to add event"),
+    onError: () => toast.error(editingId ? "Failed to update event" : "Failed to add event"),
   });
 
   const deleteEvent = useMutation({
@@ -442,7 +496,7 @@ function EventsManager() {
             <span className="sm:hidden">Upload</span>
             <span className="hidden sm:inline">{scanning ? "Scanning…" : "Scan Sheet"}</span>
           </Button>
-          <Button size="sm" onClick={() => setOpen(true)} className="gap-1.5">
+          <Button size="sm" onClick={openAdd} className="gap-1.5">
             <Plus className="h-4 w-4" /> Add Event
           </Button>
         </div>
@@ -458,20 +512,27 @@ function EventsManager() {
             <div key={ev.id} className="flex items-center justify-between gap-3 rounded-lg border border-border bg-secondary/50 px-3 py-2">
               <div className="min-w-0">
                 <p className="text-sm font-medium text-foreground">{ev.title}</p>
-                <p className="text-xs text-muted-foreground">{ev.event_date} · {ev.category}</p>
+                <p className="text-xs text-muted-foreground truncate">
+                  {[ev.event_date, ev.category, ev.location].filter(Boolean).join(" · ")}
+                </p>
               </div>
-              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive flex-shrink-0 h-8 w-8" onClick={() => deleteEvent.mutate(ev.id)}>
-                <Trash2 className="h-3.5 w-3.5" />
-              </Button>
+              <div className="flex items-center gap-1 flex-shrink-0">
+                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary h-8 w-8" onClick={() => openEdit(ev)}>
+                  <Pencil className="h-3.5 w-3.5" />
+                </Button>
+                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive h-8 w-8" onClick={() => deleteEvent.mutate(ev.id)}>
+                  <Trash2 className="h-3.5 w-3.5" />
+                </Button>
+              </div>
             </div>
           ))}
         </div>
       )}
 
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) resetForm(); }}>
         <DialogContent className="bg-card border-border max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="font-heading text-foreground">Add Event</DialogTitle>
+            <DialogTitle className="font-heading text-foreground">{editingId ? "Edit Event" : "Add Event"}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <Input placeholder="Event title" value={title} onChange={(e) => setTitle(e.target.value)} className="bg-secondary border-border" />
@@ -482,6 +543,16 @@ function EventsManager() {
                 {EVENT_CATEGORIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
               </SelectContent>
             </Select>
+            <div>
+              <Label className="text-xs text-muted-foreground mb-1.5 block">Location (optional)</Label>
+              <Select value={location} onValueChange={setLocation}>
+                <SelectTrigger className="bg-secondary border-border"><SelectValue placeholder="Select a room" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={NO_LOCATION}>— No location —</SelectItem>
+                  {CONFERENCE_ROOMS.map((r) => <SelectItem key={r} value={r}>{r}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label className="text-xs text-muted-foreground mb-1.5 block">Date</Label>
@@ -541,9 +612,9 @@ function EventsManager() {
             )}
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-            <Button onClick={() => addEvent.mutate()} disabled={!title || !eventDate || addEvent.isPending}>
-              {addEvent.isPending ? "Adding…" : "Add Event"}
+            <Button variant="outline" onClick={() => { setOpen(false); resetForm(); }}>Cancel</Button>
+            <Button onClick={() => saveEvent.mutate()} disabled={!title || !eventDate || saveEvent.isPending}>
+              {saveEvent.isPending ? "Saving…" : editingId ? "Save Changes" : "Add Event"}
             </Button>
           </DialogFooter>
         </DialogContent>

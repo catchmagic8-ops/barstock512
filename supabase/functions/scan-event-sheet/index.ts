@@ -8,6 +8,19 @@ const corsHeaders = {
 
 const EVENT_CATEGORIES = ["Wave", "Conference", "Bar512"];
 
+const CONFERENCE_ROOMS = [
+  "Roald Amundsen",
+  "Willem Barents",
+  "Vasco Da Gamma",
+  "Christopher Columbus",
+  "Marco Polo",
+  "Baltic Panorama",
+  "Henry Hudson",
+  "James Cook",
+  "Amergio Vespucci",
+  "Ferdinand Magellan",
+];
+
 const SYSTEM_PROMPT = `You are an assistant that extracts structured event information from a photograph or scan of a physical event sheet (poster, flyer, handwritten note, printed schedule).
 
 Look carefully at the image and extract:
@@ -16,6 +29,7 @@ Look carefully at the image and extract:
 - event_date: the date in strict ISO format YYYY-MM-DD. If only a day/month is visible, assume the nearest upcoming occurrence from today's date. If no date at all, leave null.
 - event_time: 24h time HH:MM. Optional.
 - category: pick the SINGLE best fit from this exact list: ${EVENT_CATEGORIES.join(", ")}. Use "Conference" for conferences/meetings/corporate events, "Wave" for restaurant/Polskie Smaki dining events, "Bar512" for bar/lounge/cocktail events.
+- location: the conference room / venue. If recognizable, pick the SINGLE best match from this exact list: ${CONFERENCE_ROOMS.join(", ")}. Match flexibly (typos, partial names, missing accents). If no recognizable room is mentioned, return null.
 - food_menu: the food items / menu listed on the sheet, as plain text (one item per line if multiple). Optional.
 - beverage_menu: the drinks / beverage items listed on the sheet, as plain text (one item per line if multiple). Optional.
 - guest_count: number of people / pax / guests expected (whole integer). Optional.
@@ -73,6 +87,7 @@ serve(async (req) => {
                   event_date: { type: ["string", "null"], description: "YYYY-MM-DD" },
                   event_time: { type: ["string", "null"], description: "HH:MM 24h" },
                   category: { type: "string", enum: EVENT_CATEGORIES },
+                  location: { type: ["string", "null"], enum: [...CONFERENCE_ROOMS, null] },
                   food_menu: { type: ["string", "null"] },
                   beverage_menu: { type: ["string", "null"] },
                   guest_count: { type: ["integer", "null"] },
