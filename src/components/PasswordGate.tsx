@@ -25,12 +25,12 @@ export default function PasswordGate({ children }: { children: React.ReactNode }
 
   return (
     <div className="flex min-h-[100dvh] bg-background">
-      {/* Left panel with logo (desktop only) */}
+      {/* Left panel with logo (desktop only) — vertically centered to match form */}
       <div className="hidden md:flex md:w-1/2 items-center justify-center bg-card border-r border-border p-8">
         <img
           src={barLogo}
           alt="Sheraton"
-          className="max-h-[70vh] w-auto object-contain opacity-90"
+          className="max-h-[60vh] w-auto object-contain opacity-90"
         />
       </div>
 
