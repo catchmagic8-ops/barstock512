@@ -608,6 +608,99 @@ export type Database = {
         }
         Relationships: []
       }
+      reservations_polskie_smaki: {
+        Row: {
+          allergies: string | null
+          arrival_time: string
+          beverage_preference: string | null
+          contact_phone: string | null
+          created_at: string
+          decoration_requests: string | null
+          deposit_amount: number | null
+          deposit_paid: boolean
+          dietary_requirements: string[]
+          guest_name: string
+          hotel_guest: boolean
+          id: string
+          language: string | null
+          menu_preference: string | null
+          mobility_needs: string[]
+          notes: string | null
+          number_of_children: number | null
+          number_of_guests: number
+          occasion: string | null
+          pre_ordered_items: string | null
+          reservation_date: string
+          reservation_source: string | null
+          room_number: string | null
+          seating_request: string | null
+          status: string
+          table_number: string | null
+          updated_at: string
+          vip_returning: boolean
+        }
+        Insert: {
+          allergies?: string | null
+          arrival_time: string
+          beverage_preference?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          decoration_requests?: string | null
+          deposit_amount?: number | null
+          deposit_paid?: boolean
+          dietary_requirements?: string[]
+          guest_name: string
+          hotel_guest?: boolean
+          id?: string
+          language?: string | null
+          menu_preference?: string | null
+          mobility_needs?: string[]
+          notes?: string | null
+          number_of_children?: number | null
+          number_of_guests?: number
+          occasion?: string | null
+          pre_ordered_items?: string | null
+          reservation_date: string
+          reservation_source?: string | null
+          room_number?: string | null
+          seating_request?: string | null
+          status?: string
+          table_number?: string | null
+          updated_at?: string
+          vip_returning?: boolean
+        }
+        Update: {
+          allergies?: string | null
+          arrival_time?: string
+          beverage_preference?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          decoration_requests?: string | null
+          deposit_amount?: number | null
+          deposit_paid?: boolean
+          dietary_requirements?: string[]
+          guest_name?: string
+          hotel_guest?: boolean
+          id?: string
+          language?: string | null
+          menu_preference?: string | null
+          mobility_needs?: string[]
+          notes?: string | null
+          number_of_children?: number | null
+          number_of_guests?: number
+          occasion?: string | null
+          pre_ordered_items?: string | null
+          reservation_date?: string
+          reservation_source?: string | null
+          room_number?: string | null
+          seating_request?: string | null
+          status?: string
+          table_number?: string | null
+          updated_at?: string
+          vip_returning?: boolean
+        }
+        Relationships: []
+      }
       subcategories: {
         Row: {
           category: string
