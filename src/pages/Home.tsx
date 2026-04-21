@@ -1,11 +1,12 @@
 import { useNavigate } from "react-router-dom";
-import { Package, Calendar, BookOpen, Phone, Shield, ArrowLeft, Utensils } from "lucide-react";
+import { Package, Calendar, BookOpen, Phone, Shield, ArrowLeft, Utensils, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useDepartment } from "@/contexts/DepartmentContext";
 import { deptSubPath, DEPT_TABLES } from "@/lib/department";
+import { useAuth } from "@/contexts/AuthContext";
 
 function getGreeting(): string {
   const h = new Date().getHours();
@@ -183,17 +184,22 @@ const aLaCarteCard: NavCard = {
 export default function Home() {
   const navigate = useNavigate();
   const { department, meta } = useDepartment();
+  const { isAdmin, user, logout } = useAuth();
 
   const visibleCards: NavCard[] = (() => {
-    if (department === "konferencje") return cards;
+    let base = department === "konferencje" ? [...cards] : [...cards];
     // For Polskie Smaki: drop Cocktail Recipes, add A La Carte before Admin.
     // For Bar 512: keep Cocktail Recipes, add A La Carte before Admin.
-    let result = [...cards];
+    let result = base;
     if (department === "polskie_smaki") {
       result = result.filter((c) => c.sub !== "recipes");
     }
-    const adminIdx = result.findIndex((c) => c.sub === "admin");
-    result.splice(adminIdx, 0, aLaCarteCard);
+    if (department !== "konferencje") {
+      const adminIdx = result.findIndex((c) => c.sub === "admin");
+      result.splice(adminIdx, 0, aLaCarteCard);
+    }
+    // Staff users don't see the Admin tile
+    if (!isAdmin) result = result.filter((c) => c.sub !== "admin");
     return result;
   })();
 
