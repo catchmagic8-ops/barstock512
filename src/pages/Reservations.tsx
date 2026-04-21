@@ -239,11 +239,15 @@ function ReservationCard({
   canAdmin,
   onEdit,
   onDelete,
+  onStatusChange,
+  statusUpdating,
 }: {
   r: Reservation;
   canAdmin: boolean;
   onEdit: () => void;
   onDelete: () => void;
+  onStatusChange: (newStatus: string) => void;
+  statusUpdating: boolean;
 }) {
   const has = (v: any) =>
     v !== null && v !== undefined && (Array.isArray(v) ? v.length > 0 : String(v).trim() !== "");
@@ -301,9 +305,31 @@ function ReservationCard({
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Badge className={cn("border", STATUS_STYLES[r.status] ?? STATUS_STYLES.Pending)}>
-            {r.status}
-          </Badge>
+          <Select
+            value={r.status}
+            onValueChange={(v) => {
+              if (v !== r.status) onStatusChange(v);
+            }}
+            disabled={statusUpdating}
+          >
+            <SelectTrigger
+              title="Click to change status"
+              className={cn(
+                "h-7 w-auto gap-1 rounded-full border px-3 py-0 text-xs font-semibold shadow-none transition hover:opacity-90 focus:ring-0 focus:ring-offset-0",
+                STATUS_STYLES[r.status] ?? STATUS_STYLES.Pending,
+                statusUpdating && "opacity-60"
+              )}
+            >
+              <SelectValue>{r.status}</SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              {STATUSES.map((s) => (
+                <SelectItem key={s} value={s}>
+                  {s}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           {canAdmin && (
             <>
               <Button size="icon" variant="ghost" onClick={onEdit} title="Edit">
