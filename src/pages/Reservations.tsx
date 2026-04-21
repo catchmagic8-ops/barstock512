@@ -892,7 +892,7 @@ export default function Reservations() {
             <p className="text-xs text-muted-foreground">{meta.label}</p>
           </div>
         </div>
-        {canAdmin && (
+        {canCreate && (
           <Button
             onClick={openCreate}
             style={{ background: "#d74c5a" }}
@@ -937,7 +937,7 @@ export default function Reservations() {
           </div>
         ) : filtered.length === 0 ? (
           <div className="rounded-xl border border-dashed border-border p-12 text-center text-muted-foreground">
-            No reservations yet.{canAdmin && " Click \"New Reservation\" to add one."}
+            No reservations yet.{canCreate && " Click \"New Reservation\" to add one."}
           </div>
         ) : (
           <div className="space-y-4">
