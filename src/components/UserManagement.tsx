@@ -180,10 +180,13 @@ export default function UserManagement() {
                       {u.username}
                       {isMe && <span className="text-xs text-muted-foreground ml-2">(you)</span>}
                     </p>
-                    <p className="text-xs text-muted-foreground capitalize">{u.role}</p>
+                    <p className="text-xs text-muted-foreground">
+                      <span className="capitalize">{u.role}</span>
+                      <span> · {DEPT_LABELS[u.department ?? "all"]}</span>
+                    </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-1.5 flex-shrink-0">
+                <div className="flex items-center gap-1.5 flex-shrink-0 flex-wrap justify-end">
                   <Select
                     value={u.role}
                     onValueChange={(v) => updateRole.mutate({ userId: u.id, role: v as AppRole })}
@@ -194,6 +197,20 @@ export default function UserManagement() {
                     <SelectContent>
                       <SelectItem value="staff">Staff</SelectItem>
                       <SelectItem value="admin">Admin</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Select
+                    value={u.department ?? "all"}
+                    onValueChange={(v) => updateRole.mutate({ userId: u.id, department: v as AppDepartment })}
+                  >
+                    <SelectTrigger className="h-8 w-[140px] text-xs bg-card">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Departments</SelectItem>
+                      <SelectItem value="bar512">Bar 512</SelectItem>
+                      <SelectItem value="konferencje">Konferencje</SelectItem>
+                      <SelectItem value="polskie_smaki">Polskie Smaki</SelectItem>
                     </SelectContent>
                   </Select>
                   <Button
