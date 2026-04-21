@@ -92,6 +92,33 @@ export type Database = {
         }
         Relationships: []
       }
+      app_users: {
+        Row: {
+          created_at: string
+          id: string
+          password_hash: string
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at: string
+          username: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          password_hash: string
+          role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string
+          username: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          password_hash?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string
+          username?: string
+        }
+        Relationships: []
+      }
       contacts: {
         Row: {
           category: string | null
@@ -646,10 +673,51 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      admin_create_user: {
+        Args: {
+          _admin_id: string
+          _password: string
+          _role: Database["public"]["Enums"]["app_role"]
+          _username: string
+        }
+        Returns: string
+      }
+      admin_delete_user: {
+        Args: { _admin_id: string; _user_id: string }
+        Returns: undefined
+      }
+      admin_list_users: {
+        Args: { _admin_id: string }
+        Returns: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          username: string
+        }[]
+      }
+      admin_update_password: {
+        Args: { _admin_id: string; _new_password: string; _user_id: string }
+        Returns: undefined
+      }
+      admin_update_role: {
+        Args: {
+          _admin_id: string
+          _new_role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: undefined
+      }
+      verify_user_login: {
+        Args: { _password: string; _username: string }
+        Returns: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          username: string
+        }[]
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "staff"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -776,6 +844,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "staff"],
+    },
   },
 } as const
