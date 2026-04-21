@@ -228,20 +228,9 @@ export default function Telephone() {
                             {c.role && (
                               <p className="text-xs font-medium text-primary">{c.role}</p>
                             )}
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <h3 className="font-heading font-bold text-foreground break-words">
-                                {c.name}
-                              </h3>
-                              <span
-                                className={cn(
-                                  "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium border",
-                                  DEPT_BADGE[c._dept as Department]
-                                )}
-                              >
-                                <Building2 className="h-2.5 w-2.5" />
-                                {DEPT_META[c._dept as Department].shortLabel}
-                              </span>
-                            </div>
+                            <h3 className="font-heading font-bold text-foreground break-words">
+                              {c.name}
+                            </h3>
                           </div>
                         </div>
 
