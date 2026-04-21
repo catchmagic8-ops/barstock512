@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
 import {
-  ArrowLeft, Plus, Trash2, Loader2, Phone, Package, Calendar, BookOpen, ChevronDown, ChevronUp, BellRing, Check, ImagePlus, Repeat, Pencil, Sparkles, Upload,
+  ArrowLeft, Plus, Trash2, Loader2, Phone, Package, Calendar, BookOpen, ChevronDown, ChevronUp, BellRing, Check, ImagePlus, Repeat, Pencil, Sparkles, Upload, Utensils,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import OptionsPasswordGate from "@/components/OptionsPasswordGate";
 import StockManager from "@/components/StockManager";
 import SubcategoryManager from "@/components/SubcategoryManager";
+import ALaCarteManager from "@/components/ALaCarteManager";
 import { useInventory } from "@/hooks/useInventory";
 import { useDepartment } from "@/contexts/DepartmentContext";
 import { deptHomePath } from "@/lib/department";
@@ -800,6 +801,12 @@ export default function Admin() {
           <AdminSection title="Recipes Management" icon={BookOpen}>
             <RecipesManager />
           </AdminSection>
+
+          {department !== "konferencje" && (
+            <AdminSection title="A La Carte Menu" icon={Utensils}>
+              <ALaCarteManager />
+            </AdminSection>
+          )}
         </main>
       </div>
     </OptionsPasswordGate>

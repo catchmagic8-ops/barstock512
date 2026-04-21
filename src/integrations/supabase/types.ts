@@ -14,6 +14,84 @@ export type Database = {
   }
   public: {
     Tables: {
+      a_la_carte_bar512: {
+        Row: {
+          allergens: string[]
+          category: string
+          created_at: string
+          description: string | null
+          dietary: string[]
+          id: string
+          name: string
+          price_pln: number
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          allergens?: string[]
+          category: string
+          created_at?: string
+          description?: string | null
+          dietary?: string[]
+          id?: string
+          name: string
+          price_pln?: number
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          allergens?: string[]
+          category?: string
+          created_at?: string
+          description?: string | null
+          dietary?: string[]
+          id?: string
+          name?: string
+          price_pln?: number
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      a_la_carte_polskie_smaki: {
+        Row: {
+          allergens: string[]
+          category: string
+          created_at: string
+          description: string | null
+          dietary: string[]
+          id: string
+          name: string
+          price_pln: number
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          allergens?: string[]
+          category: string
+          created_at?: string
+          description?: string | null
+          dietary?: string[]
+          id?: string
+          name: string
+          price_pln?: number
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          allergens?: string[]
+          category?: string
+          created_at?: string
+          description?: string | null
+          dietary?: string[]
+          id?: string
+          name?: string
+          price_pln?: number
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       contacts: {
         Row: {
           category: string | null

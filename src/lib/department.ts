@@ -6,6 +6,7 @@ export interface DeptTables {
   recipes: "recipes" | "recipes_konferencje" | "recipes_polskie_smaki";
   contacts: "contacts" | "contacts_konferencje" | "contacts_polskie_smaki";
   subcategories: "subcategories" | "subcategories_konferencje" | "subcategories_polskie_smaki";
+  alaCarte: "a_la_carte_bar512" | "a_la_carte_polskie_smaki" | null;
 }
 
 export const DEPT_TABLES: Record<Department, DeptTables> = {
@@ -15,6 +16,7 @@ export const DEPT_TABLES: Record<Department, DeptTables> = {
     recipes: "recipes",
     contacts: "contacts",
     subcategories: "subcategories",
+    alaCarte: "a_la_carte_bar512",
   },
   konferencje: {
     inventory: "inventory_items_konferencje",
@@ -22,6 +24,7 @@ export const DEPT_TABLES: Record<Department, DeptTables> = {
     recipes: "recipes_konferencje",
     contacts: "contacts_konferencje",
     subcategories: "subcategories_konferencje",
+    alaCarte: null,
   },
   polskie_smaki: {
     inventory: "inventory_items_polskie_smaki",
@@ -29,6 +32,7 @@ export const DEPT_TABLES: Record<Department, DeptTables> = {
     recipes: "recipes_polskie_smaki",
     contacts: "contacts_polskie_smaki",
     subcategories: "subcategories_polskie_smaki",
+    alaCarte: "a_la_carte_polskie_smaki",
   },
 };
 
@@ -64,6 +68,6 @@ export function deptHomePath(d: Department): string {
   return d === "bar512" ? "/home" : DEPT_META[d].basePath;
 }
 
-export function deptSubPath(d: Department, sub: "inventory" | "events" | "recipes" | "telephone" | "admin"): string {
+export function deptSubPath(d: Department, sub: "inventory" | "events" | "recipes" | "telephone" | "admin" | "a-la-carte"): string {
   return d === "bar512" ? `/${sub}` : `${DEPT_META[d].basePath}/${sub}`;
 }

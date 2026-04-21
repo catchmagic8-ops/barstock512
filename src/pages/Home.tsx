@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Package, Calendar, BookOpen, Phone, Shield, ArrowLeft } from "lucide-react";
+import { Package, Calendar, BookOpen, Phone, Shield, ArrowLeft, Utensils } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
@@ -130,11 +130,31 @@ function AdminBadge() {
   );
 }
 
+function ALaCarteBadge() {
+  const { tables, department } = useDepartment();
+  const tableName = tables.alaCarte;
+  const { data: count = 0 } = useQuery({
+    queryKey: ["a-la-carte-count", department],
+    queryFn: async () => {
+      if (!tableName) return 0;
+      const { data, error } = await (supabase as any).from(tableName).select("id");
+      if (error) throw error;
+      return data?.length ?? 0;
+    },
+    enabled: !!tableName,
+  });
+  return (
+    <span className="rounded-full bg-primary/20 px-2.5 py-0.5 text-xs font-semibold text-primary">
+      {count} item{count === 1 ? "" : "s"}
+    </span>
+  );
+}
+
 interface NavCard {
   title: string;
   icon: React.ElementType;
   subtitle: string;
-  sub: "inventory" | "events" | "recipes" | "telephone" | "admin";
+  sub: "inventory" | "events" | "recipes" | "telephone" | "admin" | "a-la-carte";
   badge: () => React.ReactNode;
 }
 
@@ -146,9 +166,26 @@ const cards: NavCard[] = [
   { title: "ADMIN", icon: Shield, subtitle: "Manage all content for this dept.", sub: "admin", badge: AdminBadge },
 ];
 
+const aLaCarteCard: NavCard = {
+  title: "A LA CARTE",
+  icon: Utensils,
+  subtitle: "Menu of dishes, allergens & prices",
+  sub: "a-la-carte",
+  badge: ALaCarteBadge,
+};
+
 export default function Home() {
   const navigate = useNavigate();
   const { department, meta } = useDepartment();
+
+  const visibleCards: NavCard[] = (() => {
+    if (department === "konferencje") return cards;
+    // Insert A La Carte before Admin for Bar 512 and Polskie Smaki
+    const result = [...cards];
+    const adminIdx = result.findIndex((c) => c.sub === "admin");
+    result.splice(adminIdx, 0, aLaCarteCard);
+    return result;
+  })();
 
   return (
     <div className="flex min-h-screen flex-col" style={{ background: "#0f0e0c" }}>
@@ -184,7 +221,7 @@ export default function Home() {
         </div>
 
         <div className="grid w-full max-w-4xl grid-cols-1 gap-5 sm:grid-cols-3 sm:gap-6">
-          {cards.map(({ title, icon: Icon, subtitle, sub, badge: Badge }) => (
+          {visibleCards.map(({ title, icon: Icon, subtitle, sub, badge: Badge }) => (
             <button
               key={title}
               onClick={() => navigate(deptSubPath(department, sub))}
