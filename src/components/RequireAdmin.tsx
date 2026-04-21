@@ -2,18 +2,22 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
+import { useDepartment } from "@/contexts/DepartmentContext";
 
 export default function RequireAdmin({ children }: { children: React.ReactNode }) {
-  const { isAdmin, user } = useAuth();
+  const { user, isAdminFor } = useAuth();
+  const { department } = useDepartment();
   const navigate = useNavigate();
 
+  const allowed = !!user && isAdminFor(department);
+
   useEffect(() => {
-    if (user && !isAdmin) {
+    if (user && !allowed) {
       toast.error("Access denied — admin only");
       navigate("/", { replace: true });
     }
-  }, [isAdmin, user, navigate]);
+  }, [allowed, user, navigate]);
 
-  if (!user || !isAdmin) return null;
+  if (!allowed) return null;
   return <>{children}</>;
 }
