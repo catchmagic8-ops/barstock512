@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Lock } from "lucide-react";
-import barLogo from "@/assets/bar-logo.png";
+import barLogo from "@/assets/sheraton-logo.png";
 
 const PASS = "5sheraton12";
 
