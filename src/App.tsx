@@ -11,6 +11,7 @@ import Telephone from "./pages/Telephone.tsx";
 import Admin from "./pages/Admin.tsx";
 import Departments from "./pages/Departments.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import ALaCarte from "./pages/ALaCarte.tsx";
 import PasswordGate from "./components/PasswordGate";
 import { DepartmentProvider } from "@/contexts/DepartmentContext";
 import type { Department } from "@/lib/department";
@@ -27,6 +28,7 @@ function DeptRoutes({ department }: { department: Department }) {
         <Route path="recipes" element={<Recipes />} />
         <Route path="telephone" element={<Telephone />} />
         <Route path="admin" element={<Admin />} />
+        <Route path="a-la-carte" element={<ALaCarte />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </DepartmentProvider>
@@ -68,6 +70,10 @@ const App = () => (
             <Route
               path="/admin"
               element={<DepartmentProvider department="bar512"><Admin /></DepartmentProvider>}
+            />
+            <Route
+              path="/a-la-carte"
+              element={<DepartmentProvider department="bar512"><ALaCarte /></DepartmentProvider>}
             />
 
             {/* Konferencje */}
