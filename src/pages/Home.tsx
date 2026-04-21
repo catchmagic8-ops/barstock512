@@ -223,6 +223,22 @@ export default function Home() {
             {meta.label}
           </h1>
         </div>
+        <div className="flex items-center gap-2">
+          {user && (
+            <span className="hidden sm:inline text-xs text-muted-foreground">
+              {user.username} · <span className="capitalize">{user.role}</span>
+            </span>
+          )}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={logout}
+            title="Sign out"
+            className="text-muted-foreground hover:text-foreground"
+          >
+            <LogOut className="h-5 w-5" />
+          </Button>
+        </div>
       </header>
 
       <main className="flex flex-1 flex-col items-center justify-center px-5 pb-16 sm:px-8">

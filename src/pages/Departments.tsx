@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
 import bar512Img from "@/assets/dept-bar512.jpg";
 import konferencjeImg from "@/assets/dept-konferencje.jpg";
 import polskieSmakiImg from "@/assets/dept-polskie-smaki.jpg";
@@ -20,11 +21,7 @@ const tiles: Tile[] = [
 
 export default function Departments() {
   const navigate = useNavigate();
-
-  const handleLogout = () => {
-    sessionStorage.removeItem("bar-unlocked");
-    window.location.href = "/";
-  };
+  const { user, logout } = useAuth();
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -35,15 +32,22 @@ export default function Departments() {
         >
           Departments
         </h1>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={handleLogout}
-          title="Logout"
-          className="text-muted-foreground hover:text-foreground"
-        >
-          <LogOut className="h-5 w-5" />
-        </Button>
+        <div className="flex items-center gap-2">
+          {user && (
+            <span className="hidden sm:inline text-xs text-muted-foreground">
+              {user.username} · <span className="capitalize">{user.role}</span>
+            </span>
+          )}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={logout}
+            title="Sign out"
+            className="text-muted-foreground hover:text-foreground"
+          >
+            <LogOut className="h-5 w-5" />
+          </Button>
+        </div>
       </header>
 
       <main className="flex flex-1 flex-col items-center justify-center px-5 pb-16 sm:px-8">

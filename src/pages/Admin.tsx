@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
 import {
-  ArrowLeft, Plus, Trash2, Loader2, Phone, Package, Calendar, BookOpen, ChevronDown, ChevronUp, BellRing, Check, ImagePlus, Repeat, Pencil, Sparkles, Upload, Utensils,
+  ArrowLeft, Plus, Trash2, Loader2, Phone, Package, Calendar, BookOpen, ChevronDown, ChevronUp, BellRing, Check, ImagePlus, Repeat, Pencil, Sparkles, Upload, Utensils, Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,10 +17,10 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import OptionsPasswordGate from "@/components/OptionsPasswordGate";
 import StockManager from "@/components/StockManager";
 import SubcategoryManager from "@/components/SubcategoryManager";
 import ALaCarteManager from "@/components/ALaCarteManager";
+import UserManagement from "@/components/UserManagement";
 import { useInventory } from "@/hooks/useInventory";
 import { useDepartment } from "@/contexts/DepartmentContext";
 import { deptHomePath } from "@/lib/department";
@@ -754,8 +754,7 @@ function RecipesManager() {
 export default function Admin() {
   const { department, meta } = useDepartment();
   return (
-    <OptionsPasswordGate>
-      <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background">
         <header className="sticky top-0 z-30 border-b border-border bg-card/80 backdrop-blur-md">
           <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">
             <div className="flex items-center gap-3">
@@ -771,6 +770,10 @@ export default function Admin() {
         </header>
 
         <main className="mx-auto max-w-3xl px-4 py-6 space-y-4">
+          <AdminSection title="User Management" icon={Users}>
+            <UserManagement />
+          </AdminSection>
+
           <AdminSection title="Low Stock Alerts" icon={BellRing} defaultOpen>
             <LowStockAlerts />
           </AdminSection>
@@ -802,7 +805,6 @@ export default function Admin() {
             </AdminSection>
           )}
         </main>
-      </div>
-    </OptionsPasswordGate>
+    </div>
   );
 }
