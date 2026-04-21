@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Loader2, Calendar, Clock, Tag, Repeat, Users, UtensilsCrossed, Wine } from "lucide-react";
+import { ArrowLeft, Loader2, Calendar, Clock, Tag, Repeat, Users, UtensilsCrossed, Wine, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
@@ -84,6 +84,13 @@ export default function Events() {
                   <Badge variant="outline" className="bg-muted/50 text-muted-foreground border-border">
                     <Clock className="h-3 w-3 mr-1" />
                     {ev.event_time.slice(0, 5)}
+                  </Badge>
+                )}
+
+                {ev.location && (
+                  <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30">
+                    <MapPin className="h-3 w-3 mr-1" />
+                    {ev.location}
                   </Badge>
                 )}
 
