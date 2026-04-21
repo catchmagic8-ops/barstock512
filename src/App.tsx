@@ -12,6 +12,7 @@ import Admin from "./pages/Admin.tsx";
 import Departments from "./pages/Departments.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import ALaCarte from "./pages/ALaCarte.tsx";
+import Reservations from "./pages/Reservations.tsx";
 import AuthGate from "./components/AuthGate";
 import RequireAdmin from "./components/RequireAdmin";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -31,6 +32,7 @@ function DeptRoutes({ department }: { department: Department }) {
         <Route path="telephone" element={<Telephone />} />
         <Route path="admin" element={<RequireAdmin><Admin /></RequireAdmin>} />
         <Route path="a-la-carte" element={<ALaCarte />} />
+        <Route path="reservations" element={<Reservations />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </DepartmentProvider>

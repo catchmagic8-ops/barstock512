@@ -12,7 +12,6 @@ import {
   Trash2,
   X,
   Users,
-  Baby,
   Hash,
   Clock,
   Phone,
