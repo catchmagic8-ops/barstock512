@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Loader2, Calendar, Clock, Tag, Repeat, Users, UtensilsCrossed, Wine, MapPin, Search, X, Building2 } from "lucide-react";
+import { ArrowLeft, Loader2, Calendar, Clock, Repeat, Users, UtensilsCrossed, Wine, MapPin, Search, X, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -10,15 +10,6 @@ import { format } from "date-fns";
 import { useDepartment } from "@/contexts/DepartmentContext";
 import { deptHomePath, DEPT_META, DEPT_TABLES, type Department } from "@/lib/department";
 import { cn } from "@/lib/utils";
-
-const categoryColor = (cat: string) => {
-  const colors: Record<string, string> = {
-    Wave: "bg-cyan-500/15 text-cyan-400 border-cyan-500/30",
-    Conference: "bg-blue-500/15 text-blue-400 border-blue-500/30",
-    Bar512: "bg-amber-500/15 text-amber-400 border-amber-500/30",
-  };
-  return colors[cat] || "bg-muted text-muted-foreground border-border";
-};
 
 const DEPT_BADGE: Record<Department, string> = {
   bar512: "bg-amber-500/15 text-amber-400 border-amber-500/30",
@@ -163,11 +154,6 @@ export default function Events() {
                 <Badge variant="outline" className={DEPT_BADGE[ev._dept as Department]}>
                   <Building2 className="h-3 w-3 mr-1" />
                   {DEPT_META[ev._dept as Department].label}
-                </Badge>
-
-                <Badge variant="outline" className={categoryColor(ev.category || "General")}>
-                  <Tag className="h-3 w-3 mr-1" />
-                  {ev.category || "General"}
                 </Badge>
 
                 <Badge variant="outline" className="bg-muted/50 text-muted-foreground border-border">
