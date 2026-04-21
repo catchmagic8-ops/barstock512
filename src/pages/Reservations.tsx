@@ -140,6 +140,7 @@ function emptyForm(): Partial<Reservation> {
     language: "English",
     mobility_needs: [],
     decoration_requests: "",
+    language: "Polish",
     reservation_source: "Phone",
     deposit_paid: false,
     deposit_amount: null,
