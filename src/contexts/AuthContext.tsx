@@ -2,16 +2,20 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import { supabase } from "@/integrations/supabase/client";
 
 export type AppRole = "admin" | "staff";
+export type AppDepartment = "all" | "bar512" | "konferencje" | "polskie_smaki";
 
 export interface AuthUser {
   id: string;
   username: string;
   role: AppRole;
+  department: AppDepartment;
 }
 
 interface AuthContextValue {
   user: AuthUser | null;
   isAdmin: boolean;
+  isGlobalAdmin: boolean;
+  isAdminFor: (dept: Exclude<AppDepartment, "all">) => boolean;
   loading: boolean;
   login: (username: string, password: string) => Promise<{ ok: true } | { ok: false; error: string }>;
   logout: () => void;
@@ -29,7 +33,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw) as AuthUser;
-        if (parsed?.id && parsed?.username && parsed?.role) setUser(parsed);
+        if (parsed?.id && parsed?.username && parsed?.role) {
+          // Backward compat: older sessions had no department field.
+          if (!parsed.department) parsed.department = "all";
+          setUser(parsed);
+        }
       }
     } catch {
       /* ignore */
@@ -47,7 +55,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (error) return { ok: false, error: error.message ?? "Login failed" };
     const row = Array.isArray(data) ? data[0] : data;
     if (!row) return { ok: false, error: "Invalid username or password" };
-    const u: AuthUser = { id: row.id, username: row.username, role: row.role };
+    const u: AuthUser = {
+      id: row.id,
+      username: row.username,
+      role: row.role,
+      department: (row.department as AppDepartment) ?? "all",
+    };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(u));
     setUser(u);
     return { ok: true };
@@ -61,10 +74,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
   }, []);
 
-  const value = useMemo<AuthContextValue>(
-    () => ({ user, isAdmin: user?.role === "admin", loading, login, logout }),
-    [user, loading, login, logout],
-  );
+  const value = useMemo<AuthContextValue>(() => {
+    const isGlobalAdmin = user?.role === "admin" && user?.department === "all";
+    const isAdminFor = (dept: Exclude<AppDepartment, "all">) =>
+      user?.role === "admin" && (user.department === "all" || user.department === dept);
+    return {
+      user,
+      // `isAdmin` here means "global admin" — used for User Management gates.
+      isAdmin: isGlobalAdmin,
+      isGlobalAdmin,
+      isAdminFor,
+      loading,
+      login,
+      logout,
+    };
+  }, [user, loading, login, logout]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
