@@ -538,12 +538,6 @@ function EventsManager() {
           <div className="space-y-4 py-2">
             <Input placeholder="Event title" value={title} onChange={(e) => setTitle(e.target.value)} className="bg-secondary border-border" />
             <Textarea placeholder="Description (optional)" value={description} onChange={(e) => setDescription(e.target.value)} className="bg-secondary border-border" rows={3} />
-            <Select value={category} onValueChange={setCategory}>
-              <SelectTrigger className="bg-secondary border-border"><SelectValue placeholder="Category" /></SelectTrigger>
-              <SelectContent>
-                {EVENT_CATEGORIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-              </SelectContent>
-            </Select>
             <div>
               <Label className="text-xs text-muted-foreground mb-1.5 block">Location (optional)</Label>
               <Select value={location} onValueChange={setLocation}>
