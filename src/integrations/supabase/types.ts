@@ -133,40 +133,46 @@ export type Database = {
       }
       events: {
         Row: {
+          beverage_menu: string | null
           category: string | null
           created_at: string
           description: string | null
           event_date: string
           event_time: string | null
+          food_menu: string | null
+          guest_count: number | null
           id: string
           is_recurring: boolean
-          price: number | null
           recurrence_rule: string | null
           title: string
           updated_at: string
         }
         Insert: {
+          beverage_menu?: string | null
           category?: string | null
           created_at?: string
           description?: string | null
           event_date: string
           event_time?: string | null
+          food_menu?: string | null
+          guest_count?: number | null
           id?: string
           is_recurring?: boolean
-          price?: number | null
           recurrence_rule?: string | null
           title: string
           updated_at?: string
         }
         Update: {
+          beverage_menu?: string | null
           category?: string | null
           created_at?: string
           description?: string | null
           event_date?: string
           event_time?: string | null
+          food_menu?: string | null
+          guest_count?: number | null
           id?: string
           is_recurring?: boolean
-          price?: number | null
           recurrence_rule?: string | null
           title?: string
           updated_at?: string
@@ -175,40 +181,46 @@ export type Database = {
       }
       events_konferencje: {
         Row: {
+          beverage_menu: string | null
           category: string | null
           created_at: string
           description: string | null
           event_date: string
           event_time: string | null
+          food_menu: string | null
+          guest_count: number | null
           id: string
           is_recurring: boolean
-          price: number | null
           recurrence_rule: string | null
           title: string
           updated_at: string
         }
         Insert: {
+          beverage_menu?: string | null
           category?: string | null
           created_at?: string
           description?: string | null
           event_date: string
           event_time?: string | null
+          food_menu?: string | null
+          guest_count?: number | null
           id?: string
           is_recurring?: boolean
-          price?: number | null
           recurrence_rule?: string | null
           title: string
           updated_at?: string
         }
         Update: {
+          beverage_menu?: string | null
           category?: string | null
           created_at?: string
           description?: string | null
           event_date?: string
           event_time?: string | null
+          food_menu?: string | null
+          guest_count?: number | null
           id?: string
           is_recurring?: boolean
-          price?: number | null
           recurrence_rule?: string | null
           title?: string
           updated_at?: string
@@ -217,40 +229,46 @@ export type Database = {
       }
       events_polskie_smaki: {
         Row: {
+          beverage_menu: string | null
           category: string | null
           created_at: string
           description: string | null
           event_date: string
           event_time: string | null
+          food_menu: string | null
+          guest_count: number | null
           id: string
           is_recurring: boolean
-          price: number | null
           recurrence_rule: string | null
           title: string
           updated_at: string
         }
         Insert: {
+          beverage_menu?: string | null
           category?: string | null
           created_at?: string
           description?: string | null
           event_date: string
           event_time?: string | null
+          food_menu?: string | null
+          guest_count?: number | null
           id?: string
           is_recurring?: boolean
-          price?: number | null
           recurrence_rule?: string | null
           title: string
           updated_at?: string
         }
         Update: {
+          beverage_menu?: string | null
           category?: string | null
           created_at?: string
           description?: string | null
           event_date?: string
           event_time?: string | null
+          food_menu?: string | null
+          guest_count?: number | null
           id?: string
           is_recurring?: boolean
-          price?: number | null
           recurrence_rule?: string | null
           title?: string
           updated_at?: string
