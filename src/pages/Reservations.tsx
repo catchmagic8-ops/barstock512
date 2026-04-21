@@ -110,6 +110,7 @@ type Reservation = {
   status: string;
   created_at: string;
   updated_at: string;
+  created_by_username: string | null;
 };
 
 const STATUS_STYLES: Record<string, string> = {
