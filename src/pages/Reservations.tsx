@@ -373,14 +373,6 @@ function ReservationCard({
       ) : null}
 
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-        {/* Essential */}
-        <Section title="Essential">
-          {has(r.seating_request) && r.seating_request !== "No Preference" && (
-            <Field icon={Armchair} label="Seating" value={r.seating_request} />
-          )}
-          {!has(r.seating_request) || r.seating_request === "No Preference" ? null : null}
-        </Section>
-
         {/* Food & Beverage */}
         <Section title="Food & Beverage">
           {has(r.dietary_requirements) && (
@@ -415,6 +407,9 @@ function ReservationCard({
 
         {/* Guest Info */}
         <Section title="Guest Info">
+          {has(r.seating_request) && r.seating_request !== "No Preference" && (
+            <Field icon={Armchair} label="Seating" value={r.seating_request} />
+          )}
           {r.hotel_guest && has(r.room_number) && (
             <Field icon={BedDouble} label="Room" value={r.room_number} />
           )}
