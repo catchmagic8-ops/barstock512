@@ -493,8 +493,36 @@ function EventsManager() {
               </div>
             </div>
             <div>
-              <Label className="text-xs text-muted-foreground mb-1.5 block">Price (optional)</Label>
-              <Input type="number" step="0.01" min="0" placeholder="0.00" value={price} onChange={(e) => setPrice(e.target.value)} className="bg-secondary border-border" />
+              <Label className="text-xs text-muted-foreground mb-1.5 block">Number of guests (optional)</Label>
+              <Input
+                type="number"
+                min="0"
+                step="1"
+                placeholder="e.g. 50"
+                value={guestCount}
+                onChange={(e) => setGuestCount(e.target.value)}
+                className="bg-secondary border-border"
+              />
+            </div>
+            <div>
+              <Label className="text-xs text-muted-foreground mb-1.5 block">Food menu (optional)</Label>
+              <Textarea
+                placeholder="One item per line"
+                value={foodMenu}
+                onChange={(e) => setFoodMenu(e.target.value)}
+                rows={3}
+                className="bg-secondary border-border"
+              />
+            </div>
+            <div>
+              <Label className="text-xs text-muted-foreground mb-1.5 block">Beverage menu (optional)</Label>
+              <Textarea
+                placeholder="One item per line"
+                value={beverageMenu}
+                onChange={(e) => setBeverageMenu(e.target.value)}
+                rows={3}
+                className="bg-secondary border-border"
+              />
             </div>
             <div className="flex items-center justify-between rounded-lg border border-border bg-secondary px-4 py-3">
               <div className="flex items-center gap-2">
