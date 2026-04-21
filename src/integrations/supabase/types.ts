@@ -615,6 +615,7 @@ export type Database = {
           beverage_preference: string | null
           contact_phone: string | null
           created_at: string
+          created_by_username: string | null
           decoration_requests: string | null
           deposit_amount: number | null
           deposit_paid: boolean
@@ -645,6 +646,7 @@ export type Database = {
           beverage_preference?: string | null
           contact_phone?: string | null
           created_at?: string
+          created_by_username?: string | null
           decoration_requests?: string | null
           deposit_amount?: number | null
           deposit_paid?: boolean
@@ -675,6 +677,7 @@ export type Database = {
           beverage_preference?: string | null
           contact_phone?: string | null
           created_at?: string
+          created_by_username?: string | null
           decoration_requests?: string | null
           deposit_amount?: number | null
           deposit_paid?: boolean
