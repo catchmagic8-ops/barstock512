@@ -989,6 +989,10 @@ export default function Reservations() {
                 canAdmin={canAdmin}
                 onEdit={() => openEdit(r)}
                 onDelete={() => setToDelete(r)}
+                onStatusChange={(status) => statusMutation.mutate({ id: r.id, status })}
+                statusUpdating={
+                  statusMutation.isPending && statusMutation.variables?.id === r.id
+                }
               />
             ))}
           </div>
