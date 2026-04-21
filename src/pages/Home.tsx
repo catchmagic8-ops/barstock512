@@ -167,7 +167,7 @@ interface NavCard {
 const cards: NavCard[] = [
   { title: "INVENTORY", icon: Package, subtitle: "Track stock levels & low alerts", sub: "inventory", badge: LowStockBadge },
   { title: "EVENTS", icon: Calendar, subtitle: "Upcoming events & promotions", sub: "events", badge: EventsBadge },
-  { title: "RECIPES", icon: BookOpen, subtitle: "Recipe library & instructions", sub: "recipes", badge: RecipesBadge },
+  { title: "COCKTAIL RECIPES", icon: BookOpen, subtitle: "Cocktail recipe library & instructions", sub: "recipes", badge: RecipesBadge },
   { title: "TELEPHONE", icon: Phone, subtitle: "Useful contacts & numbers", sub: "telephone", badge: ContactsBadge },
   { title: "ADMIN", icon: Shield, subtitle: "Manage all content for this dept.", sub: "admin", badge: AdminBadge },
 ];
@@ -186,8 +186,12 @@ export default function Home() {
 
   const visibleCards: NavCard[] = (() => {
     if (department === "konferencje") return cards;
-    // Insert A La Carte before Admin for Bar 512 and Polskie Smaki
-    const result = [...cards];
+    // For Polskie Smaki: drop Cocktail Recipes, add A La Carte before Admin.
+    // For Bar 512: keep Cocktail Recipes, add A La Carte before Admin.
+    let result = [...cards];
+    if (department === "polskie_smaki") {
+      result = result.filter((c) => c.sub !== "recipes");
+    }
     const adminIdx = result.findIndex((c) => c.sub === "admin");
     result.splice(adminIdx, 0, aLaCarteCard);
     return result;
