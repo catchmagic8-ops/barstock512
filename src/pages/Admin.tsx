@@ -284,20 +284,28 @@ function ContactsManager() {
   );
 }
 
-const EVENT_CATEGORIES = ["General", "Happy Hour", "Live Music", "Sports", "Private", "Promotion"];
+const EVENT_CATEGORIES = ["Wave", "Conference", "Bar512"] as const;
+const DEPT_DEFAULT_CATEGORY: Record<string, (typeof EVENT_CATEGORIES)[number]> = {
+  bar512: "Bar512",
+  konferencje: "Conference",
+  polskie_smaki: "Wave",
+};
 const RECURRENCE_OPTIONS = ["weekly", "biweekly", "monthly"];
 
 function EventsManager() {
   const qc = useQueryClient();
   const { tables, department } = useDepartment();
   const QKEY = ["events", department];
+  const defaultCategory = DEPT_DEFAULT_CATEGORY[department] ?? "Bar512";
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [eventDate, setEventDate] = useState("");
   const [eventTime, setEventTime] = useState("");
-  const [category, setCategory] = useState("General");
-  const [price, setPrice] = useState("");
+  const [category, setCategory] = useState<string>(defaultCategory);
+  const [foodMenu, setFoodMenu] = useState("");
+  const [beverageMenu, setBeverageMenu] = useState("");
+  const [guestCount, setGuestCount] = useState("");
   const [isRecurring, setIsRecurring] = useState(false);
   const [recurrenceRule, setRecurrenceRule] = useState("weekly");
   const [scanning, setScanning] = useState(false);
@@ -306,7 +314,9 @@ function EventsManager() {
 
   const resetForm = () => {
     setTitle(""); setDescription(""); setEventDate(""); setEventTime("");
-    setCategory("General"); setPrice(""); setIsRecurring(false); setRecurrenceRule("weekly");
+    setCategory(defaultCategory);
+    setFoodMenu(""); setBeverageMenu(""); setGuestCount("");
+    setIsRecurring(false); setRecurrenceRule("weekly");
   };
 
   const handleScanFile = async (file: File) => {
@@ -329,8 +339,14 @@ function EventsManager() {
       setDescription(ev.description ?? "");
       setEventDate(ev.event_date ?? "");
       setEventTime(ev.event_time ?? "");
-      setCategory(EVENT_CATEGORIES.includes(ev.category) ? ev.category : "General");
-      setPrice(ev.price != null ? String(ev.price) : "");
+      setCategory(
+        (EVENT_CATEGORIES as readonly string[]).includes(ev.category)
+          ? ev.category
+          : defaultCategory,
+      );
+      setFoodMenu(ev.food_menu ?? "");
+      setBeverageMenu(ev.beverage_menu ?? "");
+      setGuestCount(ev.guest_count != null ? String(ev.guest_count) : "");
       setIsRecurring(!!ev.is_recurring);
       setRecurrenceRule(ev.recurrence_rule ?? "weekly");
       setOpen(true);
