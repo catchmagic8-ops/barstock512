@@ -143,6 +143,7 @@ export type Database = {
           guest_count: number | null
           id: string
           is_recurring: boolean
+          location: string | null
           recurrence_rule: string | null
           title: string
           updated_at: string
@@ -158,6 +159,7 @@ export type Database = {
           guest_count?: number | null
           id?: string
           is_recurring?: boolean
+          location?: string | null
           recurrence_rule?: string | null
           title: string
           updated_at?: string
@@ -173,6 +175,7 @@ export type Database = {
           guest_count?: number | null
           id?: string
           is_recurring?: boolean
+          location?: string | null
           recurrence_rule?: string | null
           title?: string
           updated_at?: string
@@ -191,6 +194,7 @@ export type Database = {
           guest_count: number | null
           id: string
           is_recurring: boolean
+          location: string | null
           recurrence_rule: string | null
           title: string
           updated_at: string
@@ -206,6 +210,7 @@ export type Database = {
           guest_count?: number | null
           id?: string
           is_recurring?: boolean
+          location?: string | null
           recurrence_rule?: string | null
           title: string
           updated_at?: string
@@ -221,6 +226,7 @@ export type Database = {
           guest_count?: number | null
           id?: string
           is_recurring?: boolean
+          location?: string | null
           recurrence_rule?: string | null
           title?: string
           updated_at?: string
@@ -239,6 +245,7 @@ export type Database = {
           guest_count: number | null
           id: string
           is_recurring: boolean
+          location: string | null
           recurrence_rule: string | null
           title: string
           updated_at: string
@@ -254,6 +261,7 @@ export type Database = {
           guest_count?: number | null
           id?: string
           is_recurring?: boolean
+          location?: string | null
           recurrence_rule?: string | null
           title: string
           updated_at?: string
@@ -269,6 +277,7 @@ export type Database = {
           guest_count?: number | null
           id?: string
           is_recurring?: boolean
+          location?: string | null
           recurrence_rule?: string | null
           title?: string
           updated_at?: string
