@@ -24,6 +24,7 @@ import UserManagement from "@/components/UserManagement";
 import { useInventory } from "@/hooks/useInventory";
 import { useDepartment } from "@/contexts/DepartmentContext";
 import { deptHomePath } from "@/lib/department";
+import { useAuth } from "@/contexts/AuthContext";
 
 function AdminSection({
   title,
@@ -753,6 +754,7 @@ function RecipesManager() {
 
 export default function Admin() {
   const { department, meta } = useDepartment();
+  const { isGlobalAdmin } = useAuth();
   return (
     <div className="min-h-screen bg-background">
         <header className="sticky top-0 z-30 border-b border-border bg-card/80 backdrop-blur-md">
@@ -770,9 +772,11 @@ export default function Admin() {
         </header>
 
         <main className="mx-auto max-w-3xl px-4 py-6 space-y-4">
-          <AdminSection title="User Management" icon={Users}>
-            <UserManagement />
-          </AdminSection>
+          {isGlobalAdmin && (
+            <AdminSection title="User Management" icon={Users}>
+              <UserManagement />
+            </AdminSection>
+          )}
 
           <AdminSection title="Low Stock Alerts" icon={BellRing} defaultOpen>
             <LowStockAlerts />
