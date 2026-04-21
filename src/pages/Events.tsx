@@ -87,10 +87,10 @@ export default function Events() {
                   </Badge>
                 )}
 
-                {ev.price != null && (
-                  <Badge variant="outline" className="bg-emerald-500/15 text-emerald-400 border-emerald-500/30">
-                    <DollarSign className="h-3 w-3 mr-1" />
-                    {Number(ev.price).toFixed(2)}
+                {ev.guest_count != null && (
+                  <Badge variant="outline" className="bg-muted/50 text-muted-foreground border-border">
+                    <Users className="h-3 w-3 mr-1" />
+                    {ev.guest_count} {ev.guest_count === 1 ? "guest" : "guests"}
                   </Badge>
                 )}
 
@@ -101,6 +101,27 @@ export default function Events() {
                   </Badge>
                 )}
               </div>
+
+              {(ev.food_menu || ev.beverage_menu) && (
+                <div className="grid gap-2 sm:grid-cols-2 pt-1">
+                  {ev.food_menu && (
+                    <div className="rounded-lg border border-border bg-secondary/40 p-3">
+                      <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">
+                        <UtensilsCrossed className="h-3.5 w-3.5" /> Food
+                      </div>
+                      <p className="text-sm text-foreground whitespace-pre-line">{ev.food_menu}</p>
+                    </div>
+                  )}
+                  {ev.beverage_menu && (
+                    <div className="rounded-lg border border-border bg-secondary/40 p-3">
+                      <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">
+                        <Wine className="h-3.5 w-3.5" /> Beverage
+                      </div>
+                      <p className="text-sm text-foreground whitespace-pre-line">{ev.beverage_menu}</p>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           ))
         )}
