@@ -524,12 +524,39 @@ function ReservationForm({
           </div>
           <div>
             <Label>Occasion</Label>
-            <Select value={f.occasion ?? "None"} onValueChange={(v) => set("occasion", v)}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {OCCASIONS.map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}
-              </SelectContent>
-            </Select>
+            {(() => {
+              const current = f.occasion ?? "None";
+              const isPreset = (OCCASIONS as readonly string[]).includes(current);
+              const selectValue = isPreset ? current : "Other";
+              return (
+                <div className="space-y-2">
+                  <Select
+                    value={selectValue}
+                    onValueChange={(v) => {
+                      if (v === "Other") {
+                        // start with empty custom text so the user can type
+                        set("occasion", isPreset ? "" : current);
+                      } else {
+                        set("occasion", v);
+                      }
+                    }}
+                  >
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {OCCASIONS.map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                  {selectValue === "Other" && (
+                    <Input
+                      value={isPreset ? "" : current}
+                      onChange={(e) => set("occasion", e.target.value)}
+                      placeholder="Specify occasion"
+                      maxLength={120}
+                    />
+                  )}
+                </div>
+              );
+            })()}
           </div>
           <div className="sm:col-span-2">
             <Label>Special Seating Request</Label>
