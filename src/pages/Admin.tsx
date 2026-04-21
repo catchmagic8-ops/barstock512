@@ -496,7 +496,7 @@ function EventsManager() {
             <span className="sm:hidden">Upload</span>
             <span className="hidden sm:inline">{scanning ? "Scanning…" : "Scan Sheet"}</span>
           </Button>
-          <Button size="sm" onClick={() => setOpen(true)} className="gap-1.5">
+          <Button size="sm" onClick={openAdd} className="gap-1.5">
             <Plus className="h-4 w-4" /> Add Event
           </Button>
         </div>
@@ -512,20 +512,27 @@ function EventsManager() {
             <div key={ev.id} className="flex items-center justify-between gap-3 rounded-lg border border-border bg-secondary/50 px-3 py-2">
               <div className="min-w-0">
                 <p className="text-sm font-medium text-foreground">{ev.title}</p>
-                <p className="text-xs text-muted-foreground">{ev.event_date} · {ev.category}</p>
+                <p className="text-xs text-muted-foreground truncate">
+                  {[ev.event_date, ev.category, ev.location].filter(Boolean).join(" · ")}
+                </p>
               </div>
-              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive flex-shrink-0 h-8 w-8" onClick={() => deleteEvent.mutate(ev.id)}>
-                <Trash2 className="h-3.5 w-3.5" />
-              </Button>
+              <div className="flex items-center gap-1 flex-shrink-0">
+                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary h-8 w-8" onClick={() => openEdit(ev)}>
+                  <Pencil className="h-3.5 w-3.5" />
+                </Button>
+                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive h-8 w-8" onClick={() => deleteEvent.mutate(ev.id)}>
+                  <Trash2 className="h-3.5 w-3.5" />
+                </Button>
+              </div>
             </div>
           ))}
         </div>
       )}
 
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) resetForm(); }}>
         <DialogContent className="bg-card border-border max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="font-heading text-foreground">Add Event</DialogTitle>
+            <DialogTitle className="font-heading text-foreground">{editingId ? "Edit Event" : "Add Event"}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <Input placeholder="Event title" value={title} onChange={(e) => setTitle(e.target.value)} className="bg-secondary border-border" />
@@ -536,6 +543,16 @@ function EventsManager() {
                 {EVENT_CATEGORIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
               </SelectContent>
             </Select>
+            <div>
+              <Label className="text-xs text-muted-foreground mb-1.5 block">Location (optional)</Label>
+              <Select value={location} onValueChange={setLocation}>
+                <SelectTrigger className="bg-secondary border-border"><SelectValue placeholder="Select a room" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={NO_LOCATION}>— No location —</SelectItem>
+                  {CONFERENCE_ROOMS.map((r) => <SelectItem key={r} value={r}>{r}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label className="text-xs text-muted-foreground mb-1.5 block">Date</Label>
@@ -595,9 +612,9 @@ function EventsManager() {
             )}
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-            <Button onClick={() => addEvent.mutate()} disabled={!title || !eventDate || addEvent.isPending}>
-              {addEvent.isPending ? "Adding…" : "Add Event"}
+            <Button variant="outline" onClick={() => { setOpen(false); resetForm(); }}>Cancel</Button>
+            <Button onClick={() => saveEvent.mutate()} disabled={!title || !eventDate || saveEvent.isPending}>
+              {saveEvent.isPending ? "Saving…" : editingId ? "Save Changes" : "Add Event"}
             </Button>
           </DialogFooter>
         </DialogContent>
