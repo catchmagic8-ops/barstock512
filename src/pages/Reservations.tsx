@@ -875,6 +875,21 @@ export default function Reservations() {
     onError: (err: any) => toast.error(err?.message ?? "Delete failed"),
   });
 
+  const statusMutation = useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: string }) => {
+      const { error } = await (supabase as any)
+        .from(TABLE)
+        .update({ status })
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: (_d, vars) => {
+      toast.success(`Status set to ${vars.status}`);
+      qc.invalidateQueries({ queryKey: ["reservations", department] });
+    },
+    onError: (err: any) => toast.error(err?.message ?? "Status update failed"),
+  });
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return reservations.filter((r) => {
