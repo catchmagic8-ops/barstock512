@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Loader2, Calendar, Clock, DollarSign, Tag, Repeat } from "lucide-react";
+import { ArrowLeft, Loader2, Calendar, Clock, Tag, Repeat, Users, UtensilsCrossed, Wine } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
@@ -10,11 +10,9 @@ import { deptHomePath } from "@/lib/department";
 
 const categoryColor = (cat: string) => {
   const colors: Record<string, string> = {
-    "Happy Hour": "bg-amber-500/15 text-amber-400 border-amber-500/30",
-    "Live Music": "bg-purple-500/15 text-purple-400 border-purple-500/30",
-    "Sports": "bg-green-500/15 text-green-400 border-green-500/30",
-    "Private": "bg-red-500/15 text-red-400 border-red-500/30",
-    "Promotion": "bg-blue-500/15 text-blue-400 border-blue-500/30",
+    Wave: "bg-cyan-500/15 text-cyan-400 border-cyan-500/30",
+    Conference: "bg-blue-500/15 text-blue-400 border-blue-500/30",
+    Bar512: "bg-amber-500/15 text-amber-400 border-amber-500/30",
   };
   return colors[cat] || "bg-muted text-muted-foreground border-border";
 };
@@ -89,10 +87,10 @@ export default function Events() {
                   </Badge>
                 )}
 
-                {ev.price != null && (
-                  <Badge variant="outline" className="bg-emerald-500/15 text-emerald-400 border-emerald-500/30">
-                    <DollarSign className="h-3 w-3 mr-1" />
-                    {Number(ev.price).toFixed(2)}
+                {ev.guest_count != null && (
+                  <Badge variant="outline" className="bg-muted/50 text-muted-foreground border-border">
+                    <Users className="h-3 w-3 mr-1" />
+                    {ev.guest_count} {ev.guest_count === 1 ? "guest" : "guests"}
                   </Badge>
                 )}
 
@@ -103,6 +101,27 @@ export default function Events() {
                   </Badge>
                 )}
               </div>
+
+              {(ev.food_menu || ev.beverage_menu) && (
+                <div className="grid gap-2 sm:grid-cols-2 pt-1">
+                  {ev.food_menu && (
+                    <div className="rounded-lg border border-border bg-secondary/40 p-3">
+                      <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">
+                        <UtensilsCrossed className="h-3.5 w-3.5" /> Food
+                      </div>
+                      <p className="text-sm text-foreground whitespace-pre-line">{ev.food_menu}</p>
+                    </div>
+                  )}
+                  {ev.beverage_menu && (
+                    <div className="rounded-lg border border-border bg-secondary/40 p-3">
+                      <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">
+                        <Wine className="h-3.5 w-3.5" /> Beverage
+                      </div>
+                      <p className="text-sm text-foreground whitespace-pre-line">{ev.beverage_menu}</p>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           ))
         )}

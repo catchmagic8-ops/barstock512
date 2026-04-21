@@ -6,17 +6,19 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const EVENT_CATEGORIES = ["General", "Happy Hour", "Live Music", "Sports", "Private", "Promotion"];
+const EVENT_CATEGORIES = ["Wave", "Conference", "Bar512"];
 
 const SYSTEM_PROMPT = `You are an assistant that extracts structured event information from a photograph or scan of a physical event sheet (poster, flyer, handwritten note, printed schedule).
 
 Look carefully at the image and extract:
 - title: short event name
-- description: any extra details (performers, theme, what's included). Optional.
+- description: any extra details (theme, organiser, notes). Optional.
 - event_date: the date in strict ISO format YYYY-MM-DD. If only a day/month is visible, assume the nearest upcoming occurrence from today's date. If no date at all, leave null.
 - event_time: 24h time HH:MM. Optional.
-- category: pick the SINGLE best fit from this exact list: ${EVENT_CATEGORIES.join(", ")}. Default "General".
-- price: numeric price in the currency shown (just the number). Optional.
+- category: pick the SINGLE best fit from this exact list: ${EVENT_CATEGORIES.join(", ")}. Use "Conference" for conferences/meetings/corporate events, "Wave" for restaurant/Polskie Smaki dining events, "Bar512" for bar/lounge/cocktail events.
+- food_menu: the food items / menu listed on the sheet, as plain text (one item per line if multiple). Optional.
+- beverage_menu: the drinks / beverage items listed on the sheet, as plain text (one item per line if multiple). Optional.
+- guest_count: number of people / pax / guests expected (whole integer). Optional.
 - is_recurring: true if the sheet says weekly/every Friday/monthly etc.
 - recurrence_rule: one of "weekly", "biweekly", "monthly" if is_recurring. Otherwise null.
 
@@ -71,7 +73,9 @@ serve(async (req) => {
                   event_date: { type: ["string", "null"], description: "YYYY-MM-DD" },
                   event_time: { type: ["string", "null"], description: "HH:MM 24h" },
                   category: { type: "string", enum: EVENT_CATEGORIES },
-                  price: { type: ["number", "null"] },
+                  food_menu: { type: ["string", "null"] },
+                  beverage_menu: { type: ["string", "null"] },
+                  guest_count: { type: ["integer", "null"] },
                   is_recurring: { type: "boolean" },
                   recurrence_rule: { type: ["string", "null"], enum: ["weekly", "biweekly", "monthly", null] },
                 },
