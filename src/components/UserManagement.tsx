@@ -280,6 +280,23 @@ export default function UserManagement() {
                 </SelectContent>
               </Select>
             </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs uppercase tracking-wider text-muted-foreground">Department</Label>
+              <Select value={newDepartment} onValueChange={(v) => setNewDepartment(v as AppDepartment)}>
+                <SelectTrigger className="bg-secondary border-border">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Departments</SelectItem>
+                  <SelectItem value="bar512">Bar 512</SelectItem>
+                  <SelectItem value="konferencje">Konferencje</SelectItem>
+                  <SelectItem value="polskie_smaki">Polskie Smaki</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-[11px] text-muted-foreground">
+                Admins limited to a single department only manage that department.
+              </p>
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button>
