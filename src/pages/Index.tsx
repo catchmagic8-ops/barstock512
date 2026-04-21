@@ -139,9 +139,11 @@ export default function Index() {
 
       <main className="mx-auto w-full max-w-5xl flex-1 px-2 py-2 sm:px-4 sm:py-6">
         <div className="flex gap-6">
-          <div className="hidden lg:flex flex-col items-center justify-center pt-4">
-            <img src={logo} alt="Logo" className="w-64 h-auto opacity-80" loading="lazy" />
-          </div>
+          {department === "bar512" && (
+            <div className="hidden lg:flex flex-col items-center justify-center pt-4">
+              <img src={logo} alt="Logo" className="w-64 h-auto opacity-80" loading="lazy" />
+            </div>
+          )}
 
           <div className="flex-1 min-w-0 space-y-3 sm:space-y-6">
             <div className="relative">
