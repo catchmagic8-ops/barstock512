@@ -19,7 +19,7 @@ export default function LoginScreen() {
     setError(null);
     const res = await login(username, password);
     setSubmitting(false);
-    if (!res.ok) setError(res.error);
+    if (res.ok === false) setError(res.error);
   };
 
   return (

@@ -12,7 +12,9 @@ import Admin from "./pages/Admin.tsx";
 import Departments from "./pages/Departments.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import ALaCarte from "./pages/ALaCarte.tsx";
-import PasswordGate from "./components/PasswordGate";
+import AuthGate from "./components/AuthGate";
+import RequireAdmin from "./components/RequireAdmin";
+import { AuthProvider } from "@/contexts/AuthContext";
 import { DepartmentProvider } from "@/contexts/DepartmentContext";
 import type { Department } from "@/lib/department";
 
@@ -27,7 +29,7 @@ function DeptRoutes({ department }: { department: Department }) {
         <Route path="events" element={<Events />} />
         <Route path="recipes" element={<Recipes />} />
         <Route path="telephone" element={<Telephone />} />
-        <Route path="admin" element={<Admin />} />
+        <Route path="admin" element={<RequireAdmin><Admin /></RequireAdmin>} />
         <Route path="a-la-carte" element={<ALaCarte />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
@@ -40,8 +42,9 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <PasswordGate>
-        <BrowserRouter>
+      <AuthProvider>
+        <AuthGate>
+          <BrowserRouter>
           <Routes>
             {/* Top-level departments landing */}
             <Route path="/" element={<Departments />} />
@@ -69,7 +72,7 @@ const App = () => (
             />
             <Route
               path="/admin"
-              element={<DepartmentProvider department="bar512"><Admin /></DepartmentProvider>}
+              element={<DepartmentProvider department="bar512"><RequireAdmin><Admin /></RequireAdmin></DepartmentProvider>}
             />
             <Route
               path="/a-la-carte"
@@ -84,8 +87,9 @@ const App = () => (
 
             <Route path="*" element={<NotFound />} />
           </Routes>
-        </BrowserRouter>
-      </PasswordGate>
+          </BrowserRouter>
+        </AuthGate>
+      </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
