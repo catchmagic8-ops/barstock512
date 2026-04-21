@@ -763,8 +763,9 @@ function ReservationForm({
 
 export default function Reservations() {
   const { department, meta } = useDepartment();
-  const { isAdminFor } = useAuth();
+  const { isAdminFor, user } = useAuth();
   const canAdmin = isAdminFor("polskie_smaki");
+  const canCreate = !!user; // any logged-in user (incl. staff) can create
   const qc = useQueryClient();
 
   const [search, setSearch] = useState("");
