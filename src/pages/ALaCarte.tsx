@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Link, Navigate } from "react-router-dom";
-import { ArrowLeft, Loader2, Utensils, Search, X, AlertTriangle, Leaf } from "lucide-react";
+import { ArrowLeft, Loader2, Utensils, Search, X, AlertTriangle, Leaf, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useDepartment } from "@/contexts/DepartmentContext";
@@ -49,6 +49,7 @@ export default function ALaCarte() {
   const { tables, department, meta } = useDepartment();
   const [search, setSearch] = useState("");
   const [activeCat, setActiveCat] = useState<string | null>(null);
+  const [excludedAllergens, setExcludedAllergens] = useState<string[]>([]);
 
   const tableName = tables.alaCarte;
 
@@ -74,7 +75,12 @@ export default function ALaCarte() {
         i.name.toLowerCase().includes(search.toLowerCase()) ||
         (i.description ?? "").toLowerCase().includes(search.toLowerCase());
       const matchCat = !activeCat || i.category === activeCat;
-      return matchSearch && matchCat;
+      const matchAllergens =
+        excludedAllergens.length === 0 ||
+        !i.allergens.some((a) =>
+          excludedAllergens.some((ex) => a.toLowerCase().includes(ex.toLowerCase()))
+        );
+      return matchSearch && matchCat && matchAllergens;
     });
     const map = new Map<string, ALaCarteItem[]>();
     for (const it of filtered) {
@@ -87,7 +93,7 @@ export default function ALaCarte() {
       if (!CATEGORY_ORDER.includes(c)) ordered.push([c, list]);
     }
     return ordered;
-  }, [items, search, activeCat]);
+  }, [items, search, activeCat, excludedAllergens]);
 
   const categories = useMemo(() => {
     const set = new Set(items.map((i) => i.category));
@@ -95,6 +101,20 @@ export default function ALaCarte() {
       [...set].filter((c) => !CATEGORY_ORDER.includes(c))
     );
   }, [items]);
+
+  const allAllergens = useMemo(() => {
+    const set = new Set<string>();
+    for (const it of items) {
+      for (const a of it.allergens) set.add(a);
+    }
+    return [...set].sort((a, b) => a.localeCompare(b));
+  }, [items]);
+
+  function toggleAllergen(a: string) {
+    setExcludedAllergens((curr) =>
+      curr.includes(a) ? curr.filter((x) => x !== a) : [...curr, a]
+    );
+  }
 
   if (!tableName) return <Navigate to={deptHomePath(department)} replace />;
 
@@ -160,6 +180,45 @@ export default function ALaCarte() {
                   {c}
                 </button>
               ))}
+            </div>
+          )}
+
+          {allAllergens.length > 0 && (
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
+                  <span>Hide dishes containing:</span>
+                </div>
+                {excludedAllergens.length > 0 && (
+                  <button
+                    onClick={() => setExcludedAllergens([])}
+                    className="text-xs text-muted-foreground hover:text-foreground underline"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+              <div className="flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1">
+                {allAllergens.map((a) => {
+                  const active = excludedAllergens.includes(a);
+                  return (
+                    <button
+                      key={a}
+                      onClick={() => toggleAllergen(a)}
+                      className={cn(
+                        "flex-shrink-0 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium border whitespace-nowrap transition-colors",
+                        active
+                          ? "bg-amber-500/20 text-amber-400 border-amber-500/50"
+                          : "bg-secondary text-muted-foreground border-border hover:text-foreground"
+                      )}
+                    >
+                      {active ? <X className="h-3 w-3" /> : <AlertTriangle className="h-3 w-3" />}
+                      {a}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>
