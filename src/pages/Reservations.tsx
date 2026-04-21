@@ -323,6 +323,13 @@ function ReservationCard({
         </div>
       </div>
 
+      {r.created_by_username && (
+        <div className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-border bg-muted/40 px-2.5 py-0.5 text-[11px] text-muted-foreground">
+          <UserCircle2 className="h-3.5 w-3.5" />
+          Created by <span className="font-semibold text-foreground">{r.created_by_username}</span>
+        </div>
+      )}
+
       {/* Highlight strip: occasion + allergies */}
       {(has(r.occasion) && r.occasion !== "None") || has(r.allergies) ? (
         <div className="mb-4 flex flex-wrap gap-2">
