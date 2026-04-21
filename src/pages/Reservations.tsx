@@ -28,6 +28,7 @@ import {
   Wallet,
   StickyNote,
   Armchair,
+  UserCircle2,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useDepartment } from "@/contexts/DepartmentContext";
@@ -110,6 +111,7 @@ type Reservation = {
   status: string;
   created_at: string;
   updated_at: string;
+  created_by_username: string | null;
 };
 
 const STATUS_STYLES: Record<string, string> = {
@@ -320,6 +322,13 @@ function ReservationCard({
           )}
         </div>
       </div>
+
+      {r.created_by_username && (
+        <div className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-border bg-muted/40 px-2.5 py-0.5 text-[11px] text-muted-foreground">
+          <UserCircle2 className="h-3.5 w-3.5" />
+          Created by <span className="font-semibold text-foreground">{r.created_by_username}</span>
+        </div>
+      )}
 
       {/* Highlight strip: occasion + allergies */}
       {(has(r.occasion) && r.occasion !== "None") || has(r.allergies) ? (
@@ -754,8 +763,9 @@ function ReservationForm({
 
 export default function Reservations() {
   const { department, meta } = useDepartment();
-  const { isAdminFor } = useAuth();
+  const { isAdminFor, user } = useAuth();
   const canAdmin = isAdminFor("polskie_smaki");
+  const canCreate = !!user; // any logged-in user (incl. staff) can create
   const qc = useQueryClient();
 
   const [search, setSearch] = useState("");
@@ -811,7 +821,9 @@ export default function Reservations() {
         const { error } = await (supabase as any).from(TABLE).update(payload).eq("id", editing.id);
         if (error) throw error;
       } else {
-        const { error } = await (supabase as any).from(TABLE).insert(payload);
+        const { error } = await (supabase as any)
+          .from(TABLE)
+          .insert({ ...payload, created_by_username: user?.username ?? null });
         if (error) throw error;
       }
     },
@@ -880,7 +892,7 @@ export default function Reservations() {
             <p className="text-xs text-muted-foreground">{meta.label}</p>
           </div>
         </div>
-        {canAdmin && (
+        {canCreate && (
           <Button
             onClick={openCreate}
             style={{ background: "#d74c5a" }}
@@ -925,7 +937,7 @@ export default function Reservations() {
           </div>
         ) : filtered.length === 0 ? (
           <div className="rounded-xl border border-dashed border-border p-12 text-center text-muted-foreground">
-            No reservations yet.{canAdmin && " Click \"New Reservation\" to add one."}
+            No reservations yet.{canCreate && " Click \"New Reservation\" to add one."}
           </div>
         ) : (
           <div className="space-y-4">
