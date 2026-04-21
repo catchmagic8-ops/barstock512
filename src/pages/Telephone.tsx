@@ -138,26 +138,6 @@ export default function Telephone() {
               className="pl-9 bg-secondary border-border"
             />
           </div>
-          <div className="mt-2 flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1">
-            {ALL_DEPTS.map((d) => {
-              const active = activeDepts.includes(d);
-              return (
-                <button
-                  key={d}
-                  onClick={() => toggleDept(d)}
-                  className={cn(
-                    "flex-shrink-0 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium border whitespace-nowrap transition-colors",
-                    active
-                      ? DEPT_BADGE[d]
-                      : "bg-secondary text-muted-foreground border-border hover:text-foreground"
-                  )}
-                >
-                  <Building2 className="h-3 w-3" />
-                  {DEPT_META[d].label}
-                </button>
-              );
-            })}
-          </div>
         </div>
       </header>
 
