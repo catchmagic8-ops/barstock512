@@ -821,7 +821,9 @@ export default function Reservations() {
         const { error } = await (supabase as any).from(TABLE).update(payload).eq("id", editing.id);
         if (error) throw error;
       } else {
-        const { error } = await (supabase as any).from(TABLE).insert(payload);
+        const { error } = await (supabase as any)
+          .from(TABLE)
+          .insert({ ...payload, created_by_username: user?.username ?? null });
         if (error) throw error;
       }
     },
