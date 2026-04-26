@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useDepartment } from "@/contexts/DepartmentContext";
 import { deptSubPath, DEPT_TABLES } from "@/lib/department";
 import { useAuth } from "@/contexts/AuthContext";
+import { AmbientBackgroundForDepartment } from "@/components/AmbientBackground";
 
 function getGreeting(): string {
   const h = new Date().getHours();
@@ -241,8 +242,9 @@ export default function Home() {
   })();
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <header className="flex items-center justify-between px-5 py-4 sm:px-8">
+    <div className="relative flex min-h-screen flex-col">
+      <AmbientBackgroundForDepartment intensity={0.4} blur={3} />
+      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-white/5 bg-background/40 px-5 py-4 backdrop-blur-xl backdrop-saturate-150 sm:px-8">
         <div className="flex items-center gap-3">
           <Button
             variant="ghost"
@@ -300,14 +302,19 @@ export default function Home() {
               )}
               style={{
                 borderColor: "rgba(215, 76, 90, 0.4)",
-                background: "rgba(215, 76, 90, 0.04)",
+                background:
+                  "linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(215, 76, 90, 0.06) 100%)",
+                boxShadow: "0 10px 40px -20px rgba(0,0,0,0.6)",
+                backdropFilter: "blur(14px) saturate(150%)",
+                WebkitBackdropFilter: "blur(14px) saturate(150%)",
               }}
               onMouseEnter={(e) => {
                 (e.currentTarget as HTMLElement).style.boxShadow =
-                  "0 0 20px rgba(215, 76, 90, 0.15)";
+                  "0 0 30px rgba(215, 76, 90, 0.25), 0 10px 40px -20px rgba(0,0,0,0.7)";
               }}
               onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.boxShadow = "none";
+                (e.currentTarget as HTMLElement).style.boxShadow =
+                  "0 10px 40px -20px rgba(0,0,0,0.6)";
               }}
             >
               <Icon className="h-8 w-8 text-primary" />
