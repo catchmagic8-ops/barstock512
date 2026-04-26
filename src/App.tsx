@@ -15,6 +15,7 @@ import ALaCarte from "./pages/ALaCarte.tsx";
 import Reservations from "./pages/Reservations.tsx";
 import AuthGate from "./components/AuthGate";
 import RequireAdmin from "./components/RequireAdmin";
+import PageTransition from "./components/PageTransition";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { DepartmentProvider } from "@/contexts/DepartmentContext";
 import type { Department } from "@/lib/department";
@@ -47,7 +48,8 @@ const App = () => (
       <AuthProvider>
         <AuthGate>
           <BrowserRouter>
-          <Routes>
+          <PageTransition>
+            <Routes>
             {/* Top-level departments landing */}
             <Route path="/" element={<Departments />} />
 
@@ -88,7 +90,8 @@ const App = () => (
             <Route path="/polskie-smaki/*" element={<DeptRoutes department="polskie_smaki" />} />
 
             <Route path="*" element={<NotFound />} />
-          </Routes>
+            </Routes>
+          </PageTransition>
           </BrowserRouter>
         </AuthGate>
       </AuthProvider>

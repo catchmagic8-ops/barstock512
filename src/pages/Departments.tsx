@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import bar512Img from "@/assets/dept-bar512.jpg";
 import konferencjeImg from "@/assets/dept-konferencje.jpg";
 import polskieSmakiImg from "@/assets/dept-polskie-smaki.jpg";
+import AmbientBackground, { DEPT_VIDEO } from "@/components/AmbientBackground";
 
 interface Tile {
   title: string;
@@ -24,8 +25,9 @@ export default function Departments() {
   const { user, logout } = useAuth();
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <header className="flex items-center justify-between px-5 py-4 sm:px-8">
+    <div className="relative flex min-h-screen flex-col">
+      <AmbientBackground src={DEPT_VIDEO.bar512} intensity={0.35} blur={4} />
+      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-white/5 bg-background/40 px-5 py-4 backdrop-blur-xl backdrop-saturate-150 sm:px-8">
         <h1
           className="text-xl font-bold tracking-wide sm:text-2xl"
           style={{ fontFamily: "'Playfair Display', serif", color: "#d74c5a" }}
@@ -68,10 +70,11 @@ export default function Departments() {
             <button
               key={t.title}
               onClick={() => navigate(t.to)}
-              className="group relative overflow-hidden rounded-2xl border text-left transition-all duration-500 hover:scale-[1.02]"
+              className="group relative overflow-hidden rounded-2xl border bg-white/[0.03] text-left backdrop-blur-md transition-all duration-500 hover:scale-[1.02] hover:bg-white/[0.06]"
               style={{
                 borderColor: "rgba(215, 76, 90, 0.4)",
                 aspectRatio: "4/5",
+                boxShadow: "0 20px 60px -20px rgba(0,0,0,0.6)",
               }}
             >
               <img
@@ -80,7 +83,7 @@ export default function Departments() {
                 width={1024}
                 height={768}
                 loading={idx === 0 ? "eager" : "lazy"}
-                className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                className="absolute inset-0 h-full w-full object-cover opacity-90 transition-all duration-700 group-hover:scale-110 group-hover:opacity-100"
               />
               <div
                 className="absolute inset-0"
