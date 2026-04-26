@@ -15,6 +15,7 @@ import ALaCarte from "./pages/ALaCarte.tsx";
 import Reservations from "./pages/Reservations.tsx";
 import AuthGate from "./components/AuthGate";
 import RequireAdmin from "./components/RequireAdmin";
+import PageTransition from "./components/PageTransition";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { DepartmentProvider } from "@/contexts/DepartmentContext";
 import type { Department } from "@/lib/department";
@@ -24,7 +25,8 @@ const queryClient = new QueryClient();
 function DeptRoutes({ department }: { department: Department }) {
   return (
     <DepartmentProvider department={department}>
-      <Routes>
+      <PageTransition>
+        <Routes>
         <Route index element={<Home />} />
         <Route path="inventory" element={<Index />} />
         <Route path="events" element={<Events />} />
@@ -34,7 +36,8 @@ function DeptRoutes({ department }: { department: Department }) {
         <Route path="a-la-carte" element={<ALaCarte />} />
         <Route path="reservations" element={<Reservations />} />
         <Route path="*" element={<NotFound />} />
-      </Routes>
+        </Routes>
+      </PageTransition>
     </DepartmentProvider>
   );
 }
@@ -47,7 +50,8 @@ const App = () => (
       <AuthProvider>
         <AuthGate>
           <BrowserRouter>
-          <Routes>
+          <PageTransition>
+            <Routes>
             {/* Top-level departments landing */}
             <Route path="/" element={<Departments />} />
 
@@ -88,7 +92,8 @@ const App = () => (
             <Route path="/polskie-smaki/*" element={<DeptRoutes department="polskie_smaki" />} />
 
             <Route path="*" element={<NotFound />} />
-          </Routes>
+            </Routes>
+          </PageTransition>
           </BrowserRouter>
         </AuthGate>
       </AuthProvider>
