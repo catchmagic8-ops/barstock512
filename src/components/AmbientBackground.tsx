@@ -1,27 +1,23 @@
 import { useDepartment } from "@/contexts/DepartmentContext";
-import bar512Asset from "../../public/videos/bar512.mp4.asset.json";
-import konferencjeAsset from "../../public/videos/konferencje.mp4.asset.json";
-import polskieSmakiAsset from "../../public/videos/polskie-smaki.mp4.asset.json";
+import bar512Img from "@/assets/ambient-bar512.jpg";
+import konferencjeImg from "@/assets/ambient-konferencje.jpg";
+import polskieSmakiImg from "@/assets/ambient-polskie-smaki.jpg";
 
-export const DEPT_VIDEO: Record<string, string> = {
-  bar512: bar512Asset.url,
-  konferencje: konferencjeAsset.url,
-  polskie_smaki: polskieSmakiAsset.url,
+export const DEPT_AMBIENT: Record<string, string> = {
+  bar512: bar512Img,
+  konferencje: konferencjeImg,
+  polskie_smaki: polskieSmakiImg,
 };
 
 interface Props {
-  /** 0 to 1 — overall video opacity */
+  /** 0 to 1 — overall image opacity */
   intensity?: number;
-  /** Pixel blur applied to the video for an atmospheric feel */
+  /** Pixel blur applied for an atmospheric feel */
   blur?: number;
-  /** Direct video src (used when not inside a DepartmentProvider). */
+  /** Direct image src (used when not inside a DepartmentProvider). */
   src?: string;
 }
 
-/**
- * Renders a fixed full-viewport ambient background video.
- * Designed to sit behind translucent (glassy) UI surfaces.
- */
 function AmbientShell({
   src,
   intensity = 0.55,
@@ -36,13 +32,11 @@ function AmbientShell({
       aria-hidden
       className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-background"
     >
-      <video
+      <img
         src={src}
-        autoPlay
-        loop
-        muted
-        playsInline
-        preload="auto"
+        alt=""
+        width={1920}
+        height={1080}
         className="absolute inset-0 h-full w-full object-cover"
         style={{
           opacity: intensity,
@@ -61,15 +55,15 @@ function AmbientShell({
   );
 }
 
-/** Pulls the video URL from the active DepartmentProvider. */
+/** Pulls the ambient image from the active DepartmentProvider. */
 export function AmbientBackgroundForDepartment({ intensity, blur }: Omit<Props, "src">) {
   const { department } = useDepartment();
-  const src = DEPT_VIDEO[department];
+  const src = DEPT_AMBIENT[department];
   if (!src) return null;
   return <AmbientShell src={src} intensity={intensity} blur={blur} />;
 }
 
-/** Standalone variant — pass an explicit src (or department key). */
+/** Standalone variant — pass an explicit src. */
 export default function AmbientBackground({ src, intensity, blur }: Props) {
   if (!src) return null;
   return <AmbientShell src={src} intensity={intensity} blur={blur} />;

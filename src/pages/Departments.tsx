@@ -5,7 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import bar512Img from "@/assets/dept-bar512.jpg";
 import konferencjeImg from "@/assets/dept-konferencje.jpg";
 import polskieSmakiImg from "@/assets/dept-polskie-smaki.jpg";
-import AmbientBackground, { DEPT_VIDEO } from "@/components/AmbientBackground";
+import AmbientBackground, { DEPT_AMBIENT } from "@/components/AmbientBackground";
 
 interface Tile {
   title: string;
@@ -26,7 +26,7 @@ export default function Departments() {
 
   return (
     <div className="relative flex min-h-screen flex-col">
-      <AmbientBackground src={DEPT_VIDEO.bar512} intensity={0.35} blur={4} />
+      <AmbientBackground src={DEPT_AMBIENT.bar512} intensity={0.35} blur={4} />
       <header className="sticky top-0 z-20 flex items-center justify-between border-b border-white/5 bg-background/40 px-5 py-4 backdrop-blur-xl backdrop-saturate-150 sm:px-8">
         <h1
           className="text-xl font-bold tracking-wide sm:text-2xl"
