@@ -25,8 +25,7 @@ const queryClient = new QueryClient();
 function DeptRoutes({ department }: { department: Department }) {
   return (
     <DepartmentProvider department={department}>
-      <PageTransition>
-        <Routes>
+      <Routes>
         <Route index element={<Home />} />
         <Route path="inventory" element={<Index />} />
         <Route path="events" element={<Events />} />
@@ -36,8 +35,7 @@ function DeptRoutes({ department }: { department: Department }) {
         <Route path="a-la-carte" element={<ALaCarte />} />
         <Route path="reservations" element={<Reservations />} />
         <Route path="*" element={<NotFound />} />
-        </Routes>
-      </PageTransition>
+      </Routes>
     </DepartmentProvider>
   );
 }
