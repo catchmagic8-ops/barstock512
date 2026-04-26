@@ -9,20 +9,32 @@ const VIDEO_URL: Record<string, string> = {
   polskie_smaki: polskieSmakiAsset.url,
 };
 
+export const DEPT_VIDEO = VIDEO_URL;
+
 interface Props {
   /** 0 to 1 — overall video opacity */
   intensity?: number;
   /** Pixel blur applied to the video for an atmospheric feel */
   blur?: number;
+  /** Optional explicit src — when provided, skips the department lookup */
+  src?: string;
 }
 
 /**
- * Fixed full-viewport ambient background video, themed per department.
+ * Fixed full-viewport ambient background video.
+ * If `src` is omitted, looks up the current department's themed loop.
  * Designed to sit behind translucent (glassy) UI surfaces.
  */
-export default function AmbientBackground({ intensity = 0.55, blur = 2 }: Props) {
-  const { department } = useDepartment();
-  const src = VIDEO_URL[department];
+export default function AmbientBackground({ intensity = 0.55, blur = 2, src: srcProp }: Props) {
+  // useDepartment throws when used outside a provider — guard with a try.
+  let deptSrc: string | undefined;
+  try {
+    const { department } = useDepartment();
+    deptSrc = VIDEO_URL[department];
+  } catch {
+    deptSrc = undefined;
+  }
+  const src = srcProp ?? deptSrc;
   if (!src) return null;
 
   return (
