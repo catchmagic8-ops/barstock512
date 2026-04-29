@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import ThemeToggle from "@/components/ThemeToggle";
 import bar512Img from "@/assets/dept-bar512.jpg";
 import konferencjeImg from "@/assets/dept-konferencje.jpg";
 import polskieSmakiImg from "@/assets/dept-polskie-smaki.jpg";
@@ -40,6 +41,7 @@ export default function Departments() {
               {user.username} · <span className="capitalize">{user.role}</span>
             </span>
           )}
+          <ThemeToggle />
           <Button
             variant="ghost"
             size="icon"
