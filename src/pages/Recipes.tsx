@@ -10,7 +10,7 @@ import { deptHomePath } from "@/lib/department";
 
 export default function Recipes() {
   const [expanded, setExpanded] = useState<string | null>(null);
-  const [filter, setFilter] = useState<"all" | "signature" | "classic">("all");
+  const [filter, setFilter] = useState<string>("all");
   const [search, setSearch] = useState("");
   const { tables, department, meta } = useDepartment();
 
@@ -26,22 +26,37 @@ export default function Recipes() {
     },
   });
 
+  // Normalize a category string into a stable filter key (case-insensitive,
+  // strips trailing plural "s" so "Signature Cocktail" and "Signature Cocktails" merge).
+  const normalize = (raw: string) => {
+    const t = (raw ?? "").trim().toLowerCase();
+    return t.endsWith("s") ? t.slice(0, -1) : t;
+  };
+
+  // Build filter pills dynamically from the categories present in the data.
+  const categoryOptions = useMemo(() => {
+    const map = new Map<string, string>(); // key -> display label
+    for (const r of recipes as any[]) {
+      const raw = (r.category ?? "").trim();
+      if (!raw) continue;
+      const key = normalize(raw);
+      if (!map.has(key)) {
+        // Title-case the display label
+        const label = raw.replace(/\b\w/g, (c: string) => c.toUpperCase());
+        map.set(key, label);
+      }
+    }
+    return [{ key: "all", label: "All" }, ...Array.from(map, ([key, label]) => ({ key, label }))];
+  }, [recipes]);
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return recipes.filter((r: any) => {
-      const c = (r.category ?? "").toLowerCase();
-      if (filter === "signature" && !c.includes("signature")) return false;
-      if (filter === "classic" && !c.includes("classic")) return false;
+      if (filter !== "all" && normalize(r.category ?? "") !== filter) return false;
       if (q && !(r.name ?? "").toLowerCase().includes(q)) return false;
       return true;
     });
   }, [recipes, filter, search]);
-
-  const filters: { key: "all" | "signature" | "classic"; label: string }[] = [
-    { key: "all", label: "All" },
-    { key: "signature", label: "Signature" },
-    { key: "classic", label: "Classic" },
-  ];
 
   return (
     <div className="min-h-screen bg-background">
@@ -71,7 +86,7 @@ export default function Recipes() {
         </div>
 
         <div className="flex gap-1.5 overflow-x-auto scrollbar-hide pb-1">
-          {filters.map((f) => (
+          {categoryOptions.map((f) => (
             <button
               key={f.key}
               onClick={() => setFilter(f.key)}
