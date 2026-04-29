@@ -258,7 +258,7 @@ export default function Home() {
           </Button>
           <h1
             className="text-xl font-bold tracking-wide sm:text-2xl"
-            style={{ fontFamily: "'Playfair Display', serif", color: "#d74c5a" }}
+            style={{ fontFamily: "'Playfair Display', serif", color: "hsl(var(--brand))" }}
           >
             {meta.label}
           </h1>
@@ -286,7 +286,7 @@ export default function Home() {
         <div className="mb-10 text-center sm:mb-14">
           <h2
             className="text-3xl font-bold sm:text-4xl lg:text-5xl"
-            style={{ fontFamily: "'Playfair Display', serif", color: "#e8e3d5" }}
+            style={{ fontFamily: "'Playfair Display', serif", color: "hsl(var(--foreground))" }}
           >
             {getGreeting()}
           </h2>
@@ -303,9 +303,9 @@ export default function Home() {
                 "hover:scale-[1.03]"
               )}
               style={{
-                borderColor: "rgba(215, 76, 90, 0.4)",
+                borderColor: "hsl(var(--tile-border))",
                 background:
-                  "linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(215, 76, 90, 0.06) 100%)",
+                  "linear-gradient(180deg, hsl(var(--tile-bg-from)) 0%, hsl(var(--tile-bg-to)) 100%)",
                 boxShadow: "0 10px 40px -20px rgba(0,0,0,0.6)",
                 backdropFilter: "blur(14px) saturate(150%)",
                 WebkitBackdropFilter: "blur(14px) saturate(150%)",
@@ -322,7 +322,7 @@ export default function Home() {
               <Icon className="h-8 w-8 text-primary" />
               <h3
                 className="text-lg font-bold tracking-wider"
-                style={{ fontFamily: "'Playfair Display', serif", color: "#e8e3d5" }}
+                style={{ fontFamily: "'Playfair Display', serif", color: "hsl(var(--foreground))" }}
               >
                 {title}
               </h3>

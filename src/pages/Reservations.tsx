@@ -271,7 +271,7 @@ function ReservationCard({
           <div className="flex flex-wrap items-center gap-2">
             <h3
               className="truncate text-xl font-bold"
-              style={{ fontFamily: "'Playfair Display', serif", color: "#e8e3d5" }}
+              style={{ fontFamily: "'Playfair Display', serif", color: "hsl(var(--foreground))" }}
             >
               {r.guest_name}
             </h3>
@@ -921,7 +921,7 @@ export default function Reservations() {
           <div>
             <h1
               className="text-xl font-bold sm:text-2xl"
-              style={{ fontFamily: "'Playfair Display', serif", color: "#d74c5a" }}
+              style={{ fontFamily: "'Playfair Display', serif", color: "hsl(var(--brand))" }}
             >
               Table Reservations
             </h1>

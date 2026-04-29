@@ -48,7 +48,7 @@ function AmbientShell({
         className="absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse at center, rgba(15,14,18,0.35) 0%, rgba(15,14,18,0.78) 70%, rgba(15,14,18,0.95) 100%)",
+            "radial-gradient(ellipse at center, hsl(var(--background) / 0.35) 0%, hsl(var(--background) / 0.78) 70%, hsl(var(--background) / 0.95) 100%)",
         }}
       />
     </div>

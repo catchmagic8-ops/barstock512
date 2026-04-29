@@ -31,7 +31,7 @@ export default function Departments() {
       <header className="sticky top-0 z-20 flex items-center justify-between border-b border-white/5 bg-background/40 px-5 py-4 backdrop-blur-xl backdrop-saturate-150 sm:px-8">
         <h1
           className="text-xl font-bold tracking-wide sm:text-2xl"
-          style={{ fontFamily: "'Playfair Display', serif", color: "#d74c5a" }}
+          style={{ fontFamily: "'Playfair Display', serif", color: "hsl(var(--brand))" }}
         >
           Departments
         </h1>
@@ -58,7 +58,7 @@ export default function Departments() {
         <div className="mb-10 text-center sm:mb-14">
           <h2
             className="text-3xl font-bold sm:text-4xl lg:text-5xl"
-            style={{ fontFamily: "'Playfair Display', serif", color: "#e8e3d5" }}
+            style={{ fontFamily: "'Playfair Display', serif", color: "hsl(var(--foreground))" }}
           >
             Choose a department
           </h2>
