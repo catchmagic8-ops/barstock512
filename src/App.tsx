@@ -18,6 +18,7 @@ import RequireAdmin from "./components/RequireAdmin";
 import PageTransition from "./components/PageTransition";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { DepartmentProvider } from "@/contexts/DepartmentContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import type { Department } from "@/lib/department";
 
 const queryClient = new QueryClient();
@@ -42,6 +43,7 @@ function DeptRoutes({ department }: { department: Department }) {
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
+    <ThemeProvider>
     <TooltipProvider>
       <Toaster />
       <Sonner />
@@ -96,6 +98,7 @@ const App = () => (
         </AuthGate>
       </AuthProvider>
     </TooltipProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 
