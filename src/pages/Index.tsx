@@ -111,7 +111,9 @@ export default function Index() {
       <header className="sticky top-0 z-30 border-b border-border bg-card/80 backdrop-blur-md">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-3 py-2 sm:px-4 sm:py-3">
           <div className="flex items-center gap-2 sm:gap-3">
-            <img src={logo} alt="Logo" className="h-7 w-7 sm:h-8 sm:w-8" width={32} height={32} />
+            {department === "bar512" && (
+              <img src={logo} alt="Logo" className="h-7 w-7 sm:h-8 sm:w-8" width={32} height={32} />
+            )}
             <div>
               <h1 className="font-heading text-base font-bold leading-tight text-foreground sm:text-lg">
                 {meta.label.toUpperCase()} INVENTORY
