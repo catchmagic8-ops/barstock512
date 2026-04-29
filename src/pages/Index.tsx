@@ -143,7 +143,7 @@ export default function Index() {
                 </HoverCardTrigger>
                 <HoverCardContent
                   align="end"
-                  className="w-72 border-warning/30 bg-background/40 p-3 backdrop-blur-xl shadow-[0_8px_30px_rgba(0,0,0,0.35)]"
+                  className="w-72 border-warning/30 bg-background/85 p-3 backdrop-blur-2xl backdrop-saturate-150 shadow-[0_8px_30px_rgba(0,0,0,0.45)]"
                 >
                   <div className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-warning">
                     <BellRing className="h-3.5 w-3.5" />
