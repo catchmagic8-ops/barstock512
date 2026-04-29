@@ -17,7 +17,7 @@ import { useAuth, type AppRole, type AppDepartment } from "@/contexts/AuthContex
 const DEPT_LABELS: Record<AppDepartment, string> = {
   all: "All Departments",
   bar512: "Bar 512",
-  konferencje: "Konferencje",
+  konferencje: "Conference",
   polskie_smaki: "Polskie Smaki",
 };
 
@@ -209,7 +209,7 @@ export default function UserManagement() {
                     <SelectContent>
                       <SelectItem value="all">All Departments</SelectItem>
                       <SelectItem value="bar512">Bar 512</SelectItem>
-                      <SelectItem value="konferencje">Konferencje</SelectItem>
+                      <SelectItem value="konferencje">Conference</SelectItem>
                       <SelectItem value="polskie_smaki">Polskie Smaki</SelectItem>
                     </SelectContent>
                   </Select>
@@ -289,7 +289,7 @@ export default function UserManagement() {
                 <SelectContent>
                   <SelectItem value="all">All Departments</SelectItem>
                   <SelectItem value="bar512">Bar 512</SelectItem>
-                  <SelectItem value="konferencje">Konferencje</SelectItem>
+                  <SelectItem value="konferencje">Conference</SelectItem>
                   <SelectItem value="polskie_smaki">Polskie Smaki</SelectItem>
                 </SelectContent>
               </Select>
