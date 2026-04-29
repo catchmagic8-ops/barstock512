@@ -2,14 +2,16 @@ import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Loader2, BookOpen, ChevronDown, ChevronUp } from "lucide-react";
+import { ArrowLeft, Loader2, BookOpen, ChevronDown, ChevronUp, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useDepartment } from "@/contexts/DepartmentContext";
 import { deptHomePath } from "@/lib/department";
 
 export default function Recipes() {
   const [expanded, setExpanded] = useState<string | null>(null);
   const [filter, setFilter] = useState<"all" | "signature" | "classic">("all");
+  const [search, setSearch] = useState("");
   const { tables, department, meta } = useDepartment();
 
   const { data: recipes = [], isLoading } = useQuery({
@@ -25,14 +27,15 @@ export default function Recipes() {
   });
 
   const filtered = useMemo(() => {
-    if (filter === "all") return recipes;
+    const q = search.trim().toLowerCase();
     return recipes.filter((r: any) => {
       const c = (r.category ?? "").toLowerCase();
-      if (filter === "signature") return c.includes("signature");
-      if (filter === "classic") return c.includes("classic");
+      if (filter === "signature" && !c.includes("signature")) return false;
+      if (filter === "classic" && !c.includes("classic")) return false;
+      if (q && !(r.name ?? "").toLowerCase().includes(q)) return false;
       return true;
     });
-  }, [recipes, filter]);
+  }, [recipes, filter, search]);
 
   const filters: { key: "all" | "signature" | "classic"; label: string }[] = [
     { key: "all", label: "All" },
@@ -57,6 +60,16 @@ export default function Recipes() {
       </header>
 
       <main className="mx-auto max-w-3xl px-4 py-6 space-y-3">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search recipes by name..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-9 bg-card border-border rounded-lg"
+          />
+        </div>
+
         <div className="flex gap-1.5 overflow-x-auto scrollbar-hide pb-1">
           {filters.map((f) => (
             <button
