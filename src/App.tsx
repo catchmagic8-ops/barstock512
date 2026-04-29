@@ -85,7 +85,9 @@ const App = () => (
               element={<DepartmentProvider department="bar512"><ALaCarte /></DepartmentProvider>}
             />
 
-            {/* Konferencje */}
+            {/* Conference */}
+            <Route path="/conference/*" element={<DeptRoutes department="konferencje" />} />
+            {/* Legacy redirect */}
             <Route path="/konferencje/*" element={<DeptRoutes department="konferencje" />} />
 
             {/* Polskie Smaki */}
