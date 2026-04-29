@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
@@ -9,6 +9,7 @@ import { deptHomePath } from "@/lib/department";
 
 export default function Recipes() {
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [filter, setFilter] = useState<"all" | "signature" | "classic">("all");
   const { tables, department, meta } = useDepartment();
 
   const { data: recipes = [], isLoading } = useQuery({
@@ -22,6 +23,22 @@ export default function Recipes() {
       return data ?? [];
     },
   });
+
+  const filtered = useMemo(() => {
+    if (filter === "all") return recipes;
+    return recipes.filter((r: any) => {
+      const c = (r.category ?? "").toLowerCase();
+      if (filter === "signature") return c.includes("signature");
+      if (filter === "classic") return c.includes("classic");
+      return true;
+    });
+  }, [recipes, filter]);
+
+  const filters: { key: "all" | "signature" | "classic"; label: string }[] = [
+    { key: "all", label: "All" },
+    { key: "signature", label: "Signature" },
+    { key: "classic", label: "Classic" },
+  ];
 
   return (
     <div className="min-h-screen bg-background">
@@ -40,18 +57,34 @@ export default function Recipes() {
       </header>
 
       <main className="mx-auto max-w-3xl px-4 py-6 space-y-3">
+        <div className="flex gap-1.5 overflow-x-auto scrollbar-hide pb-1">
+          {filters.map((f) => (
+            <button
+              key={f.key}
+              onClick={() => setFilter(f.key)}
+              className={`rounded-full px-3 py-1 text-xs font-medium whitespace-nowrap transition-all ${
+                filter === f.key
+                  ? "bg-primary/20 text-primary border border-primary/40"
+                  : "bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-transparent"
+              }`}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+
         {isLoading ? (
           <div className="flex justify-center py-16">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
           </div>
-        ) : recipes.length === 0 ? (
+        ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
             <BookOpen className="h-12 w-12 mb-3 opacity-40" />
             <p className="text-lg">No recipes yet</p>
             <p className="text-sm">Recipes are managed from the Admin panel</p>
           </div>
         ) : (
-          recipes.map((r: any) => {
+          filtered.map((r: any) => {
             const isOpen = expanded === r.id;
             return (
               <div key={r.id} className="rounded-xl border border-border bg-card overflow-hidden">
