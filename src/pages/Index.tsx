@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from "react";
-import { AlertTriangle, FileText, Loader2, Home, Search, BellRing } from "lucide-react";
+import { AlertTriangle, FileText, Loader2, Home, Search, BellRing, ClipboardList } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,7 +9,7 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/h
 import CategoryTabs from "@/components/CategoryTabs";
 import InventoryTable from "@/components/InventoryTable";
 import { Input } from "@/components/ui/input";
-import { generateReport } from "@/lib/generateReport";
+import { generateReport, generateBlankCountSheet } from "@/lib/generateReport";
 import type { Category } from "@/lib/inventory";
 import { useInventory } from "@/hooks/useInventory";
 import { useDepartment } from "@/contexts/DepartmentContext";
@@ -175,6 +175,16 @@ export default function Index() {
             <Button variant="ghost" size="icon" onClick={() => generateReport(items)} title="Generate report" className="h-8 w-8 text-muted-foreground hover:text-foreground sm:h-9 sm:w-auto sm:px-3 sm:gap-1.5">
               <FileText className="h-4 w-4" />
               <span className="hidden sm:inline text-sm">Report</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => generateBlankCountSheet(items, meta.label)}
+              title="Blank count sheet for hand-checking inventory"
+              className="h-8 w-8 text-muted-foreground hover:text-foreground sm:h-9 sm:w-auto sm:px-3 sm:gap-1.5"
+            >
+              <ClipboardList className="h-4 w-4" />
+              <span className="hidden sm:inline text-sm">Count Sheet</span>
             </Button>
           </div>
         </div>
