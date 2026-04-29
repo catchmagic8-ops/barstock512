@@ -50,6 +50,16 @@
 
     --font-heading: 'Space Grotesk', sans-serif;
     --font-body: 'DM Sans', sans-serif;
+
+    /* Brand / surface tokens used across pages */
+    --brand: 355 64% 57%;
+    --heading: 40 30% 88%;
+    --tile-bg-from: 0 0% 100% / 0.04;
+    --tile-bg-to: 355 64% 57% / 0.06;
+    --tile-border: 355 64% 57% / 0.4;
+    --tile-overlay-top: 220 20% 8% / 0.15;
+    --tile-overlay-mid: 220 20% 8% / 0.55;
+    --tile-overlay-bot: 220 20% 8% / 0.95;
   }
 
   .light {
@@ -92,6 +102,15 @@
     --sidebar-accent-foreground: 220 25% 18%;
     --sidebar-border: 220 15% 86%;
     --sidebar-ring: 355 64% 50%;
+
+    --brand: 355 64% 45%;
+    --heading: 220 30% 14%;
+    --tile-bg-from: 0 0% 100% / 0.85;
+    --tile-bg-to: 355 64% 50% / 0.08;
+    --tile-border: 355 64% 45% / 0.45;
+    --tile-overlay-top: 0 0% 100% / 0.05;
+    --tile-overlay-mid: 220 20% 10% / 0.35;
+    --tile-overlay-bot: 220 25% 8% / 0.85;
   }
 }
 
