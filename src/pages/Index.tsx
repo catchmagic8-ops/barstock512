@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/bar-logo.png";
 import { Button } from "@/components/ui/button";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import CategoryTabs from "@/components/CategoryTabs";
 import InventoryTable from "@/components/InventoryTable";
 import { Input } from "@/components/ui/input";
@@ -92,6 +93,11 @@ export default function Index() {
     [items]
   );
 
+  const flaggedItems = useMemo(
+    () => items.filter((i) => i.needsRestock),
+    [items]
+  );
+
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
@@ -124,10 +130,47 @@ export default function Index() {
               </Button>
             </Link>
             {flaggedCount > 0 && (
-              <span className="flex items-center gap-1 rounded-full bg-warning/20 px-2 py-0.5 text-[10px] font-semibold text-warning sm:px-2.5 sm:py-1 sm:text-xs">
-                <BellRing className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-                {flaggedCount}
-              </span>
+              <HoverCard openDelay={100} closeDelay={150}>
+                <HoverCardTrigger asChild>
+                  <button
+                    type="button"
+                    className="flex items-center gap-1 rounded-full bg-warning/20 px-2 py-0.5 text-[10px] font-semibold text-warning transition-colors hover:bg-warning/30 sm:px-2.5 sm:py-1 sm:text-xs"
+                    aria-label="Show low stock items"
+                  >
+                    <BellRing className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                    {flaggedCount}
+                  </button>
+                </HoverCardTrigger>
+                <HoverCardContent
+                  align="end"
+                  className="w-72 border-warning/30 bg-background/40 p-3 backdrop-blur-xl shadow-[0_8px_30px_rgba(0,0,0,0.35)]"
+                >
+                  <div className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-warning">
+                    <BellRing className="h-3.5 w-3.5" />
+                    Low stock ({flaggedCount})
+                  </div>
+                  <ul className="max-h-64 space-y-1.5 overflow-y-auto pr-1">
+                    {flaggedItems.map((it) => (
+                      <li
+                        key={it.id}
+                        className="flex items-start justify-between gap-2 rounded-md bg-background/30 px-2 py-1.5 text-xs"
+                      >
+                        <div className="min-w-0">
+                          <div className="truncate font-medium text-foreground">{it.name}</div>
+                          {it.restockNote && (
+                            <div className="truncate text-[10px] text-muted-foreground">
+                              {it.restockNote}
+                            </div>
+                          )}
+                        </div>
+                        <span className="shrink-0 text-[10px] uppercase tracking-wide text-muted-foreground">
+                          {it.category}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </HoverCardContent>
+              </HoverCard>
             )}
             <Button variant="ghost" size="icon" onClick={() => generateReport(items)} title="Generate report" className="h-8 w-8 text-muted-foreground hover:text-foreground sm:h-9 sm:w-auto sm:px-3 sm:gap-1.5">
               <FileText className="h-4 w-4" />
