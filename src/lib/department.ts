@@ -53,7 +53,7 @@ export const DEPT_META: Record<Department, DeptMeta> = {
   konferencje: {
     label: "Conference",
     shortLabel: "Conf.",
-    basePath: "/konferencje",
+    basePath: "/conference",
     tagline: "Events & conference operations",
   },
   polskie_smaki: {
