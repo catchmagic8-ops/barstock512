@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Package, Calendar, BookOpen, Phone, Shield, ArrowLeft, Utensils, LogOut, BookMarked } from "lucide-react";
+import ThemeToggle from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
@@ -268,6 +269,7 @@ export default function Home() {
               {user.username} · <span className="capitalize">{user.role}</span>
             </span>
           )}
+          <ThemeToggle />
           <Button
             variant="ghost"
             size="icon"
