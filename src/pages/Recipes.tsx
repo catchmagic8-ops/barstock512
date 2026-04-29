@@ -78,7 +78,11 @@ export default function Recipes() {
                 {isOpen && (
                   <div className="border-t border-border px-4 pb-4 pt-3 space-y-3">
                     {r.image_url && (
-                      <img src={r.image_url} alt={r.name} className="w-full max-h-64 rounded-lg object-cover" />
+                      <img
+                        src={r.image_url}
+                        alt={r.name}
+                        className="mx-auto max-h-80 w-auto max-w-full rounded-lg object-contain bg-background/40"
+                      />
                     )}
                     <div>
                       <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Ingredients</p>
