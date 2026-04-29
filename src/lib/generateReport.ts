@@ -143,30 +143,37 @@ export function generateBlankCountSheet(items: InventoryItem[], deptLabel = "INV
     doc.text(cat.toUpperCase().replace(/-/g, " "), 14, y);
     y += 4;
 
+    // Two-column layout per category to save paper
+    const half = Math.ceil(catItems.length / 2);
+    const left = catItems.slice(0, half);
+    const right = catItems.slice(half);
+    const rows: (string)[][] = [];
+    for (let i = 0; i < half; i++) {
+      rows.push([
+        left[i]?.name ?? "",
+        "",
+        right[i]?.name ?? "",
+        "",
+      ]);
+    }
+
     autoTable(doc, {
       startY: y,
-      head: [["Item", "Subcategory", "Unit", "Qty Counted", "Notes"]],
-      body: catItems.map((i) => [
-        i.name,
-        i.subcategory || "—",
-        i.unit,
-        "", // blank for hand entry
-        "",
-      ]),
+      head: [["Item", "Qty", "Item", "Qty"]],
+      body: rows,
       theme: "grid",
-      headStyles: { fillColor: [40, 44, 58], textColor: 255 },
-      styles: { fontSize: 10, minCellHeight: 9 },
+      headStyles: { fillColor: [40, 44, 58], textColor: 255, fontSize: 8 },
+      styles: { fontSize: 8, cellPadding: 1.2, minCellHeight: 5.5 },
       columnStyles: {
-        0: { cellWidth: 55 },
-        1: { cellWidth: 35 },
-        2: { cellWidth: 22 },
-        3: { cellWidth: 28 },
-        4: { cellWidth: "auto" },
+        0: { cellWidth: 70 },
+        1: { cellWidth: 22 },
+        2: { cellWidth: 70 },
+        3: { cellWidth: 22 },
       },
       margin: { left: 14, right: 14 },
     });
 
-    y = (doc as any).lastAutoTable.finalY + 8;
+    y = (doc as any).lastAutoTable.finalY + 5;
   });
 
   doc.save(`count-sheet-${Date.now()}.pdf`);
