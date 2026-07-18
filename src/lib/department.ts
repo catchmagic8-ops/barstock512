@@ -70,7 +70,7 @@ export function deptHomePath(d: Department): string {
 
 export function deptSubPath(
   d: Department,
-  sub: "inventory" | "events" | "recipes" | "telephone" | "admin" | "a-la-carte" | "reservations",
+  sub: "inventory" | "events" | "recipes" | "telephone" | "admin" | "a-la-carte" | "reservations" | "upselling",
 ): string {
   return d === "bar512" ? `/${sub}` : `${DEPT_META[d].basePath}/${sub}`;
 }

@@ -767,6 +767,48 @@ export type Database = {
         }
         Relationships: []
       }
+      upsell_items_bar512: {
+        Row: {
+          category: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          image_url: string | null
+          name: string
+          pairing_suggestions: string | null
+          price_tier: string | null
+          tasting_notes: string | null
+          updated_at: string
+          upsell_pitch: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          image_url?: string | null
+          name: string
+          pairing_suggestions?: string | null
+          price_tier?: string | null
+          tasting_notes?: string | null
+          updated_at?: string
+          upsell_pitch?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          pairing_suggestions?: string | null
+          price_tier?: string | null
+          tasting_notes?: string | null
+          updated_at?: string
+          upsell_pitch?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
