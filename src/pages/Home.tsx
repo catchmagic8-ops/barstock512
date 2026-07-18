@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Package, Calendar, BookOpen, Phone, Shield, ArrowLeft, Utensils, LogOut, BookMarked } from "lucide-react";
+import { Package, Calendar, BookOpen, Phone, Shield, ArrowLeft, Utensils, LogOut, BookMarked, Sparkles } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -163,7 +163,7 @@ interface NavCard {
   title: string;
   icon: React.ElementType;
   subtitle: string;
-  sub: "inventory" | "events" | "recipes" | "telephone" | "admin" | "a-la-carte" | "reservations";
+  sub: "inventory" | "events" | "recipes" | "telephone" | "admin" | "a-la-carte" | "reservations" | "upselling";
   badge: () => React.ReactNode;
 }
 
@@ -213,6 +213,32 @@ const reservationsCard: NavCard = {
   badge: ReservationsBadge,
 };
 
+function UpsellingBadge() {
+  const { data: count = 0 } = useQuery({
+    queryKey: ["upsell-items-bar512-count"],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from("upsell_items_bar512")
+        .select("id");
+      if (error) throw error;
+      return data?.length ?? 0;
+    },
+  });
+  return (
+    <span className="rounded-full bg-primary/20 px-2.5 py-0.5 text-xs font-semibold text-primary">
+      {count} bottle{count === 1 ? "" : "s"}
+    </span>
+  );
+}
+
+const upsellingCard: NavCard = {
+  title: "UPSELLING",
+  icon: Sparkles,
+  subtitle: "Scan bottles & get pitch tips",
+  sub: "upselling",
+  badge: UpsellingBadge,
+};
+
 export default function Home() {
   const navigate = useNavigate();
   const { department, meta } = useDepartment();
@@ -236,6 +262,12 @@ export default function Home() {
       const adminIdx = result.findIndex((c) => c.sub === "admin");
       const insertAt = adminIdx === -1 ? result.length : adminIdx;
       result.splice(insertAt, 0, reservationsCard);
+    }
+    // Upselling: only Bar 512, inserted before Admin
+    if (department === "bar512") {
+      const adminIdx = result.findIndex((c) => c.sub === "admin");
+      const insertAt = adminIdx === -1 ? result.length : adminIdx;
+      result.splice(insertAt, 0, upsellingCard);
     }
     // Only admins for THIS department see the Admin tile
     if (!canAdmin) result = result.filter((c) => c.sub !== "admin");
