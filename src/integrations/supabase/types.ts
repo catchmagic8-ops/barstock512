@@ -400,7 +400,10 @@ export type Database = {
           id: string
           name: string
           needs_restock: boolean
+          qty_left: number | null
+          qty_to_order: number | null
           restock_note: string | null
+          storehouse: string | null
           subcategory: string | null
           unit: string
           updated_at: string
@@ -412,7 +415,10 @@ export type Database = {
           id: string
           name: string
           needs_restock?: boolean
+          qty_left?: number | null
+          qty_to_order?: number | null
           restock_note?: string | null
+          storehouse?: string | null
           subcategory?: string | null
           unit: string
           updated_at?: string
@@ -424,7 +430,10 @@ export type Database = {
           id?: string
           name?: string
           needs_restock?: boolean
+          qty_left?: number | null
+          qty_to_order?: number | null
           restock_note?: string | null
+          storehouse?: string | null
           subcategory?: string | null
           unit?: string
           updated_at?: string
@@ -439,7 +448,10 @@ export type Database = {
           id: string
           name: string
           needs_restock: boolean
+          qty_left: number | null
+          qty_to_order: number | null
           restock_note: string | null
+          storehouse: string | null
           subcategory: string | null
           unit: string
           updated_at: string
@@ -451,7 +463,10 @@ export type Database = {
           id: string
           name: string
           needs_restock?: boolean
+          qty_left?: number | null
+          qty_to_order?: number | null
           restock_note?: string | null
+          storehouse?: string | null
           subcategory?: string | null
           unit: string
           updated_at?: string
@@ -463,7 +478,10 @@ export type Database = {
           id?: string
           name?: string
           needs_restock?: boolean
+          qty_left?: number | null
+          qty_to_order?: number | null
           restock_note?: string | null
+          storehouse?: string | null
           subcategory?: string | null
           unit?: string
           updated_at?: string
@@ -478,7 +496,10 @@ export type Database = {
           id: string
           name: string
           needs_restock: boolean
+          qty_left: number | null
+          qty_to_order: number | null
           restock_note: string | null
+          storehouse: string | null
           subcategory: string | null
           unit: string
           updated_at: string
@@ -490,7 +511,10 @@ export type Database = {
           id: string
           name: string
           needs_restock?: boolean
+          qty_left?: number | null
+          qty_to_order?: number | null
           restock_note?: string | null
+          storehouse?: string | null
           subcategory?: string | null
           unit: string
           updated_at?: string
@@ -502,7 +526,10 @@ export type Database = {
           id?: string
           name?: string
           needs_restock?: boolean
+          qty_left?: number | null
+          qty_to_order?: number | null
           restock_note?: string | null
+          storehouse?: string | null
           subcategory?: string | null
           unit?: string
           updated_at?: string
