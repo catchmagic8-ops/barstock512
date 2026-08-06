@@ -10,13 +10,22 @@ import { cn } from "@/lib/utils";
 
 interface Props {
   items: InventoryItem[];
-  onFlag: (id: string, note?: string) => void;
+  onFlag: (id: string, note?: string, qtyLeft?: number | null, qtyToOrder?: number | null) => void;
   onClear?: (id: string) => void;
 }
 
 export default function InventoryTable({ items, onFlag, onClear }: Props) {
   const [flagging, setFlagging] = useState<InventoryItem | null>(null);
   const [note, setNote] = useState("");
+  const [qtyLeft, setQtyLeft] = useState("");
+  const [qtyToOrder, setQtyToOrder] = useState("");
+
+  const openFlag = (item: InventoryItem) => {
+    setFlagging(item);
+    setNote("");
+    setQtyLeft("");
+    setQtyToOrder("");
+  };
 
   if (items.length === 0) {
     return (
@@ -28,9 +37,16 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
 
   const submitFlag = () => {
     if (!flagging) return;
-    onFlag(flagging.id, note.trim() || undefined);
+    onFlag(
+      flagging.id,
+      note.trim() || undefined,
+      qtyLeft.trim() === "" ? null : Number(qtyLeft),
+      qtyToOrder.trim() === "" ? null : Number(qtyToOrder)
+    );
     setFlagging(null);
     setNote("");
+    setQtyLeft("");
+    setQtyToOrder("");
   };
 
   return (
