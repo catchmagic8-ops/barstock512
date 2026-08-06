@@ -70,8 +70,15 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
                 <div className="min-w-0">
                   <p className="font-medium text-foreground text-sm truncate">{item.name}</p>
                   <p className="text-[11px] text-muted-foreground truncate">
-                    {item.subcategory ? `${item.subcategory} · ${item.unit}` : item.unit}
+                    {[item.subcategory, item.unit, item.storehouse].filter(Boolean).join(" · ")}
                   </p>
+                  {flagged && (item.qtyLeft != null || item.qtyToOrder != null) && (
+                    <p className="mt-0.5 text-[11px] font-medium text-warning">
+                      {item.qtyLeft != null && <>{item.qtyLeft} left</>}
+                      {item.qtyLeft != null && item.qtyToOrder != null && " · "}
+                      {item.qtyToOrder != null && <>order {item.qtyToOrder}</>}
+                    </p>
+                  )}
                   {flagged && item.restockNote && (
                     <p className="mt-0.5 text-[11px] text-warning/90 italic truncate">
                       "{item.restockNote}"
@@ -102,10 +109,7 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
                     variant="outline"
                     size="sm"
                     className="h-8 text-[11px] gap-1 px-2.5 border-warning/40 text-warning hover:bg-warning/10 hover:text-warning"
-                    onClick={() => {
-                      setFlagging(item);
-                      setNote("");
-                    }}
+                    onClick={() => openFlag(item)}
                   >
                     <BellRing className="h-3.5 w-3.5" />
                     Low
@@ -153,14 +157,28 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
                           {item.name}
                         </span>
                         <span className="text-xs text-muted-foreground">
-                          {item.subcategory ? `${item.subcategory} · ${item.unit}` : item.unit}
+                          {[item.subcategory, item.unit, item.storehouse].filter(Boolean).join(" · ")}
                         </span>
                       </div>
                     </div>
                   </td>
                   <td className="py-3 pr-4 hidden md:table-cell">
-                    {flagged && item.restockNote ? (
-                      <span className="text-xs text-warning/90 italic">"{item.restockNote}"</span>
+                    {flagged && (item.restockNote || item.qtyLeft != null || item.qtyToOrder != null) ? (
+                      <span className="text-xs text-warning/90">
+                        {(item.qtyLeft != null || item.qtyToOrder != null) && (
+                          <span className="font-medium">
+                            {item.qtyLeft != null && <>{item.qtyLeft} left</>}
+                            {item.qtyLeft != null && item.qtyToOrder != null && " · "}
+                            {item.qtyToOrder != null && <>order {item.qtyToOrder}</>}
+                          </span>
+                        )}
+                        {item.restockNote && (
+                          <span className="italic">
+                            {(item.qtyLeft != null || item.qtyToOrder != null) && " — "}
+                            "{item.restockNote}"
+                          </span>
+                        )}
+                      </span>
                     ) : (
                       <span className="text-xs text-muted-foreground">—</span>
                     )}
@@ -188,10 +206,7 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
                         variant="outline"
                         size="sm"
                         className="h-8 text-xs gap-1 px-3 border-warning/40 text-warning hover:bg-warning/10 hover:text-warning"
-                        onClick={() => {
-                          setFlagging(item);
-                          setNote("");
-                        }}
+                        onClick={() => openFlag(item)}
                       >
                         <BellRing className="h-3.5 w-3.5" />
                         Low Stock
@@ -210,16 +225,78 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
           <DialogHeader>
             <DialogTitle>Notify manager: low stock</DialogTitle>
             <DialogDescription>
-              {flagging?.name} — add an optional note (e.g. "almost empty", "1 left").
+              {flagging?.name} — note how much is left and how much to order.
             </DialogDescription>
           </DialogHeader>
-          <Input
-            placeholder="Optional note…"
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            autoFocus
-            onKeyDown={(e) => e.key === "Enter" && submitFlag()}
-          />
+          <div className="space-y-3">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-muted-foreground">
+                  How much is left {flagging?.unit ? `(${flagging.unit})` : ""}
+                </label>
+                <Input
+                  type="number"
+                  min="0"
+                  step="any"
+                  inputMode="decimal"
+                  placeholder="e.g. 1"
+                  value={qtyLeft}
+                  onChange={(e) => setQtyLeft(e.target.value)}
+                  autoFocus
+                  onKeyDown={(e) => e.key === "Enter" && submitFlag()}
+                />
+                <div className="flex gap-1 pt-0.5">
+                  {["0", "1", "2", "5"].map((v) => (
+                    <Button
+                      key={v}
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="h-7 flex-1 px-0 text-[11px]"
+                      onClick={() => setQtyLeft(v)}
+                    >
+                      {v}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-muted-foreground">
+                  How much to order {flagging?.unit ? `(${flagging.unit})` : ""}
+                </label>
+                <Input
+                  type="number"
+                  min="0"
+                  step="any"
+                  inputMode="decimal"
+                  placeholder="e.g. 6"
+                  value={qtyToOrder}
+                  onChange={(e) => setQtyToOrder(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && submitFlag()}
+                />
+                <div className="flex gap-1 pt-0.5">
+                  {["1", "2", "6", "12"].map((v) => (
+                    <Button
+                      key={v}
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="h-7 flex-1 px-0 text-[11px]"
+                      onClick={() => setQtyToOrder(v)}
+                    >
+                      {v}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <Input
+              placeholder="Optional note…"
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && submitFlag()}
+            />
+          </div>
           <DialogFooter className="flex-row justify-end gap-2">
             <Button variant="ghost" onClick={() => setFlagging(null)}>Cancel</Button>
             <Button onClick={submitFlag} className="gap-1.5">
