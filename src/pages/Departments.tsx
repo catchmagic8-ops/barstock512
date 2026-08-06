@@ -4,8 +4,6 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import ThemeToggle from "@/components/ThemeToggle";
 import bar512Img from "@/assets/dept-bar512.jpg";
-import konferencjeImg from "@/assets/dept-konferencje.jpg";
-import polskieSmakiImg from "@/assets/dept-polskie-smaki.jpg";
 import AmbientBackground, { DEPT_AMBIENT } from "@/components/AmbientBackground";
 
 interface Tile {
@@ -17,8 +15,6 @@ interface Tile {
 
 const tiles: Tile[] = [
   { title: "Bar 512", tagline: "Cocktails · Stock · Service", image: bar512Img, to: "/home" },
-  { title: "Conference", tagline: "Events · Conference Operations", image: konferencjeImg, to: "/conference" },
-  { title: "Polskie Smaki", tagline: "Kitchen · Recipes · Supplies", image: polskieSmakiImg, to: "/polskie-smaki" },
 ];
 
 export default function Departments() {
@@ -67,7 +63,7 @@ export default function Departments() {
           </p>
         </div>
 
-        <div className="grid w-full max-w-6xl grid-cols-1 gap-5 sm:gap-6 md:grid-cols-3">
+        <div className="grid w-full max-w-sm grid-cols-1 gap-5 sm:gap-6">
           {tiles.map((t, idx) => (
             <button
               key={t.title}

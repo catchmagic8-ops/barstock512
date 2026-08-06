@@ -21,12 +21,19 @@ export function useInventory() {
   });
 
   const flagItem = useMutation({
-    mutationFn: async ({ id, note }: { id: string; note?: string }) => {
+    mutationFn: async ({
+      id,
+      note,
+      qtyLeft,
+      qtyToOrder,
+    }: { id: string; note?: string; qtyLeft?: number | null; qtyToOrder?: number | null }) => {
       const { error } = await (supabase as any)
         .from(tables.inventory)
         .update({
           needs_restock: true,
           restock_note: note ?? null,
+          qty_left: qtyLeft ?? null,
+          qty_to_order: qtyToOrder ?? null,
           flagged_at: new Date().toISOString(),
         })
         .eq("id", id);
@@ -39,7 +46,7 @@ export function useInventory() {
     mutationFn: async (id: string) => {
       const { error } = await (supabase as any)
         .from(tables.inventory)
-        .update({ needs_restock: false, restock_note: null, flagged_at: null })
+        .update({ needs_restock: false, restock_note: null, qty_left: null, qty_to_order: null, flagged_at: null })
         .eq("id", id);
       if (error) throw error;
     },
@@ -50,7 +57,7 @@ export function useInventory() {
     mutationFn: async () => {
       const { error } = await (supabase as any)
         .from(tables.inventory)
-        .update({ needs_restock: false, restock_note: null, flagged_at: null })
+        .update({ needs_restock: false, restock_note: null, qty_left: null, qty_to_order: null, flagged_at: null })
         .eq("needs_restock", true);
       if (error) throw error;
     },
@@ -58,9 +65,9 @@ export function useInventory() {
   });
 
   const addItem = useMutation({
-    mutationFn: async (item: { id: string; name: string; category: Category; subcategory?: string | null; unit: string }) => {
+    mutationFn: async (item: { id: string; name: string; category: Category; subcategory?: string | null; unit: string; storehouse?: string | null }) => {
       const { error } = await (supabase as any).from(tables.inventory).insert({
-        id: item.id, name: item.name, category: item.category, subcategory: item.subcategory ?? null, unit: item.unit,
+        id: item.id, name: item.name, category: item.category, subcategory: item.subcategory ?? null, unit: item.unit, storehouse: item.storehouse ?? null,
       });
       if (error) throw error;
     },
@@ -68,10 +75,10 @@ export function useInventory() {
   });
 
   const editItem = useMutation({
-    mutationFn: async (item: { id: string; name: string; category: Category; subcategory?: string | null; unit: string }) => {
+    mutationFn: async (item: { id: string; name: string; category: Category; subcategory?: string | null; unit: string; storehouse?: string | null }) => {
       const { error } = await (supabase as any)
         .from(tables.inventory)
-        .update({ name: item.name, category: item.category, subcategory: item.subcategory ?? null, unit: item.unit })
+        .update({ name: item.name, category: item.category, subcategory: item.subcategory ?? null, unit: item.unit, storehouse: item.storehouse ?? null })
         .eq("id", item.id);
       if (error) throw error;
     },
