@@ -22,9 +22,10 @@ interface ItemForm {
   category: Category;
   subcategory: string;
   unit: string;
+  storehouse: string;
 }
 
-const emptyForm: ItemForm = { name: "", category: "spirits", subcategory: "", unit: "bottles" };
+const emptyForm: ItemForm = { name: "", category: "spirits", subcategory: "", unit: "bottles", storehouse: "" };
 
 export default function StockManager() {
   const { items, addItem, editItem, deleteItem } = useInventory();
@@ -34,10 +35,16 @@ export default function StockManager() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<ItemForm>(emptyForm);
   const [filterCat, setFilterCat] = useState<Category | "all">("all");
+  const [filterStore, setFilterStore] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
+
+  const storehouses = Array.from(
+    new Set(items.map((i) => i.storehouse).filter((s): s is string => !!s))
+  ).sort();
 
   const filtered = items
     .filter((i) => filterCat === "all" || i.category === filterCat)
+    .filter((i) => filterStore === "all" || (i.storehouse ?? "") === (filterStore === "_none" ? "" : filterStore))
     .filter((i) => !searchQuery || i.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
   const getSubsForCategory = (cat: Category) => subcategories.filter((s) => s.category === cat);
@@ -46,7 +53,7 @@ export default function StockManager() {
     if (!form.name.trim()) { toast.error("Name is required"); return; }
     const id = form.name.toLowerCase().replace(/\s+/g, "-") + "-" + Date.now();
     addItem.mutate(
-      { id, name: form.name.trim(), category: form.category, subcategory: form.subcategory || null, unit: form.unit.trim() || "units" },
+      { id, name: form.name.trim(), category: form.category, subcategory: form.subcategory || null, unit: form.unit.trim() || "units", storehouse: form.storehouse.trim() || null },
       {
         onSuccess: () => { setForm(emptyForm); setShowAdd(false); toast.success("Item added"); },
         onError: () => toast.error("Failed to add item"),
@@ -56,13 +63,13 @@ export default function StockManager() {
 
   const startEdit = (item: InventoryItem) => {
     setEditingId(item.id);
-    setEditForm({ name: item.name, category: item.category, subcategory: item.subcategory || "", unit: item.unit });
+    setEditForm({ name: item.name, category: item.category, subcategory: item.subcategory || "", unit: item.unit, storehouse: item.storehouse || "" });
   };
 
   const handleEdit = () => {
     if (!editingId || !editForm.name.trim()) return;
     editItem.mutate(
-      { id: editingId, name: editForm.name.trim(), category: editForm.category, subcategory: editForm.subcategory || null, unit: editForm.unit.trim() },
+      { id: editingId, name: editForm.name.trim(), category: editForm.category, subcategory: editForm.subcategory || null, unit: editForm.unit.trim(), storehouse: editForm.storehouse.trim() || null },
       {
         onSuccess: () => { setEditingId(null); toast.success("Item updated"); },
         onError: () => toast.error("Failed to update"),
@@ -114,6 +121,13 @@ export default function StockManager() {
             </Select>
             <SubcategorySelect value={form.subcategory} onChange={(v) => setForm({ ...form, subcategory: v })} category={form.category} />
             <Input placeholder="Unit (e.g. bottles)" value={form.unit} onChange={(e) => setForm({ ...form, unit: e.target.value })} className="bg-card" />
+            <Input
+              placeholder="Storehouse / warehouse"
+              list="storehouse-options"
+              value={form.storehouse}
+              onChange={(e) => setForm({ ...form, storehouse: e.target.value })}
+              className="bg-card"
+            />
           </div>
           <div className="flex gap-2">
             <Button size="sm" onClick={handleAdd} disabled={addItem.isPending}>Save</Button>
@@ -122,13 +136,28 @@ export default function StockManager() {
         </div>
       )}
 
-      <Select value={filterCat} onValueChange={(v) => setFilterCat(v as Category | "all")}>
-        <SelectTrigger className="w-48 bg-card"><SelectValue placeholder="Filter category" /></SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All Categories</SelectItem>
-          {CATEGORIES.map((c) => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}
-        </SelectContent>
-      </Select>
+      <datalist id="storehouse-options">
+        {storehouses.map((s) => <option key={s} value={s} />)}
+      </datalist>
+
+      <div className="flex flex-wrap gap-2">
+        <Select value={filterCat} onValueChange={(v) => setFilterCat(v as Category | "all")}>
+          <SelectTrigger className="w-48 bg-card"><SelectValue placeholder="Filter category" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Categories</SelectItem>
+            {CATEGORIES.map((c) => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}
+          </SelectContent>
+        </Select>
+
+        <Select value={filterStore} onValueChange={setFilterStore}>
+          <SelectTrigger className="w-48 bg-card"><SelectValue placeholder="Filter storehouse" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Storehouses</SelectItem>
+            <SelectItem value="_none">No storehouse</SelectItem>
+            {storehouses.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+          </SelectContent>
+        </Select>
+      </div>
 
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -155,6 +184,13 @@ export default function StockManager() {
                   </Select>
                   <SubcategorySelect value={editForm.subcategory} onChange={(v) => setEditForm({ ...editForm, subcategory: v })} category={editForm.category} />
                   <Input value={editForm.unit} onChange={(e) => setEditForm({ ...editForm, unit: e.target.value })} className="bg-muted" />
+                  <Input
+                    placeholder="Storehouse / warehouse"
+                    list="storehouse-options"
+                    value={editForm.storehouse}
+                    onChange={(e) => setEditForm({ ...editForm, storehouse: e.target.value })}
+                    className="bg-muted"
+                  />
                 </div>
                 <div className="flex gap-2">
                   <Button size="sm" onClick={handleEdit} disabled={editItem.isPending} className="gap-1"><Save className="h-3.5 w-3.5" />Save</Button>
@@ -167,6 +203,11 @@ export default function StockManager() {
                   <span className="font-medium text-foreground">{item.name}</span>
                   {item.subcategory && <span className="ml-1.5 text-xs text-primary/80">({item.subcategory})</span>}
                   <span className="ml-2 text-sm text-muted-foreground">{item.unit}</span>
+                  {item.storehouse && (
+                    <span className="ml-2 rounded-full bg-secondary px-2 py-0.5 text-[10px] font-medium text-secondary-foreground">
+                      {item.storehouse}
+                    </span>
+                  )}
                   {item.needsRestock && (
                     <span className="ml-2 text-xs font-semibold text-warning">FLAGGED</span>
                   )}
