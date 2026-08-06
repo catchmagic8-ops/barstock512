@@ -43,9 +43,9 @@ export default function Index() {
   }, []);
 
   const handleFlag = useCallback(
-    (id: string, note?: string) => {
+    (id: string, note?: string, qtyLeft?: number | null, qtyToOrder?: number | null) => {
       flagItem.mutate(
-        { id, note },
+        { id, note, qtyLeft, qtyToOrder },
         {
           onSuccess: () => toast.success("Manager notified"),
           onError: () => toast.error("Failed to notify"),
@@ -159,14 +159,21 @@ export default function Index() {
                       >
                         <div className="min-w-0">
                           <div className="truncate font-medium text-foreground">{it.name}</div>
+                          {(it.qtyLeft != null || it.qtyToOrder != null) && (
+                            <div className="text-[10px] font-medium text-warning">
+                              {it.qtyLeft != null && <>{it.qtyLeft} left</>}
+                              {it.qtyLeft != null && it.qtyToOrder != null && " · "}
+                              {it.qtyToOrder != null && <>order {it.qtyToOrder}</>}
+                            </div>
+                          )}
                           {it.restockNote && (
                             <div className="truncate text-[10px] text-muted-foreground">
                               {it.restockNote}
                             </div>
                           )}
                         </div>
-                        <span className="shrink-0 text-[10px] uppercase tracking-wide text-muted-foreground">
-                          {it.category}
+                        <span className="shrink-0 text-right text-[10px] uppercase tracking-wide text-muted-foreground">
+                          {it.storehouse ?? it.category}
                         </span>
                       </li>
                     ))}
