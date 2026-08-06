@@ -38,8 +38,12 @@ export default function StockManager() {
   const [filterStore, setFilterStore] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const storehouses = Array.from(
-    new Set(items.map((i) => i.storehouse).filter((s): s is string => !!s))
+  const storehouses: string[] = Array.from(
+    new Set(
+      (items as InventoryItem[])
+        .map((i) => i.storehouse)
+        .filter((s): s is string => typeof s === "string" && s.length > 0)
+    )
   ).sort();
 
   const filtered = items
