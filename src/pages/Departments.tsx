@@ -17,8 +17,6 @@ interface Tile {
 
 const tiles: Tile[] = [
   { title: "Bar 512", tagline: "Cocktails · Stock · Service", image: bar512Img, to: "/home" },
-  { title: "Conference", tagline: "Events · Conference Operations", image: konferencjeImg, to: "/conference" },
-  { title: "Polskie Smaki", tagline: "Kitchen · Recipes · Supplies", image: polskieSmakiImg, to: "/polskie-smaki" },
 ];
 
 export default function Departments() {
