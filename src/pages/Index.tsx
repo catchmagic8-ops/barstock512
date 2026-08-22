@@ -9,7 +9,8 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/h
 import CategoryTabs from "@/components/CategoryTabs";
 import InventoryTable from "@/components/InventoryTable";
 import { Input } from "@/components/ui/input";
-import { generateReport, generateBlankCountSheet } from "@/lib/generateReport";
+import { generateBlankCountSheet } from "@/lib/generateReport";
+import ReportDialog from "@/components/ReportDialog";
 import type { Category } from "@/lib/inventory";
 import { useInventory } from "@/hooks/useInventory";
 import { useDepartment } from "@/contexts/DepartmentContext";
@@ -22,6 +23,7 @@ export default function Index() {
   const [activeCategory, setActiveCategory] = useState<Category>("spirits");
   const [activeSubcategory, setActiveSubcategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [reportOpen, setReportOpen] = useState(false);
 
   const { data: subcategories = [] } = useQuery({
     queryKey: ["subcategories", department],
@@ -181,9 +183,9 @@ export default function Index() {
                 </HoverCardContent>
               </HoverCard>
             )}
-            <Button variant="ghost" size="icon" onClick={() => generateReport(items)} title="Generate report" className="h-8 w-8 text-muted-foreground hover:text-foreground sm:h-9 sm:w-auto sm:px-3 sm:gap-1.5">
+            <Button variant="ghost" size="icon" onClick={() => setReportOpen(true)} title="Generate report" className="h-8 w-8 text-muted-foreground hover:text-foreground sm:h-9 sm:w-auto sm:px-3 sm:gap-1.5">
               <FileText className="h-4 w-4" />
-              <span className="hidden sm:inline text-sm">Report</span>
+              <span className="hidden sm:inline text-sm">Raport</span>
             </Button>
             <Button
               variant="ghost"
@@ -257,6 +259,8 @@ export default function Index() {
           </div>
         </div>
       </main>
+
+      <ReportDialog open={reportOpen} onOpenChange={setReportOpen} items={items} deptLabel={meta.label} />
     </div>
   );
 }
