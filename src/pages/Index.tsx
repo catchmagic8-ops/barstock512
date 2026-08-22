@@ -23,6 +23,7 @@ export default function Index() {
   const [activeCategory, setActiveCategory] = useState<Category>("spirits");
   const [activeSubcategory, setActiveSubcategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [reportOpen, setReportOpen] = useState(false);
 
   const { data: subcategories = [] } = useQuery({
     queryKey: ["subcategories", department],
@@ -258,6 +259,8 @@ export default function Index() {
           </div>
         </div>
       </main>
+
+      <ReportDialog open={reportOpen} onOpenChange={setReportOpen} items={items} deptLabel={meta.label} />
     </div>
   );
 }
