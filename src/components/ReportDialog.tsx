@@ -33,6 +33,8 @@ const SORT_OPTIONS: { value: ReportSort; label: string }[] = [
 export default function ReportDialog({ open, onOpenChange, items, deptLabel }: Props) {
   const [scope, setScope] = useState<ReportScope>("full");
   const [sortBy, setSortBy] = useState<ReportSort>("storehouse");
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const previewFrameRef = useRef<HTMLIFrameElement>(null);
 
   const flagged = useMemo(
     () => sortFlagged(items.filter((i) => i.needsRestock), sortBy),
