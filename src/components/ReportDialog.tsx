@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { AlertTriangle, Download, Printer } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
@@ -32,6 +33,8 @@ const SORT_OPTIONS: { value: ReportSort; label: string }[] = [
 export default function ReportDialog({ open, onOpenChange, items, deptLabel }: Props) {
   const [scope, setScope] = useState<ReportScope>("full");
   const [sortBy, setSortBy] = useState<ReportSort>("storehouse");
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const previewFrameRef = useRef<HTMLIFrameElement>(null);
 
   const flagged = useMemo(
     () => sortFlagged(items.filter((i) => i.needsRestock), sortBy),
@@ -40,13 +43,51 @@ export default function ReportDialog({ open, onOpenChange, items, deptLabel }: P
 
   const build = () => buildReport(items, { scope, sortBy, deptLabel });
 
+  const makeBlobUrl = () => {
+    const blob = build().output("blob");
+    return URL.createObjectURL(blob);
+  };
+
   const handleDownload = () => {
-    build().save(`raport-${Date.now()}.pdf`);
+    try {
+      const url = makeBlobUrl();
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `raport-${Date.now()}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 10_000);
+      toast({ title: "Raport downloaded" });
+    } catch (e) {
+      console.error("Report download failed", e);
+      toast({ title: "Couldn't generate the PDF", variant: "destructive" });
+    }
+  };
+
+  // window.open(blobUrl) gets blocked / opens blank tabs, so instead show the
+  // PDF in an in-app preview dialog and print from the embedded frame.
+  const handlePreview = () => {
+    try {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      setPreviewUrl(makeBlobUrl());
+    } catch (e) {
+      console.error("Report preview failed", e);
+      toast({ title: "Couldn't generate the PDF", variant: "destructive" });
+    }
+  };
+
+  const closePreview = () => {
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    setPreviewUrl(null);
   };
 
   const handlePrint = () => {
-    const url = build().output("bloburl");
-    window.open(url, "_blank");
+    const win = previewFrameRef.current?.contentWindow;
+    if (win) {
+      win.focus();
+      win.print();
+    }
   };
 
   return (
@@ -136,14 +177,41 @@ export default function ReportDialog({ open, onOpenChange, items, deptLabel }: P
         </div>
 
         <div className="flex justify-end gap-2 pt-1">
-          <Button variant="outline" onClick={handlePrint} className="gap-1.5">
-            <Printer className="h-4 w-4" /> Open &amp; Print
+          <Button variant="outline" onClick={handlePreview} className="gap-1.5">
+            <Printer className="h-4 w-4" /> Preview &amp; Print
           </Button>
           <Button onClick={handleDownload} className="gap-1.5">
             <Download className="h-4 w-4" /> Download PDF
           </Button>
         </div>
       </DialogContent>
+
+      <Dialog open={!!previewUrl} onOpenChange={(o) => { if (!o) closePreview(); }}>
+        <DialogContent className="flex h-[85vh] max-w-[calc(100vw-2rem)] flex-col sm:max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>Raport preview</DialogTitle>
+            <DialogDescription>
+              Review the PDF below, then print it or go back to change the options.
+            </DialogDescription>
+          </DialogHeader>
+          {previewUrl && (
+            <iframe
+              ref={previewFrameRef}
+              src={previewUrl}
+              title="Raport PDF preview"
+              className="min-h-0 w-full flex-1 rounded-md border border-border/60 bg-muted/20"
+            />
+          )}
+          <div className="flex justify-end gap-2 pt-1">
+            <Button variant="outline" onClick={closePreview}>
+              Back
+            </Button>
+            <Button onClick={handlePrint} className="gap-1.5">
+              <Printer className="h-4 w-4" /> Print
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Dialog>
   );
 }
