@@ -185,7 +185,7 @@ export default function ReportDialog({ open, onOpenChange, items, deptLabel }: P
 
         <div className="flex justify-end gap-2 pt-1">
           <Button variant="outline" onClick={handlePrint} className="gap-1.5">
-            <Printer className="h-4 w-4" /> Open &amp; Print
+            <Printer className="h-4 w-4" /> Print
           </Button>
           <Button onClick={handleDownload} className="gap-1.5">
             <Download className="h-4 w-4" /> Download PDF
