@@ -177,14 +177,41 @@ export default function ReportDialog({ open, onOpenChange, items, deptLabel }: P
         </div>
 
         <div className="flex justify-end gap-2 pt-1">
-          <Button variant="outline" onClick={handlePrint} className="gap-1.5">
-            <Printer className="h-4 w-4" /> Print
+          <Button variant="outline" onClick={handlePreview} className="gap-1.5">
+            <Printer className="h-4 w-4" /> Preview &amp; Print
           </Button>
           <Button onClick={handleDownload} className="gap-1.5">
             <Download className="h-4 w-4" /> Download PDF
           </Button>
         </div>
       </DialogContent>
+
+      <Dialog open={!!previewUrl} onOpenChange={(o) => { if (!o) closePreview(); }}>
+        <DialogContent className="flex h-[85vh] max-w-[calc(100vw-2rem)] flex-col sm:max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>Raport preview</DialogTitle>
+            <DialogDescription>
+              Review the PDF below, then print it or go back to change the options.
+            </DialogDescription>
+          </DialogHeader>
+          {previewUrl && (
+            <iframe
+              ref={previewFrameRef}
+              src={previewUrl}
+              title="Raport PDF preview"
+              className="min-h-0 w-full flex-1 rounded-md border border-border/60 bg-muted/20"
+            />
+          )}
+          <div className="flex justify-end gap-2 pt-1">
+            <Button variant="outline" onClick={closePreview}>
+              Back
+            </Button>
+            <Button onClick={handlePrint} className="gap-1.5">
+              <Printer className="h-4 w-4" /> Print
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Dialog>
   );
 }
