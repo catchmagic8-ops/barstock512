@@ -65,37 +65,28 @@ export default function ReportDialog({ open, onOpenChange, items, deptLabel }: P
     }
   };
 
-  // Print via a hidden iframe — window.open(blobUrl) is blocked by popup
-  // blockers and sandboxed previews, which produced a blank page.
-  const handlePrint = () => {
+  // window.open(blobUrl) gets blocked / opens blank tabs, so instead show the
+  // PDF in an in-app preview dialog and print from the embedded frame.
+  const handlePreview = () => {
     try {
-      const url = makeBlobUrl();
-      const iframe = document.createElement("iframe");
-      iframe.style.position = "fixed";
-      iframe.style.right = "0";
-      iframe.style.bottom = "0";
-      iframe.style.width = "0";
-      iframe.style.height = "0";
-      iframe.style.border = "0";
-      iframe.src = url;
-      iframe.onload = () => {
-        setTimeout(() => {
-          iframe.contentWindow?.focus();
-          iframe.contentWindow?.print();
-        }, 250);
-      };
-      document.body.appendChild(iframe);
-      const cleanup = () => {
-        iframe.remove();
-        URL.revokeObjectURL(url);
-        window.removeEventListener("afterprint", cleanup);
-      };
-      window.addEventListener("afterprint", cleanup);
-      // Safety cleanup in case afterprint never fires (e.g. print cancelled)
-      setTimeout(cleanup, 120_000);
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      setPreviewUrl(makeBlobUrl());
     } catch (e) {
-      console.error("Report print failed", e);
-      toast({ title: "Couldn't print the PDF", variant: "destructive" });
+      console.error("Report preview failed", e);
+      toast({ title: "Couldn't generate the PDF", variant: "destructive" });
+    }
+  };
+
+  const closePreview = () => {
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    setPreviewUrl(null);
+  };
+
+  const handlePrint = () => {
+    const win = previewFrameRef.current?.contentWindow;
+    if (win) {
+      win.focus();
+      win.print();
     }
   };
 
