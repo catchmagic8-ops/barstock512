@@ -40,13 +40,60 @@ export default function ReportDialog({ open, onOpenChange, items, deptLabel }: P
 
   const build = () => buildReport(items, { scope, sortBy, deptLabel });
 
-  const handleDownload = () => {
-    build().save(`raport-${Date.now()}.pdf`);
+  const makeBlobUrl = () => {
+    const blob = build().output("blob");
+    return URL.createObjectURL(blob);
   };
 
+  const handleDownload = () => {
+    try {
+      const url = makeBlobUrl();
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `raport-${Date.now()}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 10_000);
+      toast({ title: "Raport downloaded" });
+    } catch (e) {
+      console.error("Report download failed", e);
+      toast({ title: "Couldn't generate the PDF", variant: "destructive" });
+    }
+  };
+
+  // Print via a hidden iframe — window.open(blobUrl) is blocked by popup
+  // blockers and sandboxed previews, which produced a blank page.
   const handlePrint = () => {
-    const url = build().output("bloburl");
-    window.open(url, "_blank");
+    try {
+      const url = makeBlobUrl();
+      const iframe = document.createElement("iframe");
+      iframe.style.position = "fixed";
+      iframe.style.right = "0";
+      iframe.style.bottom = "0";
+      iframe.style.width = "0";
+      iframe.style.height = "0";
+      iframe.style.border = "0";
+      iframe.src = url;
+      iframe.onload = () => {
+        setTimeout(() => {
+          iframe.contentWindow?.focus();
+          iframe.contentWindow?.print();
+        }, 250);
+      };
+      document.body.appendChild(iframe);
+      const cleanup = () => {
+        iframe.remove();
+        URL.revokeObjectURL(url);
+        window.removeEventListener("afterprint", cleanup);
+      };
+      window.addEventListener("afterprint", cleanup);
+      // Safety cleanup in case afterprint never fires (e.g. print cancelled)
+      setTimeout(cleanup, 120_000);
+    } catch (e) {
+      console.error("Report print failed", e);
+      toast({ title: "Couldn't print the PDF", variant: "destructive" });
+    }
   };
 
   return (
