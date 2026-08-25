@@ -10,10 +10,31 @@ import { deptHomePath } from "@/lib/department";
 import { cn } from "@/lib/utils";
 
 const CATEGORY_ORDER = [
-  "Snacks & Nibbles",
-  "Small Plates",
-  "Sandwiches & Light Mains",
-  "Desserts",
+  "Przekąski",
+  "Pizza",
+  "Sałatki",
+  "Pomiędzy bułkami",
+  "Zupy",
+  "Makarony",
+  "Dania główne",
+  "Słodkości",
+  "Dla dzieci",
+  "Koktajle firmowe",
+  "Spritzery",
+  "Moktajle",
+  "Szampany i wina musujące",
+  "Wino białe",
+  "Wino czerwone",
+  "Wino różowe",
+  "Piwo",
+  "Wódka",
+  "Whisky i whiskey",
+  "Cognac i brandy",
+  "Gin",
+  "Rum",
+  "Tequila",
+  "Zimne napoje i soki",
+  "Kawa i herbata",
 ];
 
 interface ALaCarteItem {
