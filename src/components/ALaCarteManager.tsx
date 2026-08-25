@@ -16,13 +16,34 @@ import { toast } from "sonner";
 import { useDepartment } from "@/contexts/DepartmentContext";
 
 const CATEGORIES = [
-  "Snacks & Nibbles",
-  "Small Plates",
-  "Sandwiches & Light Mains",
-  "Desserts",
+  "Przekąski",
+  "Pizza",
+  "Sałatki",
+  "Pomiędzy bułkami",
+  "Zupy",
+  "Makarony",
+  "Dania główne",
+  "Słodkości",
+  "Dla dzieci",
+  "Koktajle firmowe",
+  "Spritzery",
+  "Moktajle",
+  "Szampany i wina musujące",
+  "Wino białe",
+  "Wino czerwone",
+  "Wino różowe",
+  "Piwo",
+  "Wódka",
+  "Whisky i whiskey",
+  "Cognac i brandy",
+  "Gin",
+  "Rum",
+  "Tequila",
+  "Zimne napoje i soki",
+  "Kawa i herbata",
 ];
 
-const DIETARY_OPTIONS = ["Vegan", "Vegetarian"];
+const DIETARY_OPTIONS = ["Wegańskie", "Wegetariańskie"];
 
 interface ALaCarteItem {
   id: string;
@@ -52,7 +73,7 @@ export default function ALaCarteManager() {
   if (!tableName) {
     return (
       <p className="text-sm text-muted-foreground">
-        A La Carte is not enabled for this department.
+        Menu A La Carte nie jest włączone dla tego działu.
       </p>
     );
   }
@@ -117,14 +138,14 @@ export default function ALaCarteManager() {
       }
     },
     onSuccess: () => {
-      toast.success(editingId ? "Item updated" : "Item added");
+      toast.success(editingId ? "Pozycja zaktualizowana" : "Pozycja dodana");
       qc.invalidateQueries({ queryKey: ["a-la-carte-admin", department] });
       qc.invalidateQueries({ queryKey: ["a-la-carte", department] });
       qc.invalidateQueries({ queryKey: ["a-la-carte-count", department] });
       reset();
       setOpen(false);
     },
-    onError: (e: any) => toast.error(e.message ?? "Failed"),
+    onError: (e: any) => toast.error(e.message ?? "Nie udało się"),
   });
 
   const deleteItem = useMutation({
@@ -133,12 +154,12 @@ export default function ALaCarteManager() {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Item removed");
+      toast.success("Pozycja usunięta");
       qc.invalidateQueries({ queryKey: ["a-la-carte-admin", department] });
       qc.invalidateQueries({ queryKey: ["a-la-carte", department] });
       qc.invalidateQueries({ queryKey: ["a-la-carte-count", department] });
     },
-    onError: (e: any) => toast.error(e.message ?? "Failed"),
+    onError: (e: any) => toast.error(e.message ?? "Nie udało się"),
   });
 
   function toggleDietary(tag: string) {
@@ -151,7 +172,7 @@ export default function ALaCarteManager() {
     <div className="space-y-3">
       <div className="flex justify-between items-center">
         <p className="text-sm text-muted-foreground">
-          {items.length} item{items.length === 1 ? "" : "s"}
+          {items.length} {items.length === 1 ? "pozycja" : "pozycji"}
         </p>
         <Button
           size="sm"
@@ -161,14 +182,14 @@ export default function ALaCarteManager() {
           }}
           className="gap-1.5"
         >
-          <Plus className="h-4 w-4" /> Add Item
+          <Plus className="h-4 w-4" /> Dodaj pozycję
         </Button>
       </div>
 
       {isLoading ? (
         <Loader2 className="h-5 w-5 animate-spin text-primary mx-auto" />
       ) : items.length === 0 ? (
-        <p className="text-sm text-muted-foreground text-center py-4">No items</p>
+        <p className="text-sm text-muted-foreground text-center py-4">Brak pozycji</p>
       ) : (
         <div className="space-y-2 max-h-[60vh] overflow-y-auto">
           {items.map((it) => (
@@ -197,7 +218,7 @@ export default function ALaCarteManager() {
                   size="icon"
                   className="text-muted-foreground hover:text-destructive h-8 w-8"
                   onClick={() => {
-                    if (window.confirm(`Delete "${it.name}"?`)) deleteItem.mutate(it.id);
+                    if (window.confirm(`Usunąć „${it.name}”?`)) deleteItem.mutate(it.id);
                   }}
                 >
                   <Trash2 className="h-3.5 w-3.5" />
@@ -218,19 +239,19 @@ export default function ALaCarteManager() {
         <DialogContent className="bg-card border-border max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="font-heading text-foreground">
-              {editingId ? "Edit Item" : "Add Item"}
+              {editingId ? "Edytuj pozycję" : "Dodaj pozycję"}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <Input
-              placeholder="Item name"
+              placeholder="Nazwa pozycji"
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="bg-secondary border-border"
             />
 
             <div>
-              <Label className="text-xs text-muted-foreground">Category</Label>
+              <Label className="text-xs text-muted-foreground">Kategoria</Label>
               <Select value={category} onValueChange={setCategory}>
                 <SelectTrigger className="bg-secondary border-border mt-1">
                   <SelectValue />
@@ -246,7 +267,7 @@ export default function ALaCarteManager() {
             </div>
 
             <Textarea
-              placeholder="Description"
+              placeholder="Opis"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
@@ -255,10 +276,10 @@ export default function ALaCarteManager() {
 
             <div>
               <Label className="text-xs text-muted-foreground">
-                Allergens (comma-separated, e.g. Gluten, Milk, Eggs)
+                Alergeny (rozdzielone przecinkami, np. Gluten, Mleko, Jaja)
               </Label>
               <Input
-                placeholder="Gluten, Milk, Eggs"
+                placeholder="Gluten, Mleko, Jaja"
                 value={allergensText}
                 onChange={(e) => setAllergensText(e.target.value)}
                 className="bg-secondary border-border mt-1"
@@ -266,7 +287,7 @@ export default function ALaCarteManager() {
             </div>
 
             <div>
-              <Label className="text-xs text-muted-foreground">Dietary tags</Label>
+              <Label className="text-xs text-muted-foreground">Oznaczenia dietetyczne</Label>
               <div className="flex gap-2 mt-2">
                 {DIETARY_OPTIONS.map((d) => (
                   <button
@@ -286,7 +307,7 @@ export default function ALaCarteManager() {
             </div>
 
             <div>
-              <Label className="text-xs text-muted-foreground">Price (PLN)</Label>
+              <Label className="text-xs text-muted-foreground">Cena (PLN)</Label>
               <Input
                 type="number"
                 inputMode="decimal"
@@ -299,13 +320,13 @@ export default function ALaCarteManager() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>
-              Cancel
+              Anuluj
             </Button>
             <Button
               onClick={() => saveItem.mutate()}
               disabled={!name || !price || saveItem.isPending}
             >
-              {saveItem.isPending ? "Saving…" : editingId ? "Save" : "Add"}
+              {saveItem.isPending ? "Zapisywanie…" : editingId ? "Zapisz" : "Dodaj"}
             </Button>
           </DialogFooter>
         </DialogContent>

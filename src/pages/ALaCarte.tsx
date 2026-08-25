@@ -150,7 +150,7 @@ export default function ALaCarte() {
               </Button>
             </Link>
             <Utensils className="h-5 w-5 text-primary flex-shrink-0" />
-            <h1 className="font-heading text-lg font-bold text-foreground truncate">A La Carte</h1>
+            <h1 className="font-heading text-lg font-bold text-foreground truncate">Menu A La Carte</h1>
             <span className="text-xs text-muted-foreground hidden sm:inline">· {meta.label}</span>
           </div>
         </div>
@@ -161,7 +161,7 @@ export default function ALaCarte() {
             <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search dishes..."
+              placeholder="Szukaj pozycji w menu..."
               className="pl-9 pr-9 bg-secondary border-border"
             />
             {search && (
@@ -185,7 +185,7 @@ export default function ALaCarte() {
                     : "bg-secondary text-muted-foreground border-border hover:text-foreground"
                 )}
               >
-                All
+                Wszystko
               </button>
               {categories.map((c) => (
                 <button
@@ -209,14 +209,14 @@ export default function ALaCarte() {
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                   <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
-                  <span>Hide dishes containing:</span>
+                  <span>Ukryj pozycje zawierające:</span>
                 </div>
                 {excludedAllergens.length > 0 && (
                   <button
                     onClick={() => setExcludedAllergens([])}
                     className="text-xs text-muted-foreground hover:text-foreground underline"
                   >
-                    Clear
+                    Wyczyść
                   </button>
                 )}
               </div>
@@ -253,11 +253,11 @@ export default function ALaCarte() {
         ) : items.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
             <Utensils className="h-12 w-12 mb-3 opacity-40" />
-            <p className="text-lg">No menu items yet</p>
-            <p className="text-sm">Items are managed from the Admin panel</p>
+            <p className="text-lg">Brak pozycji w menu</p>
+            <p className="text-sm">Pozycje dodaje się w panelu administratora</p>
           </div>
         ) : grouped.length === 0 ? (
-          <p className="text-center text-sm text-muted-foreground py-12">No matches.</p>
+          <p className="text-center text-sm text-muted-foreground py-12">Brak wyników.</p>
         ) : (
           grouped.map(([cat, list]) => (
             <section key={cat} className="space-y-3">
