@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
 import {
-  ArrowLeft, Plus, Trash2, Loader2, Phone, Package, Calendar, BookOpen, ChevronDown, ChevronUp, BellRing, Check, ImagePlus, Repeat, Pencil, Sparkles, Upload, Utensils, Users,
+  ArrowLeft, Plus, Trash2, Loader2, Phone, Package, Calendar, BookOpen, ChevronDown, ChevronUp, BellRing, Check, ImagePlus, Repeat, Pencil, Sparkles, Upload, Utensils, Users, Palette,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,6 +21,7 @@ import StockManager from "@/components/StockManager";
 import SubcategoryManager from "@/components/SubcategoryManager";
 import ALaCarteManager from "@/components/ALaCarteManager";
 import UserManagement from "@/components/UserManagement";
+import AccentPicker from "@/components/AccentPicker";
 import { useInventory } from "@/hooks/useInventory";
 import { useDepartment } from "@/contexts/DepartmentContext";
 import { deptHomePath } from "@/lib/department";
@@ -777,6 +778,10 @@ export default function Admin() {
               <UserManagement />
             </AdminSection>
           )}
+
+          <AdminSection title="Wyglad aplikacji" icon={Palette}>
+            <AccentPicker />
+          </AdminSection>
 
           <AdminSection title="Low Stock Alerts" icon={BellRing} defaultOpen>
             <LowStockAlerts />
