@@ -397,6 +397,7 @@ export type Database = {
           category: string
           created_at: string
           flagged_at: string | null
+          flagged_by: string | null
           id: string
           name: string
           needs_restock: boolean
@@ -412,6 +413,7 @@ export type Database = {
           category: string
           created_at?: string
           flagged_at?: string | null
+          flagged_by?: string | null
           id: string
           name: string
           needs_restock?: boolean
@@ -427,6 +429,7 @@ export type Database = {
           category?: string
           created_at?: string
           flagged_at?: string | null
+          flagged_by?: string | null
           id?: string
           name?: string
           needs_restock?: boolean
@@ -445,6 +448,7 @@ export type Database = {
           category: string
           created_at: string
           flagged_at: string | null
+          flagged_by: string | null
           id: string
           name: string
           needs_restock: boolean
@@ -460,6 +464,7 @@ export type Database = {
           category: string
           created_at?: string
           flagged_at?: string | null
+          flagged_by?: string | null
           id: string
           name: string
           needs_restock?: boolean
@@ -475,6 +480,7 @@ export type Database = {
           category?: string
           created_at?: string
           flagged_at?: string | null
+          flagged_by?: string | null
           id?: string
           name?: string
           needs_restock?: boolean
@@ -493,6 +499,7 @@ export type Database = {
           category: string
           created_at: string
           flagged_at: string | null
+          flagged_by: string | null
           id: string
           name: string
           needs_restock: boolean
@@ -508,6 +515,7 @@ export type Database = {
           category: string
           created_at?: string
           flagged_at?: string | null
+          flagged_by?: string | null
           id: string
           name: string
           needs_restock?: boolean
@@ -523,6 +531,7 @@ export type Database = {
           category?: string
           created_at?: string
           flagged_at?: string | null
+          flagged_by?: string | null
           id?: string
           name?: string
           needs_restock?: boolean
