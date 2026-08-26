@@ -26,7 +26,8 @@ export function useInventory() {
       note,
       qtyLeft,
       qtyToOrder,
-    }: { id: string; note?: string; qtyLeft?: number | null; qtyToOrder?: number | null }) => {
+      flaggedBy,
+    }: { id: string; note?: string; qtyLeft?: number | null; qtyToOrder?: number | null; flaggedBy?: string | null }) => {
       const { error } = await (supabase as any)
         .from(tables.inventory)
         .update({
@@ -35,6 +36,7 @@ export function useInventory() {
           qty_left: qtyLeft ?? null,
           qty_to_order: qtyToOrder ?? null,
           flagged_at: new Date().toISOString(),
+          flagged_by: flaggedBy ?? null,
         })
         .eq("id", id);
       if (error) throw error;
@@ -46,7 +48,7 @@ export function useInventory() {
     mutationFn: async (id: string) => {
       const { error } = await (supabase as any)
         .from(tables.inventory)
-        .update({ needs_restock: false, restock_note: null, qty_left: null, qty_to_order: null, flagged_at: null })
+        .update({ needs_restock: false, restock_note: null, qty_left: null, qty_to_order: null, flagged_at: null, flagged_by: null })
         .eq("id", id);
       if (error) throw error;
     },
@@ -57,7 +59,7 @@ export function useInventory() {
     mutationFn: async () => {
       const { error } = await (supabase as any)
         .from(tables.inventory)
-        .update({ needs_restock: false, restock_note: null, qty_left: null, qty_to_order: null, flagged_at: null })
+        .update({ needs_restock: false, restock_note: null, qty_left: null, qty_to_order: null, flagged_at: null, flagged_by: null })
         .eq("needs_restock", true);
       if (error) throw error;
     },

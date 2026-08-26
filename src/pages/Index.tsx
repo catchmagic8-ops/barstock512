@@ -16,9 +16,11 @@ import { useInventory } from "@/hooks/useInventory";
 import { useDepartment } from "@/contexts/DepartmentContext";
 import { deptHomePath } from "@/lib/department";
 import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Index() {
   const { items, isLoading, flagItem, clearFlag } = useInventory();
+  const { user } = useAuth();
   const { tables, department, meta } = useDepartment();
   const [activeCategory, setActiveCategory] = useState<Category>("spirits");
   const [activeSubcategory, setActiveSubcategory] = useState<string | null>(null);
@@ -47,14 +49,14 @@ export default function Index() {
   const handleFlag = useCallback(
     (id: string, note?: string, qtyLeft?: number | null, qtyToOrder?: number | null) => {
       flagItem.mutate(
-        { id, note, qtyLeft, qtyToOrder },
+        { id, note, qtyLeft, qtyToOrder, flaggedBy: user?.username ?? null },
         {
           onSuccess: () => toast.success("Manager notified"),
           onError: () => toast.error("Failed to notify"),
         }
       );
     },
-    [flagItem]
+    [flagItem, user]
   );
 
   const handleClear = useCallback(
@@ -171,6 +173,11 @@ export default function Index() {
                           {it.restockNote && (
                             <div className="truncate text-[10px] text-muted-foreground">
                               {it.restockNote}
+                            </div>
+                          )}
+                          {it.flaggedBy && (
+                            <div className="truncate text-[10px] text-muted-foreground">
+                              zgłosił: {it.flaggedBy}
                             </div>
                           )}
                         </div>

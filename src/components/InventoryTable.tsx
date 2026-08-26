@@ -84,6 +84,11 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
                       "{item.restockNote}"
                     </p>
                   )}
+                  {flagged && item.flaggedBy && (
+                    <p className="mt-0.5 text-[10px] text-muted-foreground truncate">
+                      zgłosił: {item.flaggedBy}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -176,6 +181,11 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
                           <span className="italic">
                             {(item.qtyLeft != null || item.qtyToOrder != null) && " — "}
                             "{item.restockNote}"
+                          </span>
+                        )}
+                        {item.flaggedBy && (
+                          <span className="block text-[10px] text-muted-foreground">
+                            zgłosił: {item.flaggedBy}
                           </span>
                         )}
                       </span>

@@ -9,6 +9,7 @@ export interface InventoryItem {
   needsRestock: boolean;
   restockNote?: string;
   flaggedAt?: string;
+  flaggedBy?: string;
   storehouse?: string;
   qtyLeft?: number;
   qtyToOrder?: number;
@@ -24,6 +25,7 @@ export function rowToItem(row: {
   needs_restock?: boolean | null;
   restock_note?: string | null;
   flagged_at?: string | null;
+  flagged_by?: string | null;
   storehouse?: string | null;
   qty_left?: number | null;
   qty_to_order?: number | null;
@@ -37,6 +39,7 @@ export function rowToItem(row: {
     needsRestock: !!row.needs_restock,
     restockNote: row.restock_note ?? undefined,
     flaggedAt: row.flagged_at ?? undefined,
+    flaggedBy: row.flagged_by ?? undefined,
     storehouse: row.storehouse ?? undefined,
     qtyLeft: row.qty_left ?? undefined,
     qtyToOrder: row.qty_to_order ?? undefined,
