@@ -1,6 +1,14 @@
 import { useNavigate } from "react-router-dom";
-import { Package, Calendar, BookOpen, Phone, Shield, ArrowLeft, Utensils, LogOut, BookMarked, Sparkles } from "lucide-react";
-import ThemeToggle from "@/components/ThemeToggle";
+import { Package, Calendar, BookOpen, Phone, Shield, ArrowLeft, Utensils, LogOut, BookMarked, Sparkles, MoreVertical, Moon, Sun, User } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useTheme } from "@/contexts/ThemeContext";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
@@ -9,22 +17,6 @@ import { useDepartment } from "@/contexts/DepartmentContext";
 import { deptSubPath, DEPT_TABLES } from "@/lib/department";
 import { useAuth } from "@/contexts/AuthContext";
 import { AmbientBackgroundForDepartment } from "@/components/AmbientBackground";
-
-function getGreeting(): string {
-  const h = new Date().getHours();
-  if (h >= 5 && h < 12) return "Good morning";
-  if (h >= 12 && h < 18) return "Good afternoon";
-  return "Good evening";
-}
-
-function getFormattedDate(): string {
-  return new Date().toLocaleDateString("en-GB", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-}
 
 function LowStockBadge() {
   const { tables, department } = useDepartment();
@@ -243,6 +235,7 @@ export default function Home() {
   const navigate = useNavigate();
   const { department, meta } = useDepartment();
   const { isAdminFor, user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const canAdmin = isAdminFor(department);
 
   const visibleCards: NavCard[] = (() => {
@@ -295,36 +288,43 @@ export default function Home() {
             {meta.label}
           </h1>
         </div>
-        <div className="flex items-center gap-2">
-          {user && (
-            <span className="hidden sm:inline text-xs text-muted-foreground">
-              {user.username} · <span className="capitalize">{user.role}</span>
-            </span>
-          )}
-          <ThemeToggle />
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={logout}
-            title="Sign out"
-            className="text-muted-foreground hover:text-foreground"
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              title="Menu"
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <MoreVertical className="h-5 w-5" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="end"
+            className="w-56 bg-background/90 backdrop-blur-xl backdrop-saturate-150"
           >
-            <LogOut className="h-5 w-5" />
-          </Button>
-        </div>
+            {user && (
+              <>
+                <DropdownMenuLabel className="flex items-center gap-2 text-xs font-normal text-muted-foreground">
+                  <User className="h-3.5 w-3.5" />
+                  {user.username} · <span className="capitalize">{user.role}</span>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+              </>
+            )}
+            <DropdownMenuItem onClick={toggleTheme} className="gap-2">
+              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              {theme === "dark" ? "Light mode" : "Dark mode"}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={logout} className="gap-2">
+              <LogOut className="h-4 w-4" />
+              Sign out
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </header>
 
       <main className="flex flex-1 flex-col items-center justify-center px-5 pb-16 sm:px-8">
-        <div className="mb-10 text-center sm:mb-14">
-          <h2
-            className="text-3xl font-bold sm:text-4xl lg:text-5xl"
-            style={{ fontFamily: "'Playfair Display', serif", color: "hsl(var(--foreground))" }}
-          >
-            {getGreeting()}
-          </h2>
-          <p className="mt-2 text-sm text-muted-foreground">{getFormattedDate()}</p>
-        </div>
-
         <div className="grid w-full max-w-4xl grid-cols-1 gap-5 sm:grid-cols-3 sm:gap-6">
           {visibleCards.map(({ title, icon: Icon, subtitle, sub, badge: Badge }) => (
             <button
