@@ -263,7 +263,7 @@ export default function ALaCarte() {
             <section key={cat} className="space-y-3">
               <h2
                 className="text-xl font-bold tracking-wide"
-                style={{ fontFamily: "'Playfair Display', serif", color: "#d74c5a" }}
+                style={{ fontFamily: "'Playfair Display', serif", color: "hsl(var(--brand))" }}
               >
                 {cat}
               </h2>

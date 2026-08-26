@@ -102,7 +102,7 @@ export default function Departments() {
                 </p>
                 <span
                   className="mt-4 inline-block text-xs font-semibold tracking-widest uppercase"
-                  style={{ color: "#d74c5a" }}
+                  style={{ color: "hsl(var(--brand))" }}
                 >
                   Enter →
                 </span>

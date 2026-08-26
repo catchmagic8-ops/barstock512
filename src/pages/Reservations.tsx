@@ -771,7 +771,7 @@ function ReservationForm({
             onSubmit(f);
           }}
           disabled={saving}
-          style={{ background: "#d74c5a" }}
+          style={{ background: "hsl(var(--brand))" }}
           className="text-white hover:opacity-90"
         >
           {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -931,7 +931,7 @@ export default function Reservations() {
         {canCreate && (
           <Button
             onClick={openCreate}
-            style={{ background: "#d74c5a" }}
+            style={{ background: "hsl(var(--brand))" }}
             className="text-white hover:opacity-90"
           >
             <Plus className="mr-2 h-4 w-4" /> New Reservation
