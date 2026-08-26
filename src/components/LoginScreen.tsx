@@ -33,7 +33,7 @@ export default function LoginScreen() {
 
         <form onSubmit={handleSubmit} className="w-full space-y-6">
           <div className="flex flex-col items-center gap-2 text-center">
-            <Lock className="h-7 w-7 sm:h-8 sm:w-8" className="h-7 w-7 sm:h-8 sm:w-8 text-primary" />
+            <Lock className="h-7 w-7 sm:h-8 sm:w-8 text-primary" />
             <h2
               className="text-lg sm:text-xl font-bold"
               style={{ fontFamily: "'Playfair Display', serif", color: "#e8e3d5" }}
@@ -81,7 +81,6 @@ export default function LoginScreen() {
               type="submit"
               disabled={submitting}
               className="w-full h-11 text-base"
-              
             >
               {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Sign In"}
             </Button>
