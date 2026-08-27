@@ -37,16 +37,13 @@ export default function Departments() {
   return (
     <div className="relative flex min-h-screen flex-col">
       <AmbientBackground src={settings[DEPT_AMBIENT_IMAGE_KEY] || DEPT_AMBIENT.bar512} intensity={0.35} blur={4} />
-      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-white/5 bg-background/40 px-5 py-4 backdrop-blur-xl backdrop-saturate-150 sm:px-8">
-        <h1
-          className="text-xl font-bold tracking-wide sm:text-2xl"
-          style={{ fontFamily: "'Playfair Display', serif", color: "hsl(var(--brand))" }}
-        >
+      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-border/40 bg-background/40 px-5 py-4 backdrop-blur-xl backdrop-saturate-150 sm:px-8">
+        <h1 className="font-heading text-xl font-bold tracking-wide text-brand sm:text-2xl">
           Departments
         </h1>
         <div className="flex items-center gap-2">
           {user && (
-            <span className="hidden sm:inline text-xs text-muted-foreground">
+            <span className="hidden text-xs text-muted-foreground sm:inline">
               {user.username} · <span className="capitalize">{user.role}</span>
             </span>
           )}
@@ -69,11 +66,10 @@ export default function Departments() {
             <button
               key={t.title}
               onClick={() => navigate(t.to)}
-              className="group relative overflow-hidden rounded-2xl border bg-white/[0.03] text-left backdrop-blur-md transition-all duration-500 hover:scale-[1.02] hover:bg-white/[0.06]"
+              className="group relative overflow-hidden rounded-2xl border border-border/40 bg-background/[0.03] text-left backdrop-blur-md transition-all duration-500 hover:scale-[1.02] hover:bg-background/[0.06]"
               style={{
-                borderColor: "rgba(215, 76, 90, 0.4)",
                 aspectRatio: "4/5",
-                boxShadow: "0 20px 60px -20px rgba(0,0,0,0.6)",
+                boxShadow: "0 20px 60px -20px hsl(var(--background) / 0.6)",
               }}
             >
               <img
@@ -88,23 +84,17 @@ export default function Departments() {
                 className="absolute inset-0"
                 style={{
                   background:
-                    "linear-gradient(180deg, rgba(15,14,12,0.15) 0%, rgba(15,14,12,0.55) 55%, rgba(15,14,12,0.95) 100%)",
+                    "linear-gradient(180deg, hsl(var(--background) / 0.15) 0%, hsl(var(--background) / 0.55) 55%, hsl(var(--background) / 0.95) 100%)",
                 }}
               />
               <div className="absolute inset-x-0 bottom-0 p-6">
-                <h3
-                  className="text-2xl font-bold leading-tight sm:text-3xl"
-                  style={{ fontFamily: "'Playfair Display', serif", color: "#e8e3d5" }}
-                >
+                <h3 className="font-heading text-2xl font-bold leading-tight text-foreground sm:text-3xl">
                   {t.title}
                 </h3>
-                <p className="mt-1.5 text-sm" style={{ color: "rgba(232, 227, 213, 0.7)" }}>
+                <p className="mt-1.5 text-sm text-muted-foreground">
                   {t.tagline}
                 </p>
-                <span
-                  className="mt-4 inline-block text-xs font-semibold tracking-widest uppercase"
-                  style={{ color: "hsl(var(--brand))" }}
-                >
+                <span className="mt-4 inline-block text-xs font-semibold uppercase tracking-widest text-brand">
                   Enter →
                 </span>
               </div>

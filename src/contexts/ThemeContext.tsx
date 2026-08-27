@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState, ReactNode } from "react
 
 type Theme = "dark" | "light";
 
-export type AccentId = "red" | "amber" | "emerald" | "teal" | "indigo" | "violet";
+export type AccentId = "ember" | "amber" | "emerald" | "teal" | "indigo" | "violet";
 
 export const ACCENTS: {
   id: AccentId;
@@ -14,7 +14,7 @@ export const ACCENTS: {
   /** preview swatch color */
   swatch: string;
 }[] = [
-  { id: "red", label: "Czerwony", dark: "355 64% 57%", light: "355 64% 45%", swatch: "#d74c5a" },
+  { id: "ember", label: "Miedziany", dark: "14 77% 56%", light: "14 77% 48%", swatch: "#e85d3a" },
   { id: "amber", label: "Złoty", dark: "38 85% 55%", light: "32 85% 42%", swatch: "#e8a33d" },
   { id: "emerald", label: "Zielony", dark: "152 55% 45%", light: "152 60% 33%", swatch: "#34a97b" },
   { id: "teal", label: "Morski", dark: "190 70% 45%", light: "192 75% 33%", swatch: "#22a3bd" },
@@ -40,9 +40,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     return (localStorage.getItem(STORAGE_KEY) as Theme) || "dark";
   });
   const [accent, setAccentState] = useState<AccentId>(() => {
-    if (typeof window === "undefined") return "red";
+    if (typeof window === "undefined") return "ember";
     const saved = localStorage.getItem(ACCENT_KEY) as AccentId | null;
-    return ACCENTS.some((a) => a.id === saved) ? (saved as AccentId) : "red";
+    return ACCENTS.some((a) => a.id === saved) ? (saved as AccentId) : "ember";
   });
 
   useEffect(() => {
