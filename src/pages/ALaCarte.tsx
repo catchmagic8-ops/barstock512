@@ -118,7 +118,10 @@ export default function ALaCarte() {
         !search ||
         i.name.toLowerCase().includes(search.toLowerCase()) ||
         (i.description ?? "").toLowerCase().includes(search.toLowerCase());
-      const matchCat = !activeCat || i.category === activeCat;
+      const matchCat =
+        !activeCat ||
+        (activeCat === DRINKS_KEY ? DRINK_CATEGORIES.has(i.category) : i.category === activeCat);
+
       const matchAllergens =
         excludedAllergens.length === 0 ||
         !i.allergens.some((a) =>
