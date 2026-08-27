@@ -6,60 +6,60 @@
 
 @layer base {
   :root {
-    --background: 220 20% 10%;
-    --foreground: 40 20% 90%;
+    --background: 0 0% 10%;
+    --foreground: 40 15% 90%;
 
-    --card: 220 18% 14%;
-    --card-foreground: 40 20% 90%;
+    --card: 0 0% 14%;
+    --card-foreground: 40 15% 90%;
 
-    --popover: 220 18% 14%;
-    --popover-foreground: 40 20% 90%;
+    --popover: 0 0% 12%;
+    --popover-foreground: 40 15% 90%;
 
-    --primary: 355 64% 57%;
+    --primary: 14 77% 56%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 15% 20%;
-    --secondary-foreground: 40 15% 80%;
+    --secondary: 0 0% 16%;
+    --secondary-foreground: 40 12% 80%;
 
-    --muted: 220 15% 18%;
-    --muted-foreground: 220 10% 55%;
+    --muted: 0 0% 18%;
+    --muted-foreground: 30 8% 55%;
 
-    --accent: 355 50% 45%;
+    --accent: 14 60% 45%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 15% 22%;
-    --input: 220 15% 22%;
-    --ring: 355 64% 57%;
+    --border: 0 0% 22%;
+    --input: 0 0% 22%;
+    --ring: 14 77% 56%;
 
     --radius: 0.5rem;
 
-    --warning: 355 64% 57%;
+    --warning: 14 77% 56%;
     --warning-foreground: 0 0% 100%;
 
-    --sidebar-background: 220 20% 8%;
-    --sidebar-foreground: 40 20% 90%;
-    --sidebar-primary: 355 64% 57%;
+    --sidebar-background: 0 0% 8%;
+    --sidebar-foreground: 40 15% 90%;
+    --sidebar-primary: 14 77% 56%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 15% 18%;
-    --sidebar-accent-foreground: 40 20% 90%;
-    --sidebar-border: 220 15% 22%;
-    --sidebar-ring: 355 64% 57%;
+    --sidebar-accent: 0 0% 16%;
+    --sidebar-accent-foreground: 40 12% 80%;
+    --sidebar-border: 0 0% 20%;
+    --sidebar-ring: 14 77% 56%;
 
     --font-heading: 'Space Grotesk', sans-serif;
     --font-body: 'DM Sans', sans-serif;
 
     /* Brand / surface tokens used across pages */
-    --brand: 355 64% 57%;
-    --heading: 40 30% 88%;
+    --brand: 14 77% 56%;
+    --heading: 40 20% 88%;
     --tile-bg-from: 0 0% 100% / 0.04;
-    --tile-bg-to: 355 64% 57% / 0.06;
-    --tile-border: 355 64% 57% / 0.4;
-    --tile-overlay-top: 220 20% 8% / 0.15;
-    --tile-overlay-mid: 220 20% 8% / 0.55;
-    --tile-overlay-bot: 220 20% 8% / 0.95;
+    --tile-bg-to: 14 77% 56% / 0.06;
+    --tile-border: 14 77% 56% / 0.35;
+    --tile-overlay-top: 0 0% 8% / 0.15;
+    --tile-overlay-mid: 0 0% 8% / 0.55;
+    --tile-overlay-bot: 0 0% 8% / 0.95;
   }
 
   .light {
