@@ -144,10 +144,12 @@ export default function ALaCarte() {
 
   const categories = useMemo(() => {
     const set = new Set(items.map((i) => i.category));
-    return CATEGORY_ORDER.filter((c) => set.has(c)).concat(
-      [...set].filter((c) => !CATEGORY_ORDER.includes(c))
-    );
+    const food = CATEGORY_ORDER.filter((c) => set.has(c) && !DRINK_CATEGORIES.has(c));
+    const unknown = [...set].filter((c) => !CATEGORY_ORDER.includes(c));
+    const hasDrinks = [...set].some((c) => DRINK_CATEGORIES.has(c));
+    return [...food, ...unknown, ...(hasDrinks ? [DRINKS_KEY] : [])];
   }, [items]);
+
 
   const allAllergens = useMemo(() => {
     const set = new Set<string>();
