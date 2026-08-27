@@ -6,19 +6,21 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const SYSTEM_PROMPT = `You are a senior bar manager and spirits expert helping Sheraton Bar 512 staff upsell premium bottles.
+const SYSTEM_PROMPT = `Jesteś doświadczonym managerem baru i ekspertem od alkoholi, który pomaga zespołowi Sheraton Bar 512 sprzedawać premium butelki.
 
-You will be shown a photograph of a bottle of alcohol. Identify it as precisely as possible from the label (brand, expression, age statement if visible). Then generate content the staff can use when recommending it to guests.
+Otrzymasz zdjęcie butelki alkoholu. Zidentyfikuj ją jak najdokładniej z etykiety (marka, wersja, wiek jeśli widoczny). Następnie wygeneruj treści, których obsługa użyje w rozmowie z gościem.
 
-Return via the extract_bottle tool with:
-- name: full product name (e.g. "Macallan 12 Double Cask", "Grey Goose Vodka"). If truly unreadable, use best-guess with "(unverified)" suffix.
-- category: one of "Whisky", "Vodka", "Gin", "Rum", "Tequila", "Cognac", "Liqueur", "Wine", "Champagne", "Beer", "Other".
-- price_tier: one of "House", "Premium", "Super-Premium", "Luxury".
-- tasting_notes: 1-2 short sentences describing aroma, palate, finish in guest-friendly language.
-- upsell_pitch: a 2-3 sentence conversational pitch the bartender or server can say to a guest at the table. Warm, confident, not pushy. Highlight what makes it special (heritage, production, flavour) and suggest how to enjoy it (neat, on the rocks, in a specific cocktail).
-- pairing_suggestions: short list (comma-separated) of foods or cocktails it pairs beautifully with.
+WAŻNE: WSZYSTKIE treści (nuty smakowe, pitch, propozycje łączenia) piszesz WYŁĄCZNIE w języku POLSKIM, naturalnym i profesjonalnym.
 
-Be accurate. If the label is ambiguous, pick the most likely product but keep the pitch generic enough to stay true.`;
+Zwróć dane przez narzędzie extract_bottle:
+- name: pełna nazwa produktu (np. "Macallan 12 Double Cask"). Jeśli etykieta nieczytelna, podaj najbardziej prawdopodobną nazwę z dopiskiem "(niepotwierdzone)".
+- category: jedna z: "Whisky", "Wódka", "Gin", "Rum", "Tequila", "Cognac", "Likier", "Wino", "Szampan", "Piwo", "Inne".
+- price_tier: jedna z: "Standard", "Premium", "Super-Premium", "Luksus".
+- tasting_notes: 1-2 krótkie zdania po polsku o aromacie, smaku i finiszu, językiem zrozumiałym dla gościa.
+- upsell_pitch: 2-3 zdania po polsku, które barman lub kelner może powiedzieć gościowi przy stoliku. Ciepło, pewnie, bez nachalności. Podkreśl co wyróżnia ten alkohol i zaproponuj sposób podania (czysto, z lodem, w konkretnym koktajlu).
+- pairing_suggestions: krótka lista po polsku (oddzielona przecinkami) potraw lub koktajli, z którymi świetnie się łączy.
+
+Bądź dokładny. Jeśli etykieta jest niejednoznaczna, wybierz najbardziej prawdopodobny produkt, ale utrzymaj pitch na tyle ogólny, by pozostał prawdziwy.`;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -48,7 +50,7 @@ serve(async (req) => {
           {
             role: "user",
             content: [
-              { type: "text", text: "Identify this bottle and write an upselling pitch for it." },
+              { type: "text", text: "Zidentyfikuj tę butelkę i napisz po polsku pitch sprzedażowy." },
               { type: "image_url", image_url: { url: imageBase64 } },
             ],
           },
@@ -65,9 +67,9 @@ serve(async (req) => {
                   name: { type: "string" },
                   category: {
                     type: "string",
-                    enum: ["Whisky", "Vodka", "Gin", "Rum", "Tequila", "Cognac", "Liqueur", "Wine", "Champagne", "Beer", "Other"],
+                    enum: ["Whisky", "Wódka", "Gin", "Rum", "Tequila", "Cognac", "Likier", "Wino", "Szampan", "Piwo", "Inne"],
                   },
-                  price_tier: { type: "string", enum: ["House", "Premium", "Super-Premium", "Luxury"] },
+                  price_tier: { type: "string", enum: ["Standard", "Premium", "Super-Premium", "Luksus"] },
                   tasting_notes: { type: "string" },
                   upsell_pitch: { type: "string" },
                   pairing_suggestions: { type: "string" },
@@ -84,20 +86,20 @@ serve(async (req) => {
 
     if (!response.ok) {
       if (response.status === 429) {
-        return new Response(JSON.stringify({ error: "Rate limit exceeded, please try again later." }), {
+        return new Response(JSON.stringify({ error: "Przekroczono limit zapytań, spróbuj ponownie później." }), {
           status: 429,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
       if (response.status === 402) {
-        return new Response(JSON.stringify({ error: "AI credits exhausted. Please add credits to your Lovable workspace." }), {
+        return new Response(JSON.stringify({ error: "Wyczerpano kredyty AI. Dodaj kredyty w swoim workspace Lovable." }), {
           status: 402,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
       const t = await response.text();
       console.error("AI gateway error:", response.status, t);
-      return new Response(JSON.stringify({ error: "AI gateway error" }), {
+      return new Response(JSON.stringify({ error: "Błąd usługi AI" }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -106,7 +108,7 @@ serve(async (req) => {
     const data = await response.json();
     const toolCall = data.choices?.[0]?.message?.tool_calls?.[0];
     if (!toolCall) {
-      return new Response(JSON.stringify({ error: "Could not identify bottle from image" }), {
+      return new Response(JSON.stringify({ error: "Nie udało się rozpoznać butelki na zdjęciu" }), {
         status: 422,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
