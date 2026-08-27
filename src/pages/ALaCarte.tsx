@@ -37,6 +37,29 @@ const CATEGORY_ORDER = [
   "Kawa i herbata",
 ];
 
+/** Wszystkie kategorie napojów — na liście filtrów łączone w jeden kafelek „Napoje”. */
+const DRINK_CATEGORIES = new Set([
+  "Koktajle firmowe",
+  "Spritzery",
+  "Moktajle",
+  "Szampany i wina musujące",
+  "Wino białe",
+  "Wino czerwone",
+  "Wino różowe",
+  "Piwo",
+  "Wódka",
+  "Whisky i whiskey",
+  "Cognac i brandy",
+  "Gin",
+  "Rum",
+  "Tequila",
+  "Zimne napoje i soki",
+  "Kawa i herbata",
+]);
+
+const DRINKS_KEY = "__napoje__";
+
+
 interface ALaCarteItem {
   id: string;
   category: string;
