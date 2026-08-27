@@ -262,8 +262,8 @@ export default function Home() {
       const insertAt = adminIdx === -1 ? result.length : adminIdx;
       result.splice(insertAt, 0, upsellingCard);
     }
-    // Only admins for THIS department see the Admin tile
-    if (!canAdmin) result = result.filter((c) => c.sub !== "admin");
+    // Only admins for THIS department see the Admin and Events tiles
+    if (!canAdmin) result = result.filter((c) => c.sub !== "admin" && c.sub !== "events");
     return result;
   })();
 
