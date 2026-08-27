@@ -33,13 +33,13 @@ function LowStockBadge() {
   });
   if (count > 0) {
     return (
-      <span className="rounded-full bg-amber-500/20 px-2.5 py-0.5 text-xs font-semibold text-amber-400">
+      <span className="rounded-full bg-warning/15 px-2.5 py-0.5 text-xs font-semibold text-warning">
         {count} low
       </span>
     );
   }
   return (
-    <span className="rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-xs font-semibold text-emerald-400">
+    <span className="rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-xs font-semibold text-emerald-400">
       All good
     </span>
   );
@@ -64,7 +64,7 @@ function EventsBadge() {
   if (event) {
     const d = new Date(event.event_date).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
     return (
-      <span className="rounded-full bg-primary/20 px-2.5 py-0.5 text-xs font-semibold text-primary">
+      <span className="rounded-full bg-primary/15 px-2.5 py-0.5 text-xs font-semibold text-primary">
         {event.title} · {d}
       </span>
     );
@@ -88,7 +88,7 @@ function RecipesBadge() {
   });
   if (count > 0) {
     return (
-      <span className="rounded-full bg-primary/20 px-2.5 py-0.5 text-xs font-semibold text-primary">
+      <span className="rounded-full bg-primary/15 px-2.5 py-0.5 text-xs font-semibold text-primary">
         {count} recipes
       </span>
     );
@@ -117,7 +117,7 @@ function ContactsBadge() {
     },
   });
   return (
-    <span className="rounded-full bg-primary/20 px-2.5 py-0.5 text-xs font-semibold text-primary">
+    <span className="rounded-full bg-primary/15 px-2.5 py-0.5 text-xs font-semibold text-primary">
       {count} contacts
     </span>
   );
@@ -125,7 +125,7 @@ function ContactsBadge() {
 
 function AdminBadge() {
   return (
-    <span className="rounded-full bg-amber-500/20 px-2.5 py-0.5 text-xs font-semibold text-amber-400">
+    <span className="rounded-full bg-warning/15 px-2.5 py-0.5 text-xs font-semibold text-warning">
       Password protected
     </span>
   );
@@ -145,7 +145,7 @@ function ALaCarteBadge() {
     enabled: !!tableName,
   });
   return (
-    <span className="rounded-full bg-primary/20 px-2.5 py-0.5 text-xs font-semibold text-primary">
+    <span className="rounded-full bg-primary/15 px-2.5 py-0.5 text-xs font-semibold text-primary">
       {count} item{count === 1 ? "" : "s"}
     </span>
   );
@@ -157,14 +157,15 @@ interface NavCard {
   subtitle: string;
   sub: "inventory" | "events" | "recipes" | "telephone" | "admin" | "a-la-carte" | "reservations" | "upselling";
   badge: () => React.ReactNode;
+  size: "large" | "small";
 }
 
 const cards: NavCard[] = [
-  { title: "INVENTORY", icon: Package, subtitle: "Track stock levels & low alerts", sub: "inventory", badge: LowStockBadge },
-  { title: "EVENTS", icon: Calendar, subtitle: "Upcoming events & promotions", sub: "events", badge: EventsBadge },
-  { title: "COCKTAIL RECIPES", icon: BookOpen, subtitle: "Cocktail recipe library & instructions", sub: "recipes", badge: RecipesBadge },
-  { title: "TELEPHONE", icon: Phone, subtitle: "Useful contacts & numbers", sub: "telephone", badge: ContactsBadge },
-  { title: "ADMIN", icon: Shield, subtitle: "Manage all content for this dept.", sub: "admin", badge: AdminBadge },
+  { title: "INVENTORY", icon: Package, subtitle: "Track stock levels & low alerts", sub: "inventory", badge: LowStockBadge, size: "large" },
+  { title: "EVENTS", icon: Calendar, subtitle: "Upcoming events & promotions", sub: "events", badge: EventsBadge, size: "small" },
+  { title: "COCKTAIL RECIPES", icon: BookOpen, subtitle: "Cocktail recipe library & instructions", sub: "recipes", badge: RecipesBadge, size: "small" },
+  { title: "TELEPHONE", icon: Phone, subtitle: "Useful contacts & numbers", sub: "telephone", badge: ContactsBadge, size: "small" },
+  { title: "ADMIN", icon: Shield, subtitle: "Manage all content for this dept.", sub: "admin", badge: AdminBadge, size: "large" },
 ];
 
 const aLaCarteCard: NavCard = {
@@ -173,6 +174,7 @@ const aLaCarteCard: NavCard = {
   subtitle: "Menu of dishes, allergens & prices",
   sub: "a-la-carte",
   badge: ALaCarteBadge,
+  size: "large",
 };
 
 function ReservationsBadge() {
@@ -191,7 +193,7 @@ function ReservationsBadge() {
     enabled: department === "polskie_smaki",
   });
   return (
-    <span className="rounded-full bg-primary/20 px-2.5 py-0.5 text-xs font-semibold text-primary">
+    <span className="rounded-full bg-primary/15 px-2.5 py-0.5 text-xs font-semibold text-primary">
       {count} upcoming
     </span>
   );
@@ -203,6 +205,7 @@ const reservationsCard: NavCard = {
   subtitle: "Table bookings, guests & requests",
   sub: "reservations",
   badge: ReservationsBadge,
+  size: "large",
 };
 
 function UpsellingBadge() {
@@ -217,7 +220,7 @@ function UpsellingBadge() {
     },
   });
   return (
-    <span className="rounded-full bg-primary/20 px-2.5 py-0.5 text-xs font-semibold text-primary">
+    <span className="rounded-full bg-primary/15 px-2.5 py-0.5 text-xs font-semibold text-primary">
       {count} bottle{count === 1 ? "" : "s"}
     </span>
   );
@@ -229,6 +232,7 @@ const upsellingCard: NavCard = {
   subtitle: "Scan bottles & get pitch tips",
   sub: "upselling",
   badge: UpsellingBadge,
+  size: "large",
 };
 
 export default function Home() {
@@ -239,9 +243,7 @@ export default function Home() {
   const canAdmin = isAdminFor(department);
 
   const visibleCards: NavCard[] = (() => {
-    let base = department === "konferencje" ? [...cards] : [...cards];
-    // For Polskie Smaki: drop Cocktail Recipes, add A La Carte before Admin.
-    // For Bar 512: keep Cocktail Recipes, add A La Carte before Admin.
+    let base = [...cards];
     let result = base;
     if (department === "polskie_smaki") {
       result = result.filter((c) => c.sub !== "recipes");
@@ -250,19 +252,16 @@ export default function Home() {
       const adminIdx = result.findIndex((c) => c.sub === "admin");
       result.splice(adminIdx, 0, aLaCarteCard);
     }
-    // Reservations: only Polskie Smaki, inserted before Admin
     if (department === "polskie_smaki") {
       const adminIdx = result.findIndex((c) => c.sub === "admin");
       const insertAt = adminIdx === -1 ? result.length : adminIdx;
       result.splice(insertAt, 0, reservationsCard);
     }
-    // Upselling: only Bar 512, inserted before Admin
     if (department === "bar512") {
       const adminIdx = result.findIndex((c) => c.sub === "admin");
       const insertAt = adminIdx === -1 ? result.length : adminIdx;
       result.splice(insertAt, 0, upsellingCard);
     }
-    // Only admins for THIS department see the Admin and Events tiles
     if (!canAdmin) result = result.filter((c) => c.sub !== "admin" && c.sub !== "events");
     return result;
   })();
@@ -270,7 +269,7 @@ export default function Home() {
   return (
     <div className="relative flex min-h-screen flex-col">
       <AmbientBackgroundForDepartment intensity={0.4} blur={3} />
-      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-white/5 bg-background/40 px-5 py-4 backdrop-blur-xl backdrop-saturate-150 sm:px-8">
+      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-border/40 bg-background/40 px-5 py-4 backdrop-blur-xl backdrop-saturate-150 sm:px-8">
         <div className="flex items-center gap-3">
           <Button
             variant="ghost"
@@ -281,10 +280,7 @@ export default function Home() {
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1
-            className="text-xl font-bold tracking-wide sm:text-2xl"
-            style={{ fontFamily: "'Playfair Display', serif", color: "hsl(var(--brand))" }}
-          >
+          <h1 className="font-heading text-xl font-bold tracking-wide text-brand sm:text-2xl">
             {meta.label}
           </h1>
         </div>
@@ -301,7 +297,7 @@ export default function Home() {
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="end"
-            className="w-56 bg-background/90 backdrop-blur-xl backdrop-saturate-150"
+            className="w-56 bg-popover/90 backdrop-blur-xl backdrop-saturate-150"
           >
             {user && (
               <>
@@ -325,41 +321,27 @@ export default function Home() {
       </header>
 
       <main className="flex flex-1 flex-col items-center justify-center px-5 pb-16 sm:px-8">
-        <div className="grid w-full max-w-4xl grid-cols-1 gap-5 sm:grid-cols-3 sm:gap-6">
-          {visibleCards.map(({ title, icon: Icon, subtitle, sub, badge: Badge }) => (
+        <div className="grid w-full max-w-5xl grid-cols-1 gap-5 auto-rows-[minmax(160px,1fr)] sm:grid-cols-3 sm:gap-6">
+          {visibleCards.map(({ title, icon: Icon, subtitle, sub, badge: Badge, size }) => (
             <button
               key={title}
               onClick={() => navigate(deptSubPath(department, sub))}
               className={cn(
-                "group flex flex-col items-center gap-3 rounded-xl border px-6 py-8 text-center transition-all duration-300",
-                "hover:scale-[1.03]"
+                "group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl border border-border/40 bg-gradient-to-b from-foreground/[0.03] to-primary/[0.06] p-6 text-left transition-all duration-300",
+                "hover:scale-[1.02] hover:border-primary/40 hover:shadow-[0_0_30px_hsl(var(--primary)/0.15)]",
+                size === "large" && "sm:col-span-2"
               )}
-              style={{
-                borderColor: "hsl(var(--tile-border))",
-                background:
-                  "linear-gradient(180deg, hsl(var(--tile-bg-from)) 0%, hsl(var(--tile-bg-to)) 100%)",
-                boxShadow: "0 10px 40px -20px rgba(0,0,0,0.6)",
-                backdropFilter: "blur(14px) saturate(150%)",
-                WebkitBackdropFilter: "blur(14px) saturate(150%)",
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.boxShadow =
-                  "0 0 30px rgba(215, 76, 90, 0.25), 0 10px 40px -20px rgba(0,0,0,0.7)";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.boxShadow =
-                  "0 10px 40px -20px rgba(0,0,0,0.6)";
-              }}
             >
-              <Icon className="h-8 w-8 text-primary" />
-              <h3
-                className="text-lg font-bold tracking-wider"
-                style={{ fontFamily: "'Playfair Display', serif", color: "hsl(var(--foreground))" }}
-              >
-                {title}
-              </h3>
-              <p className="text-xs text-muted-foreground">{subtitle}</p>
-              <Badge />
+              <Icon className={cn("text-primary", size === "large" ? "h-9 w-9" : "h-7 w-7")} />
+              <div>
+                <h3 className="font-heading text-lg font-bold tracking-wider text-foreground">
+                  {title}
+                </h3>
+                <p className="mt-1 text-xs text-muted-foreground">{subtitle}</p>
+                <div className="mt-3">
+                  <Badge />
+                </div>
+              </div>
             </button>
           ))}
         </div>
