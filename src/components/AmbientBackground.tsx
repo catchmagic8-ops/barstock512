@@ -1,7 +1,9 @@
+import { useQuery } from "@tanstack/react-query";
 import { useDepartment } from "@/contexts/DepartmentContext";
 import bar512Img from "@/assets/ambient-bar512.jpg";
 import konferencjeImg from "@/assets/ambient-konferencje.jpg";
 import polskieSmakiImg from "@/assets/ambient-polskie-smaki.jpg";
+import { ambientImageKey, getSettings } from "@/lib/appSettings";
 
 export const DEPT_AMBIENT: Record<string, string> = {
   bar512: bar512Img,
@@ -55,10 +57,15 @@ function AmbientShell({
   );
 }
 
-/** Pulls the ambient image from the active DepartmentProvider. */
+/** Pulls the ambient image from the active DepartmentProvider (custom image wins). */
 export function AmbientBackgroundForDepartment({ intensity, blur }: Omit<Props, "src">) {
   const { department } = useDepartment();
-  const src = DEPT_AMBIENT[department];
+  const key = ambientImageKey(department);
+  const { data: settings = {} } = useQuery({
+    queryKey: ["app-settings", "ambient", department],
+    queryFn: () => getSettings([key]),
+  });
+  const src = settings[key] || DEPT_AMBIENT[department];
   if (!src) return null;
   return <AmbientShell src={src} intensity={intensity} blur={blur} />;
 }
