@@ -169,18 +169,25 @@ export default function ALaCarte() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-30 border-b border-border bg-card/80 backdrop-blur-md">
-        <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-3 min-w-0">
-            <Link to={deptHomePath(department)}>
-              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-            </Link>
-            <Utensils className="h-5 w-5 text-primary flex-shrink-0" />
-            <h1 className="font-heading text-lg font-bold text-foreground truncate">Menu A La Carte</h1>
-            <span className="text-xs text-muted-foreground hidden sm:inline">· {meta.label}</span>
+      <header className="sticky top-0 z-30 border-b border-border/60 bg-background/85 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-3xl items-center gap-3 px-4 py-3 min-w-0">
+          <Link to={deptHomePath(department)}>
+            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+          </Link>
+          <div className="min-w-0 flex-1 text-center">
+            <p className="text-[0.6rem] uppercase tracking-[0.45em] text-muted-foreground">
+              {meta.label}
+            </p>
+            <h1
+              className="truncate text-lg font-bold tracking-[0.2em] uppercase"
+              style={{ fontFamily: "'Playfair Display', serif", color: "hsl(var(--brand))" }}
+            >
+              Menu
+            </h1>
           </div>
+          <Utensils className="h-5 w-5 flex-shrink-0 text-primary" />
         </div>
 
         <div className="mx-auto max-w-3xl px-4 pb-3 space-y-3">
@@ -190,7 +197,7 @@ export default function ALaCarte() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Szukaj pozycji w menu..."
-              className="pl-9 pr-9 bg-secondary border-border"
+              className="pl-9 pr-9 bg-secondary/60 border-border/70"
             />
             {search && (
               <button
@@ -207,10 +214,10 @@ export default function ALaCarte() {
               <button
                 onClick={() => setActiveCat(null)}
                 className={cn(
-                  "flex-shrink-0 rounded-full px-3 py-1 text-xs font-medium transition-colors border",
+                  "flex-shrink-0 rounded-full px-3 py-1 text-[0.7rem] uppercase tracking-[0.15em] transition-colors border",
                   activeCat === null
                     ? "bg-primary text-primary-foreground border-primary"
-                    : "bg-secondary text-muted-foreground border-border hover:text-foreground"
+                    : "bg-transparent text-muted-foreground border-border/70 hover:text-foreground"
                 )}
               >
                 Wszystko
@@ -220,14 +227,15 @@ export default function ALaCarte() {
                   key={c}
                   onClick={() => setActiveCat(c === activeCat ? null : c)}
                   className={cn(
-                    "flex-shrink-0 rounded-full px-3 py-1 text-xs font-medium transition-colors border whitespace-nowrap",
+                    "flex-shrink-0 rounded-full px-3 py-1 text-[0.7rem] uppercase tracking-[0.15em] transition-colors border whitespace-nowrap",
                     activeCat === c
                       ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-secondary text-muted-foreground border-border hover:text-foreground"
+                      : "bg-transparent text-muted-foreground border-border/70 hover:text-foreground"
                   )}
                 >
-                  {c}
+                  {c === DRINKS_KEY ? "Napoje" : c}
                 </button>
+
               ))}
             </div>
           )}
