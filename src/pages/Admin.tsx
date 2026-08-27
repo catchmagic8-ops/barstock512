@@ -780,11 +780,11 @@ export default function Admin() {
             </AdminSection>
           )}
 
-          <AdminSection title="Wyglad aplikacji" icon={Palette}>
+          <AdminSection title="Wygląd aplikacji" icon={Palette}>
             <AccentPicker />
             <div className="mt-6">
               <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Zdjecia departamentu
+                Zdjęcia i tła departamentów
               </p>
               <DeptImageSettings />
             </div>
