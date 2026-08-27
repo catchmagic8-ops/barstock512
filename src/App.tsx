@@ -30,7 +30,7 @@ function DeptRoutes({ department }: { department: Department }) {
       <Routes>
         <Route index element={<Home />} />
         <Route path="inventory" element={<Index />} />
-        <Route path="events" element={<Events />} />
+        <Route path="events" element={<RequireAdmin><Events /></RequireAdmin>} />
         <Route path="recipes" element={<Recipes />} />
         <Route path="telephone" element={<Telephone />} />
         <Route path="admin" element={<RequireAdmin><Admin /></RequireAdmin>} />
@@ -68,7 +68,7 @@ const App = () => (
             />
             <Route
               path="/events"
-              element={<DepartmentProvider department="bar512"><Events /></DepartmentProvider>}
+              element={<DepartmentProvider department="bar512"><RequireAdmin><Events /></RequireAdmin></DepartmentProvider>}
             />
             <Route
               path="/recipes"
