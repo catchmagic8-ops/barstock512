@@ -68,7 +68,7 @@ const App = () => (
             />
             <Route
               path="/events"
-              element={<DepartmentProvider department="bar512"><Events /></DepartmentProvider>}
+              element={<DepartmentProvider department="bar512"><RequireAdmin><Events /></RequireAdmin></DepartmentProvider>}
             />
             <Route
               path="/recipes"
