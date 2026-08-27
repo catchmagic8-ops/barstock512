@@ -1,10 +1,12 @@
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import ThemeToggle from "@/components/ThemeToggle";
 import bar512Img from "@/assets/dept-bar512.jpg";
 import AmbientBackground, { DEPT_AMBIENT } from "@/components/AmbientBackground";
+import { DEPT_AMBIENT_IMAGE_KEY, DEPT_TILE_IMAGE_KEY, getSettings } from "@/lib/appSettings";
 
 interface Tile {
   title: string;
@@ -13,17 +15,28 @@ interface Tile {
   to: string;
 }
 
-const tiles: Tile[] = [
-  { title: "Bar 512", tagline: "Cocktails · Stock · Service", image: bar512Img, to: "/home" },
-];
+const SETTING_KEYS = [DEPT_TILE_IMAGE_KEY, DEPT_AMBIENT_IMAGE_KEY];
 
 export default function Departments() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { data: settings = {} } = useQuery({
+    queryKey: ["app-settings", "dept-images"],
+    queryFn: () => getSettings(SETTING_KEYS),
+  });
+
+  const tiles: Tile[] = [
+    {
+      title: "Bar 512",
+      tagline: "Cocktails · Stock · Service",
+      image: settings[DEPT_TILE_IMAGE_KEY] || bar512Img,
+      to: "/home",
+    },
+  ];
 
   return (
     <div className="relative flex min-h-screen flex-col">
-      <AmbientBackground src={DEPT_AMBIENT.bar512} intensity={0.35} blur={4} />
+      <AmbientBackground src={settings[DEPT_AMBIENT_IMAGE_KEY] || DEPT_AMBIENT.bar512} intensity={0.35} blur={4} />
       <header className="sticky top-0 z-20 flex items-center justify-between border-b border-white/5 bg-background/40 px-5 py-4 backdrop-blur-xl backdrop-saturate-150 sm:px-8">
         <h1
           className="text-xl font-bold tracking-wide sm:text-2xl"
@@ -51,18 +64,6 @@ export default function Departments() {
       </header>
 
       <main className="flex flex-1 flex-col items-center justify-center px-5 pb-16 sm:px-8">
-        <div className="mb-10 text-center sm:mb-14">
-          <h2
-            className="text-3xl font-bold sm:text-4xl lg:text-5xl"
-            style={{ fontFamily: "'Playfair Display', serif", color: "hsl(var(--foreground))" }}
-          >
-            Choose a department
-          </h2>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Each department has its own inventory, events, recipes & contacts.
-          </p>
-        </div>
-
         <div className="grid w-full max-w-sm grid-cols-1 gap-5 sm:gap-6">
           {tiles.map((t, idx) => (
             <button

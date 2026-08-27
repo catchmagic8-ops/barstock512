@@ -22,6 +22,7 @@ import SubcategoryManager from "@/components/SubcategoryManager";
 import ALaCarteManager from "@/components/ALaCarteManager";
 import UserManagement from "@/components/UserManagement";
 import AccentPicker from "@/components/AccentPicker";
+import DeptImageSettings from "@/components/DeptImageSettings";
 import { useInventory } from "@/hooks/useInventory";
 import { useDepartment } from "@/contexts/DepartmentContext";
 import { deptHomePath } from "@/lib/department";
@@ -781,6 +782,12 @@ export default function Admin() {
 
           <AdminSection title="Wyglad aplikacji" icon={Palette}>
             <AccentPicker />
+            <div className="mt-6">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Zdjecia departamentu
+              </p>
+              <DeptImageSettings />
+            </div>
           </AdminSection>
 
           <AdminSection title="Low Stock Alerts" icon={BellRing} defaultOpen>
