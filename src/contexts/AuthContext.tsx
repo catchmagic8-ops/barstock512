@@ -18,8 +18,10 @@ interface AuthContextValue {
   isAdminFor: (dept: Exclude<AppDepartment, "all">) => boolean;
   loading: boolean;
   login: (username: string, password: string) => Promise<{ ok: true } | { ok: false; error: string }>;
+  register: (username: string, password: string) => Promise<{ ok: true } | { ok: false; error: string }>;
   logout: () => void;
 }
+
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 const STORAGE_KEY = "sheraton-auth-user";
@@ -66,6 +68,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return { ok: true };
   }, []);
 
+  const register = useCallback<AuthContextValue["register"]>(async (username, password) => {
+    const name = username.trim();
+    if (name.length < 2) return { ok: false, error: "Nazwa użytkownika jest za krótka" };
+    if (password.length < 4) return { ok: false, error: "Hasło musi mieć min. 4 znaki" };
+    const { data, error } = await (supabase as any).rpc("self_register_user", {
+      _username: name,
+      _password: password,
+    });
+    if (error) {
+      const msg = /already taken/i.test(error.message ?? "")
+        ? "Ta nazwa użytkownika jest już zajęta"
+        : error.message ?? "Rejestracja nie udała się";
+      return { ok: false, error: msg };
+    }
+    const row = Array.isArray(data) ? data[0] : data;
+    if (!row) return { ok: false, error: "Rejestracja nie udała się" };
+    const u: AuthUser = {
+      id: row.id,
+      username: row.username,
+      role: row.role,
+      department: (row.department as AppDepartment) ?? "all",
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(u));
+    setUser(u);
+    return { ok: true };
+  }, []);
+
+
+
   const logout = useCallback(() => {
     localStorage.removeItem(STORAGE_KEY);
     // Clean legacy session keys from old PasswordGate
@@ -86,9 +117,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       isAdminFor,
       loading,
       login,
+      register,
       logout,
+
     };
-  }, [user, loading, login, logout]);
+  }, [user, loading, login, register, logout]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
