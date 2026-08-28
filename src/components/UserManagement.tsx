@@ -15,9 +15,9 @@ import { toast } from "sonner";
 import { useAuth, type AppRole, type AppDepartment } from "@/contexts/AuthContext";
 
 const DEPT_LABELS: Record<AppDepartment, string> = {
-  all: "All Departments",
+  all: "Wszystkie działy",
   bar512: "Bar 512",
-  konferencje: "Conference",
+  konferencje: "Konferencje",
   polskie_smaki: "Polskie Smaki",
 };
 
@@ -75,7 +75,7 @@ export default function UserManagement() {
 
   const createUser = useMutation({
     mutationFn: async () => {
-      if (!me) throw new Error("Not signed in");
+      if (!me) throw new Error("Nie zalogowano");
       const { error } = await (supabase as any).rpc("admin_create_user", {
         _admin_id: me.id,
         _username: newUsername.trim(),
@@ -89,14 +89,14 @@ export default function UserManagement() {
       qc.invalidateQueries({ queryKey: QKEY });
       setCreateOpen(false);
       setNewUsername(""); setNewPassword(""); setNewRole("staff"); setNewDepartment("all");
-      toast.success("User created");
+      toast.success("Użytkownik utworzony");
     },
-    onError: (err: any) => toast.error(err?.message ?? "Failed to create user"),
+    onError: (err: any) => toast.error(err?.message ?? "Nie udało się utworzyć użytkownika"),
   });
 
   const updatePassword = useMutation({
     mutationFn: async () => {
-      if (!me || !pwTarget) throw new Error("Missing target");
+      if (!me || !pwTarget) throw new Error("Brak celu");
       const { error } = await (supabase as any).rpc("admin_update_password", {
         _admin_id: me.id,
         _user_id: pwTarget.id,
@@ -106,14 +106,14 @@ export default function UserManagement() {
     },
     onSuccess: () => {
       setPwOpen(false); setPwTarget(null); setPwValue("");
-      toast.success("Password updated");
+      toast.success("Hasło zaktualizowane");
     },
-    onError: (err: any) => toast.error(err?.message ?? "Failed to update password"),
+    onError: (err: any) => toast.error(err?.message ?? "Nie udało się zaktualizować hasła"),
   });
 
   const updateRole = useMutation({
     mutationFn: async ({ userId, role, department }: { userId: string; role?: AppRole; department?: AppDepartment }) => {
-      if (!me) throw new Error("Not signed in");
+      if (!me) throw new Error("Nie zalogowano");
       // Find current values to fill in the unchanged side
       const current = users.find((u) => u.id === userId);
       const nextRole: AppRole = role ?? current?.role ?? "staff";
@@ -128,14 +128,14 @@ export default function UserManagement() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: QKEY });
-      toast.success("User updated");
+      toast.success("Użytkownik zaktualizowany");
     },
-    onError: (err: any) => toast.error(err?.message ?? "Failed to update user"),
+    onError: (err: any) => toast.error(err?.message ?? "Nie udało się zaktualizować użytkownika"),
   });
 
   const setApproved = useMutation({
     mutationFn: async ({ userId, approved }: { userId: string; approved: boolean }) => {
-      if (!me) throw new Error("Not signed in");
+      if (!me) throw new Error("Nie zalogowano");
       const { error } = await (supabase as any).rpc("admin_set_approved", {
         _admin_id: me.id,
         _user_id: userId,
@@ -145,15 +145,15 @@ export default function UserManagement() {
     },
     onSuccess: (_d, vars) => {
       qc.invalidateQueries({ queryKey: QKEY });
-      toast.success(vars.approved ? "Access approved" : "Access revoked");
+      toast.success(vars.approved ? "Dostęp zatwierdzony" : "Dostęp cofnięty");
     },
-    onError: (err: any) => toast.error(err?.message ?? "Failed to update access"),
+    onError: (err: any) => toast.error(err?.message ?? "Nie udało się zaktualizować dostępu"),
   });
 
 
   const deleteUser = useMutation({
     mutationFn: async (userId: string) => {
-      if (!me) throw new Error("Not signed in");
+      if (!me) throw new Error("Nie zalogowano");
       const { error } = await (supabase as any).rpc("admin_delete_user", {
         _admin_id: me.id,
         _user_id: userId,
@@ -162,24 +162,24 @@ export default function UserManagement() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: QKEY });
-      toast.success("User deleted");
+      toast.success("Użytkownik usunięty");
     },
-    onError: (err: any) => toast.error(err?.message ?? "Failed to delete user"),
+    onError: (err: any) => toast.error(err?.message ?? "Nie udało się usunąć użytkownika"),
   });
 
   return (
     <div className="space-y-3">
       <div className="flex justify-between items-center">
-        <p className="text-sm text-muted-foreground">Manage who can sign in and what they can do.</p>
+        <p className="text-sm text-muted-foreground">Zarządzaj tym, kto może się zalogować i co może robić.</p>
         <Button size="sm" onClick={() => setCreateOpen(true)} className="gap-1.5">
-          <Plus className="h-4 w-4" /> Add User
+          <Plus className="h-4 w-4" /> Dodaj użytkownika
         </Button>
       </div>
 
       {isLoading ? (
         <Loader2 className="h-5 w-5 animate-spin text-primary mx-auto" />
       ) : users.length === 0 ? (
-        <p className="text-sm text-muted-foreground text-center py-4">No users</p>
+        <p className="text-sm text-muted-foreground text-center py-4">Brak użytkowników</p>
       ) : (
         <div className="space-y-2">
           {users.map((u) => {
@@ -198,10 +198,10 @@ export default function UserManagement() {
                   <div className="min-w-0">
                     <p className="text-sm font-medium text-foreground truncate">
                       {u.username}
-                      {isMe && <span className="text-xs text-muted-foreground ml-2">(you)</span>}
+                      {isMe && <span className="text-xs text-muted-foreground ml-2">(ty)</span>}
                       {!u.approved && (
                         <span className="ml-2 inline-flex items-center gap-1 rounded-full border border-destructive/50 bg-destructive/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-destructive align-middle">
-                          <Clock className="h-3 w-3" /> Pending
+                          <Clock className="h-3 w-3" /> Oczekujący
                         </span>
                       )}
                     </p>
@@ -217,11 +217,11 @@ export default function UserManagement() {
                       size="sm"
                       variant={u.approved ? "ghost" : "default"}
                       className="h-8 gap-1.5 text-xs"
-                      title={u.approved ? "Revoke access" : "Approve access"}
+                      title={u.approved ? "Cofnij dostęp" : "Zatwierdź dostęp"}
                       onClick={() => setApproved.mutate({ userId: u.id, approved: !u.approved })}
                     >
                       {u.approved ? <Ban className="h-3.5 w-3.5" /> : <Check className="h-3.5 w-3.5" />}
-                      {u.approved ? "Revoke" : "Approve"}
+                      {u.approved ? "Cofnij" : "Zatwierdź"}
                     </Button>
                   )}
 
@@ -233,8 +233,8 @@ export default function UserManagement() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="staff">Staff</SelectItem>
-                      <SelectItem value="admin">Admin</SelectItem>
+                      <SelectItem value="staff">Personel</SelectItem>
+                      <SelectItem value="admin">Administrator</SelectItem>
                     </SelectContent>
                   </Select>
                   <Select
@@ -245,9 +245,9 @@ export default function UserManagement() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">All Departments</SelectItem>
+                      <SelectItem value="all">Wszystkie działy</SelectItem>
                       <SelectItem value="bar512">Bar 512</SelectItem>
-                      <SelectItem value="konferencje">Conference</SelectItem>
+                      <SelectItem value="konferencje">Konferencje</SelectItem>
                       <SelectItem value="polskie_smaki">Polskie Smaki</SelectItem>
                     </SelectContent>
                   </Select>
@@ -255,7 +255,7 @@ export default function UserManagement() {
                     variant="ghost"
                     size="icon"
                     className="text-muted-foreground hover:text-primary h-8 w-8"
-                    title="Change password"
+                    title="Zmień hasło"
                     onClick={() => { setPwTarget(u); setPwValue(""); setPwOpen(true); }}
                   >
                     <KeyRound className="h-3.5 w-3.5" />
@@ -264,10 +264,10 @@ export default function UserManagement() {
                     variant="ghost"
                     size="icon"
                     className="text-muted-foreground hover:text-destructive h-8 w-8"
-                    title="Delete user"
+                    title="Usuń użytkownika"
                     disabled={isMe}
                     onClick={() => {
-                      if (window.confirm(`Delete user "${u.username}"?`)) deleteUser.mutate(u.id);
+                      if (window.confirm(`Usunąć użytkownika "${u.username}"?`)) deleteUser.mutate(u.id);
                     }}
                   >
                     <Trash2 className="h-3.5 w-3.5" />
@@ -283,13 +283,13 @@ export default function UserManagement() {
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent className="bg-card border-border">
           <DialogHeader>
-            <DialogTitle className="font-heading text-foreground">Add User</DialogTitle>
+            <DialogTitle className="font-heading text-foreground">Dodaj użytkownika</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 py-2">
             <div className="space-y-1.5">
-              <Label className="text-xs uppercase tracking-wider text-muted-foreground">Username</Label>
+              <Label className="text-xs uppercase tracking-wider text-muted-foreground">Nazwa użytkownika</Label>
               <Input
-                placeholder="e.g. jdoe"
+                placeholder="np. jkowalski"
                 value={newUsername}
                 onChange={(e) => setNewUsername(e.target.value)}
                 autoCapitalize="none"
@@ -297,52 +297,52 @@ export default function UserManagement() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs uppercase tracking-wider text-muted-foreground">Password</Label>
+              <Label className="text-xs uppercase tracking-wider text-muted-foreground">Hasło</Label>
               <Input
                 type="password"
-                placeholder="At least 4 characters"
+                placeholder="Co najmniej 4 znaki"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 className="bg-secondary border-border"
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs uppercase tracking-wider text-muted-foreground">Role</Label>
+              <Label className="text-xs uppercase tracking-wider text-muted-foreground">Rola</Label>
               <Select value={newRole} onValueChange={(v) => setNewRole(v as AppRole)}>
                 <SelectTrigger className="bg-secondary border-border">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="staff">Staff (view only)</SelectItem>
-                  <SelectItem value="admin">Admin (full access)</SelectItem>
+                  <SelectItem value="staff">Personel (tylko podgląd)</SelectItem>
+                  <SelectItem value="admin">Administrator (pełny dostęp)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs uppercase tracking-wider text-muted-foreground">Department</Label>
+              <Label className="text-xs uppercase tracking-wider text-muted-foreground">Dział</Label>
               <Select value={newDepartment} onValueChange={(v) => setNewDepartment(v as AppDepartment)}>
                 <SelectTrigger className="bg-secondary border-border">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Departments</SelectItem>
+                  <SelectItem value="all">Wszystkie działy</SelectItem>
                   <SelectItem value="bar512">Bar 512</SelectItem>
-                  <SelectItem value="konferencje">Conference</SelectItem>
+                  <SelectItem value="konferencje">Konferencje</SelectItem>
                   <SelectItem value="polskie_smaki">Polskie Smaki</SelectItem>
                 </SelectContent>
               </Select>
               <p className="text-[11px] text-muted-foreground">
-                Admins limited to a single department only manage that department.
+                Administratorzy ograniczeni do jednego działu zarządzają tylko tym działem.
               </p>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setCreateOpen(false)}>Anuluj</Button>
             <Button
               onClick={() => createUser.mutate()}
               disabled={!newUsername.trim() || newPassword.length < 4 || createUser.isPending}
             >
-              {createUser.isPending ? "Creating…" : "Create"}
+              {createUser.isPending ? "Tworzenie…" : "Utwórz"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -353,25 +353,25 @@ export default function UserManagement() {
         <DialogContent className="bg-card border-border">
           <DialogHeader>
             <DialogTitle className="font-heading text-foreground">
-              Change password{pwTarget ? ` — ${pwTarget.username}` : ""}
+              Zmień hasło{pwTarget ? ` — ${pwTarget.username}` : ""}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-3 py-2">
             <Input
               type="password"
-              placeholder="New password (min 4 chars)"
+              placeholder="Nowe hasło (min. 4 znaki)"
               value={pwValue}
               onChange={(e) => setPwValue(e.target.value)}
               className="bg-secondary border-border"
             />
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setPwOpen(false)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setPwOpen(false)}>Anuluj</Button>
             <Button
               onClick={() => updatePassword.mutate()}
               disabled={pwValue.length < 4 || updatePassword.isPending}
             >
-              {updatePassword.isPending ? "Saving…" : "Update"}
+              {updatePassword.isPending ? "Zapisywanie…" : "Zaktualizuj"}
             </Button>
           </DialogFooter>
         </DialogContent>
