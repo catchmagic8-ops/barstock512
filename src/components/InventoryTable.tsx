@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
 } from "@/components/ui/dialog";
-import { formatFlaggedAt, type InventoryItem } from "@/lib/inventory";
+import { formatFlaggedAt, formatRelative, type InventoryItem } from "@/lib/inventory";
 import { cn } from "@/lib/utils";
 
 interface Props {
