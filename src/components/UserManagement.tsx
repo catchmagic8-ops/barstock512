@@ -199,6 +199,11 @@ export default function UserManagement() {
                     <p className="text-sm font-medium text-foreground truncate">
                       {u.username}
                       {isMe && <span className="text-xs text-muted-foreground ml-2">(you)</span>}
+                      {!u.approved && (
+                        <span className="ml-2 inline-flex items-center gap-1 rounded-full border border-destructive/50 bg-destructive/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-destructive align-middle">
+                          <Clock className="h-3 w-3" /> Pending
+                        </span>
+                      )}
                     </p>
                     <p className="text-xs text-muted-foreground">
                       <span className="capitalize">{u.role}</span>
@@ -207,6 +212,19 @@ export default function UserManagement() {
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5 flex-shrink-0 flex-wrap justify-end">
+                  {!isMe && (
+                    <Button
+                      size="sm"
+                      variant={u.approved ? "ghost" : "default"}
+                      className="h-8 gap-1.5 text-xs"
+                      title={u.approved ? "Revoke access" : "Approve access"}
+                      onClick={() => setApproved.mutate({ userId: u.id, approved: !u.approved })}
+                    >
+                      {u.approved ? <Ban className="h-3.5 w-3.5" /> : <Check className="h-3.5 w-3.5" />}
+                      {u.approved ? "Revoke" : "Approve"}
+                    </Button>
+                  )}
+
                   <Select
                     value={u.role}
                     onValueChange={(v) => updateRole.mutate({ userId: u.id, role: v as AppRole })}
