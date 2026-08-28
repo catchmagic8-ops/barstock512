@@ -14,6 +14,8 @@ import NotFound from "./pages/NotFound.tsx";
 import ALaCarte from "./pages/ALaCarte.tsx";
 import Reservations from "./pages/Reservations.tsx";
 import Upselling from "./pages/Upselling.tsx";
+import Info from "./pages/Info.tsx";
+import TestPage from "./pages/TestPage.tsx";
 import AuthGate from "./components/AuthGate";
 import RequireAdmin from "./components/RequireAdmin";
 import PageTransition from "./components/PageTransition";
