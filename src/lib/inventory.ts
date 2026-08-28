@@ -13,6 +13,7 @@ export interface InventoryItem {
   storehouse?: string;
   qtyLeft?: number;
   qtyToOrder?: number;
+  updatedAt?: string;
 }
 
 // Map DB row to app model
@@ -29,6 +30,7 @@ export function rowToItem(row: {
   storehouse?: string | null;
   qty_left?: number | null;
   qty_to_order?: number | null;
+  updated_at?: string | null;
 }): InventoryItem {
   return {
     id: row.id,
@@ -43,6 +45,7 @@ export function rowToItem(row: {
     storehouse: row.storehouse ?? undefined,
     qtyLeft: row.qty_left ?? undefined,
     qtyToOrder: row.qty_to_order ?? undefined,
+    updatedAt: row.updated_at ?? undefined,
   };
 }
 
@@ -51,4 +54,18 @@ export function formatFlaggedAt(iso: string): string {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return "";
   return `${d.toLocaleDateString("pl-PL")}, ${d.toLocaleTimeString("pl-PL", { hour: "2-digit", minute: "2-digit" })}`;
+}
+
+// Short relative label in Polish, e.g. "teraz", "3 h temu", "2 dni temu"
+export function formatRelative(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  const mins = Math.floor((Date.now() - d.getTime()) / 60000);
+  if (mins < 1) return "teraz";
+  if (mins < 60) return `${mins} min temu`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours} h temu`;
+  const days = Math.floor(hours / 24);
+  if (days < 30) return `${days} ${days === 1 ? "dzień" : "dni"} temu`;
+  return formatFlaggedAt(iso);
 }

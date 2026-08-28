@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
 } from "@/components/ui/dialog";
-import { formatFlaggedAt, type InventoryItem } from "@/lib/inventory";
+import { formatFlaggedAt, formatRelative, type InventoryItem } from "@/lib/inventory";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -72,6 +72,10 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
                   <p className="text-[11px] text-muted-foreground truncate">
                     {[item.subcategory, item.unit, item.storehouse].filter(Boolean).join(" · ")}
                   </p>
+                  <p className="text-[11px] text-muted-foreground truncate">
+                    stan: {item.qtyLeft != null ? `${item.qtyLeft} ${item.unit}` : "brak danych"}
+                    {(item.flaggedAt || item.updatedAt) && <> · {formatRelative(item.flaggedAt ?? item.updatedAt!)}</>}
+                  </p>
                   {flagged && (item.qtyLeft != null || item.qtyToOrder != null) && (
                     <p className="mt-0.5 text-[11px] font-medium text-warning">
                       {item.qtyLeft != null && <>zostało: {item.qtyLeft}</>}
@@ -131,13 +135,15 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
       <div className="hidden sm:block overflow-x-auto -mx-1">
         <table className="w-full text-sm table-fixed">
           <colgroup>
-            <col className="w-[45%]" />
-            <col className="w-[35%]" />
-            <col className="w-[20%]" />
+            <col className="w-[36%]" />
+            <col className="w-[19%]" />
+            <col className="w-[27%]" />
+            <col className="w-[18%]" />
           </colgroup>
           <thead>
             <tr className="border-b border-border text-left text-muted-foreground">
               <th className="pb-3 pr-4 font-medium">Pozycja</th>
+              <th className="pb-3 pr-4 font-medium">Stan / aktualizacja</th>
               <th className="pb-3 pr-4 font-medium hidden md:table-cell">Notatka</th>
               <th className="pb-3 font-medium text-right">Status</th>
             </tr>
@@ -167,6 +173,20 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
                         </span>
                       </div>
                     </div>
+                  </td>
+                  <td className="py-3 pr-4">
+                    {item.qtyLeft != null ? (
+                      <span className={cn("text-sm font-semibold", flagged ? "text-warning" : "text-foreground")}>
+                        {item.qtyLeft} {item.unit}
+                      </span>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">brak danych</span>
+                    )}
+                    {(item.flaggedAt || item.updatedAt) && (
+                      <span className="block text-[10px] text-muted-foreground">
+                        {formatRelative(item.flaggedAt ?? item.updatedAt!)}
+                      </span>
+                    )}
                   </td>
                   <td className="py-3 pr-4 hidden md:table-cell">
                     {flagged && (item.restockNote || item.qtyLeft != null || item.qtyToOrder != null) ? (
