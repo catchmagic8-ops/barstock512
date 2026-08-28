@@ -200,9 +200,17 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
                     ) : (
                       <span className="text-xs text-muted-foreground">brak danych</span>
                     )}
-                    {(item.flaggedAt || item.updatedAt) && (
+                    {(item.stockConfirmedAt || item.flaggedAt || item.updatedAt) && (
                       <span className="block text-[10px] text-muted-foreground">
-                        {formatRelative(item.flaggedAt ?? item.updatedAt!)}
+                        {formatRelative(item.stockConfirmedAt ?? item.flaggedAt ?? item.updatedAt!)}
+                      </span>
+                    )}
+                    {isStockStale(item) && (
+                      <span
+                        className="mt-0.5 inline-flex items-center gap-1 rounded-full bg-destructive/15 px-1.5 py-0.5 text-[10px] font-semibold text-destructive"
+                        title={`Stan nie był potwierdzony od ponad ${STALE_STOCK_DAYS} dni`}
+                      >
+                        <Clock className="h-3 w-3" /> nieaktualne
                       </span>
                     )}
                   </td>
