@@ -117,7 +117,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       isAdminFor,
       loading,
       login,
+      register,
       logout,
+
     };
   }, [user, loading, login, logout]);
 
