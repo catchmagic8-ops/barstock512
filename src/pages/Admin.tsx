@@ -815,7 +815,7 @@ export default function Admin() {
             </div>
           </AdminSection>
 
-          <AdminSection title="Low Stock Alerts" icon={BellRing} defaultOpen>
+          <AdminSection title="Low Stock Alerts" icon={BellRing} alertCount={flaggedCount}>
             <LowStockAlerts />
           </AdminSection>
 
