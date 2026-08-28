@@ -87,18 +87,9 @@ export default function Departments() {
                     "linear-gradient(180deg, hsl(var(--background) / 0.15) 0%, hsl(var(--background) / 0.55) 55%, hsl(var(--background) / 0.95) 100%)",
                 }}
               />
-              <div className="absolute inset-x-0 bottom-0 p-6">
-                <h3 className="font-heading text-2xl font-bold leading-tight text-foreground sm:text-3xl">
-                  {t.title}
-                </h3>
-                <p className="mt-1.5 text-sm text-muted-foreground">
-                  {t.tagline}
-                </p>
-                <span className="mt-4 inline-block text-xs font-semibold uppercase tracking-widest text-brand">
-                  Enter →
-                </span>
-              </div>
+              <span className="sr-only">{t.title}</span>
             </button>
+
           ))}
         </div>
       </main>
