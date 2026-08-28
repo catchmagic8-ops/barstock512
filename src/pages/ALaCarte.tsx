@@ -73,7 +73,7 @@ interface ALaCarteItem {
 
 function DietaryBadge({ tag }: { tag: string }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-xs font-semibold text-emerald-400 ring-1 ring-emerald-500/30">
+    <span className="inline-flex items-center gap-1 rounded-md bg-emerald-500/10 px-1.5 py-0.5 text-[0.68rem] font-medium text-emerald-500 dark:text-emerald-400">
       <Leaf className="h-3 w-3" />
       {tag}
     </span>
@@ -82,12 +82,12 @@ function DietaryBadge({ tag }: { tag: string }) {
 
 function AllergenBadge({ tag }: { tag: string }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 px-2.5 py-0.5 text-xs font-medium text-amber-400 ring-1 ring-amber-500/30">
-      <AlertTriangle className="h-3 w-3" />
+    <span className="inline-flex items-center rounded-md bg-muted px-1.5 py-0.5 text-[0.68rem] font-medium text-muted-foreground">
       {tag}
     </span>
   );
 }
+
 
 export default function ALaCarte() {
   const { tables, department, meta } = useDepartment();
