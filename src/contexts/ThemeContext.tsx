@@ -35,27 +35,41 @@ interface ThemeCtx {
   theme: Theme;
   toggleTheme: () => void;
   setTheme: (t: Theme) => void;
-  /** current accent as hex (#rrggbb) — shared globally between all users */
+  /** effective accent as hex (#rrggbb) — personal override or global */
   accentHex: string;
-  /** persists the accent for every user */
+  /** persists the accent for every user (admin) */
   setAccentHex: (hex: string) => void;
   savingAccent: boolean;
+  /** global accent shared by everyone */
+  globalAccentHex: string;
+  /** this user's personal override (null = follows global) */
+  personalAccentHex: string | null;
+  /** sets/clears the personal override (stored on this account/device) */
+  setPersonalAccentHex: (hex: string | null) => void;
 }
 
 const ThemeContext = createContext<ThemeCtx | undefined>(undefined);
 const STORAGE_KEY = "app-theme";
 const ACCENT_CACHE_KEY = "app-accent-hex";
+const PERSONAL_ACCENT_KEY = "app-accent-personal";
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<Theme>(() => {
     if (typeof window === "undefined") return "dark";
     return (localStorage.getItem(STORAGE_KEY) as Theme) || "dark";
   });
-  const [accentHex, setAccentHexState] = useState<string>(() => {
+  const [globalAccentHex, setGlobalAccentHexState] = useState<string>(() => {
     if (typeof window === "undefined") return DEFAULT_ACCENT_HEX;
     return localStorage.getItem(ACCENT_CACHE_KEY) || DEFAULT_ACCENT_HEX;
   });
+  const [personalAccentHex, setPersonalAccentHexState] = useState<string | null>(() => {
+    if (typeof window === "undefined") return null;
+    const v = localStorage.getItem(PERSONAL_ACCENT_KEY);
+    return v && hexToHslTriplet(v) ? v : null;
+  });
   const [savingAccent, setSavingAccent] = useState(false);
+
+  const accentHex = personalAccentHex ?? globalAccentHex;
 
   useEffect(() => {
     const root = document.documentElement;
@@ -70,7 +84,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     getSettings([APP_ACCENT_KEY])
       .then((s) => {
         const remote = s[APP_ACCENT_KEY];
-        if (!cancelled && remote && hexToHslTriplet(remote)) setAccentHexState(remote);
+        if (!cancelled && remote && hexToHslTriplet(remote)) setGlobalAccentHexState(remote);
       })
       .catch(() => {});
     return () => {
@@ -92,15 +106,27 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     root.style.setProperty("--accent", `${h} ${s} ${theme === "light" ? "50%" : "45%"}`);
     root.style.setProperty("--tile-bg-to", `${hsl} / ${theme === "light" ? "0.08" : "0.06"}`);
     root.style.setProperty("--tile-border", `${hsl} / ${theme === "light" ? "0.45" : "0.4"}`);
-    localStorage.setItem(ACCENT_CACHE_KEY, accentHex);
-  }, [accentHex, theme]);
+    localStorage.setItem(ACCENT_CACHE_KEY, globalAccentHex);
+  }, [accentHex, globalAccentHex, theme]);
 
   const setAccentHex = (hex: string) => {
     if (!hexToHslTriplet(hex)) return;
-    setAccentHexState(hex);
+    setGlobalAccentHexState(hex);
     setSavingAccent(true);
     setSetting(APP_ACCENT_KEY, hex).finally(() => setSavingAccent(false));
   };
+
+  const setPersonalAccentHex = (hex: string | null) => {
+    if (hex === null) {
+      localStorage.removeItem(PERSONAL_ACCENT_KEY);
+      setPersonalAccentHexState(null);
+      return;
+    }
+    if (!hexToHslTriplet(hex)) return;
+    localStorage.setItem(PERSONAL_ACCENT_KEY, hex);
+    setPersonalAccentHexState(hex);
+  };
+
 
   const toggleTheme = () => setThemeState((p) => (p === "dark" ? "light" : "dark"));
 
@@ -113,6 +139,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         accentHex,
         setAccentHex,
         savingAccent,
+        globalAccentHex,
+        personalAccentHex,
+        setPersonalAccentHex,
+
       }}
     >
       {children}
