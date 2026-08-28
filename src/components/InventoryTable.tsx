@@ -72,6 +72,10 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
                   <p className="text-[11px] text-muted-foreground truncate">
                     {[item.subcategory, item.unit, item.storehouse].filter(Boolean).join(" · ")}
                   </p>
+                  <p className="text-[11px] text-muted-foreground truncate">
+                    stan: {item.qtyLeft != null ? `${item.qtyLeft} ${item.unit}` : "brak danych"}
+                    {(item.flaggedAt || item.updatedAt) && <> · {formatRelative(item.flaggedAt ?? item.updatedAt!)}</>}
+                  </p>
                   {flagged && (item.qtyLeft != null || item.qtyToOrder != null) && (
                     <p className="mt-0.5 text-[11px] font-medium text-warning">
                       {item.qtyLeft != null && <>zostało: {item.qtyLeft}</>}
