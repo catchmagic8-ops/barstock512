@@ -1006,6 +1006,15 @@ export type Database = {
         }
         Returns: undefined
       }
+      self_register_user: {
+        Args: { _password: string; _username: string }
+        Returns: {
+          department: Database["public"]["Enums"]["app_department"]
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          username: string
+        }[]
+      }
       verify_user_login: {
         Args: { _password: string; _username: string }
         Returns: {
