@@ -297,7 +297,7 @@ function buildQuestions(items: MenuItem[], count: number): Question[] {
 
 export default function TestPage() {
   const { user } = useAuth();
-  const { items } = useInventory();
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -312,7 +312,25 @@ export default function TestPage() {
   const [startTime, setStartTime] = useState(0);
   const [record, setRecord] = useState<QuizResult | null>(null);
 
-  const bar512Items = useMemo(() => items.filter((i) => i.department === "bar512"), [items]);
+  useEffect(() => {
+    let cancelled = false;
+    (supabase as any)
+      .from("a_la_carte_bar512")
+      .select("id,name,category,description,price_pln,allergens,dietary")
+      .then(({ data, error }: any) => {
+        if (error) {
+          console.error(error);
+          return;
+        }
+        if (!cancelled) setMenuItems((data ?? []) as MenuItem[]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const bar512Items = menuItems;
+
 
   useEffect(() => {
     if (!user?.id || !mode) return;
