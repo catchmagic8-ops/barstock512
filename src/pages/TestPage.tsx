@@ -4,7 +4,6 @@ import { ArrowLeft, GraduationCap, InfinityIcon, Info, Trophy, Clock, Flame, Che
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useAuth } from "@/contexts/AuthContext";
-import { useInventory } from "@/hooks/useInventory";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
