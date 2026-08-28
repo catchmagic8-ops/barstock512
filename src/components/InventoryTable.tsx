@@ -374,6 +374,9 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <InventoryHistoryDialog item={historyItem} onOpenChange={(o) => !o && setHistoryItem(null)} />
     </>
+
   );
 }
