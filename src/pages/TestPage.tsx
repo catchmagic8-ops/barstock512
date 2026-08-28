@@ -297,7 +297,7 @@ function buildQuestions(items: MenuItem[], count: number): Question[] {
 
 export default function TestPage() {
   const { user } = useAuth();
-  const { items } = useInventory("bar512");
+  const { items } = useInventory();
   const navigate = useNavigate();
   const { toast } = useToast();
 
