@@ -14,6 +14,18 @@ export interface InventoryItem {
   qtyLeft?: number;
   qtyToOrder?: number;
   updatedAt?: string;
+  stockConfirmedAt?: string;
+}
+
+export const STALE_STOCK_DAYS = 7;
+
+// True when the item's stock was not confirmed within the last STALE_STOCK_DAYS days
+export function isStockStale(item: InventoryItem): boolean {
+  const ref = item.stockConfirmedAt ?? item.flaggedAt;
+  if (!ref) return true;
+  const d = new Date(ref).getTime();
+  if (Number.isNaN(d)) return true;
+  return Date.now() - d > STALE_STOCK_DAYS * 86400000;
 }
 
 // Map DB row to app model
