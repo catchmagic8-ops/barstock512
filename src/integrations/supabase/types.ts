@@ -421,6 +421,7 @@ export type Database = {
           department: string
           id: string
           message: string
+          parent_id: string | null
           pinned: boolean
           resolved: boolean
           updated_at: string
@@ -432,6 +433,7 @@ export type Database = {
           department: string
           id?: string
           message: string
+          parent_id?: string | null
           pinned?: boolean
           resolved?: boolean
           updated_at?: string
@@ -443,11 +445,20 @@ export type Database = {
           department?: string
           id?: string
           message?: string
+          parent_id?: string | null
           pinned?: boolean
           resolved?: boolean
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "handover_notes_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "handover_notes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       inventory_items: {
         Row: {
