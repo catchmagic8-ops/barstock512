@@ -133,6 +133,24 @@ export default function UserManagement() {
     onError: (err: any) => toast.error(err?.message ?? "Failed to update user"),
   });
 
+  const setApproved = useMutation({
+    mutationFn: async ({ userId, approved }: { userId: string; approved: boolean }) => {
+      if (!me) throw new Error("Not signed in");
+      const { error } = await (supabase as any).rpc("admin_set_approved", {
+        _admin_id: me.id,
+        _user_id: userId,
+        _approved: approved,
+      });
+      if (error) throw error;
+    },
+    onSuccess: (_d, vars) => {
+      qc.invalidateQueries({ queryKey: QKEY });
+      toast.success(vars.approved ? "Access approved" : "Access revoked");
+    },
+    onError: (err: any) => toast.error(err?.message ?? "Failed to update access"),
+  });
+
+
   const deleteUser = useMutation({
     mutationFn: async (userId: string) => {
       if (!me) throw new Error("Not signed in");
