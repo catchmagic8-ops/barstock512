@@ -73,8 +73,12 @@ export default function Info() {
   const [message, setMessage] = useState("");
   const [search, setSearch] = useState("");
   const [showResolved, setShowResolved] = useState(false);
+  const [replyTo, setReplyTo] = useState<string | null>(null);
+  const [replyText, setReplyText] = useState("");
 
   const queryKey = ["handover-notes", department];
+
+  useHandoverRealtime(department);
 
   const { data: notes = [], isLoading } = useQuery({
     queryKey,
@@ -90,7 +94,10 @@ export default function Info() {
     },
   });
 
-  const invalidate = () => qc.invalidateQueries({ queryKey });
+  const invalidate = () => {
+    qc.invalidateQueries({ queryKey });
+    qc.invalidateQueries({ queryKey: ["handover-notes-count", department] });
+  };
 
   const addNote = useMutation({
     mutationFn: async () => {
@@ -107,6 +114,26 @@ export default function Info() {
       setOpen(false);
       invalidate();
       toast({ title: "Wiadomość dodana" });
+    },
+    onError: (e: any) => toast({ title: "Błąd", description: e.message, variant: "destructive" }),
+  });
+
+  const addReply = useMutation({
+    mutationFn: async ({ parent, text, cat }: { parent: string; text: string; cat: string }) => {
+      const { error } = await (supabase as any).from("handover_notes").insert({
+        department,
+        category: cat,
+        message: text.trim(),
+        author_username: user?.username ?? null,
+        parent_id: parent,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      setReplyText("");
+      setReplyTo(null);
+      invalidate();
+      toast({ title: "Odpowiedź dodana" });
     },
     onError: (e: any) => toast({ title: "Błąd", description: e.message, variant: "destructive" }),
   });
@@ -130,18 +157,40 @@ export default function Info() {
     },
   });
 
+  const repliesByParent = useMemo(() => {
+    const map = new Map<string, Note[]>();
+    notes
+      .filter((n) => n.parent_id)
+      .forEach((n) => {
+        const arr = map.get(n.parent_id!) ?? [];
+        arr.push(n);
+        map.set(n.parent_id!, arr);
+      });
+    map.forEach((arr) =>
+      arr.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+    );
+    return map;
+  }, [notes]);
+
+  const matches = (n: Note, q: string) =>
+    [n.message, n.category, n.author_username]
+      .filter(Boolean)
+      .some((v) => String(v).toLowerCase().includes(q));
+
   const visible = useMemo(() => {
     const q = search.trim().toLowerCase();
     return notes.filter((n) => {
+      if (n.parent_id) return false;
       if (!showResolved && n.resolved) return false;
       if (!q) return true;
-      return [n.message, n.category, n.author_username]
-        .filter(Boolean)
-        .some((v) => String(v).toLowerCase().includes(q));
+      const replies = repliesByParent.get(n.id) ?? [];
+      return matches(n, q) || replies.some((r) => matches(r, q));
     });
-  }, [notes, search, showResolved, ]);
+  }, [notes, search, showResolved, repliesByParent]);
 
-  const openCount = notes.filter((n) => !n.resolved).length;
+  const openCount = notes.filter((n) => !n.resolved && !n.parent_id).length;
+
+
 
   return (
     <div className="relative flex min-h-screen flex-col">
