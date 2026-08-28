@@ -342,12 +342,90 @@ export default function Info() {
                   {n.message}
                 </p>
 
+                {replies.length > 0 && (
+                  <div className="mt-3 space-y-2 border-l-2 border-primary/30 pl-3">
+                    {replies.map((r) => (
+                      <div key={r.id} className="rounded-xl border border-border/40 bg-background/40 p-2.5">
+                        <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
+                          <User className="h-3 w-3" />
+                          {r.author_username ?? "nieznany"}
+                          <span className="ml-auto">{formatDate(r.created_at)}</span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-6 w-6 p-0 text-destructive hover:text-destructive"
+                            onClick={() => deleteNote.mutate(r.id)}
+                            title="Usuń odpowiedź"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
+                        <p className="mt-1 whitespace-pre-wrap text-sm leading-relaxed text-foreground">
+                          {r.message}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {replyTo === n.id && (
+                  <div className="mt-3 space-y-2 border-l-2 border-primary/30 pl-3">
+                    <Textarea
+                      value={replyText}
+                      onChange={(e) => setReplyText(e.target.value.slice(0, 2000))}
+                      placeholder="Twoja odpowiedź…"
+                      rows={3}
+                      autoFocus
+                    />
+                    <div className="flex justify-end gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setReplyTo(null);
+                          setReplyText("");
+                        }}
+                      >
+                        Anuluj
+                      </Button>
+                      <Button
+                        size="sm"
+                        disabled={!replyText.trim() || addReply.isPending}
+                        onClick={() =>
+                          addReply.mutate({ parent: n.id, text: replyText, cat: n.category })
+                        }
+                      >
+                        {addReply.isPending && <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />}
+                        Odpowiedz
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
                 <div className="mt-3 flex flex-wrap items-center gap-1.5 border-t border-border/40 pt-2.5">
                   <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
                     <User className="h-3 w-3" />
                     {n.author_username ?? "nieznany"}
                   </span>
+                  {replies.length > 0 && (
+                    <span className="flex items-center gap-1 text-[11px] text-primary">
+                      <MessageSquare className="h-3 w-3" />
+                      {replies.length} odpowied{replies.length === 1 ? "ź" : "zi"}
+                    </span>
+                  )}
                   <div className="ml-auto flex items-center gap-1">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 gap-1 px-2 text-xs text-muted-foreground hover:text-foreground"
+                      onClick={() => {
+                        setReplyText("");
+                        setReplyTo((v) => (v === n.id ? null : n.id));
+                      }}
+                    >
+                      <Reply className="h-3.5 w-3.5" />
+                      Odpowiedz
+                    </Button>
                     <Button
                       variant="ghost"
                       size="sm"
@@ -378,7 +456,9 @@ export default function Info() {
                   </div>
                 </div>
               </article>
-            ))}
+              );
+            })}
+
           </div>
         )}
       </main>
