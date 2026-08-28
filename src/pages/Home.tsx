@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Package, Calendar, BookOpen, Phone, Shield, ArrowLeft, Utensils, LogOut, BookMarked, Sparkles, MoreVertical, Moon, Sun, User } from "lucide-react";
+import { Package, Calendar, BookOpen, Phone, Shield, ArrowLeft, Utensils, LogOut, BookMarked, Sparkles, MoreVertical, Moon, Sun, User, MessageSquare, FlaskConical } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -151,11 +151,47 @@ function ALaCarteBadge() {
   );
 }
 
+function InfoBadge() {
+  const { department } = useDepartment();
+  const { data: count = 0 } = useQuery({
+    queryKey: ["handover-notes-count", department],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from("handover_notes")
+        .select("id")
+        .eq("department", department)
+        .eq("resolved", false);
+      if (error) throw error;
+      return data?.length ?? 0;
+    },
+  });
+  if (count > 0) {
+    return (
+      <span className="rounded-full bg-primary/15 px-2.5 py-0.5 text-xs font-semibold text-primary">
+        {count} wiadomoś{count === 1 ? "ć" : "ci"}
+      </span>
+    );
+  }
+  return (
+    <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs text-muted-foreground">
+      Brak wiadomości
+    </span>
+  );
+}
+
+function TestBadge() {
+  return (
+    <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs text-muted-foreground">
+      W przygotowaniu
+    </span>
+  );
+}
+
 interface NavCard {
   title: string;
   icon: React.ElementType;
   subtitle: string;
-  sub: "inventory" | "events" | "recipes" | "telephone" | "admin" | "a-la-carte" | "reservations" | "upselling";
+  sub: "inventory" | "events" | "recipes" | "telephone" | "admin" | "a-la-carte" | "reservations" | "upselling" | "info" | "test";
   badge: () => React.ReactNode;
   size: "large" | "small";
 }
@@ -165,6 +201,8 @@ const cards: NavCard[] = [
   { title: "EVENTS", icon: Calendar, subtitle: "Upcoming events & promotions", sub: "events", badge: EventsBadge, size: "small" },
   { title: "COCKTAIL RECIPES", icon: BookOpen, subtitle: "Cocktail recipe library & instructions", sub: "recipes", badge: RecipesBadge, size: "small" },
   { title: "TELEPHONE", icon: Phone, subtitle: "Useful contacts & numbers", sub: "telephone", badge: ContactsBadge, size: "small" },
+  { title: "INFO", icon: MessageSquare, subtitle: "Wiadomości i handover dla zespołu", sub: "info", badge: InfoBadge, size: "large" },
+  { title: "TEST", icon: FlaskConical, subtitle: "Strefa testowa nowych funkcji", sub: "test", badge: TestBadge, size: "small" },
   { title: "ADMIN", icon: Shield, subtitle: "Manage all content for this dept.", sub: "admin", badge: AdminBadge, size: "large" },
 ];
 

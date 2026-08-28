@@ -413,6 +413,42 @@ export type Database = {
         }
         Relationships: []
       }
+      handover_notes: {
+        Row: {
+          author_username: string | null
+          category: string
+          created_at: string
+          department: string
+          id: string
+          message: string
+          pinned: boolean
+          resolved: boolean
+          updated_at: string
+        }
+        Insert: {
+          author_username?: string | null
+          category?: string
+          created_at?: string
+          department: string
+          id?: string
+          message: string
+          pinned?: boolean
+          resolved?: boolean
+          updated_at?: string
+        }
+        Update: {
+          author_username?: string | null
+          category?: string
+          created_at?: string
+          department?: string
+          id?: string
+          message?: string
+          pinned?: boolean
+          resolved?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       inventory_items: {
         Row: {
           category: string
