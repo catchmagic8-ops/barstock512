@@ -94,6 +94,14 @@ const App = () => (
               path="/upselling"
               element={<DepartmentProvider department="bar512"><Upselling /></DepartmentProvider>}
             />
+            <Route
+              path="/info"
+              element={<DepartmentProvider department="bar512"><Info /></DepartmentProvider>}
+            />
+            <Route
+              path="/test"
+              element={<DepartmentProvider department="bar512"><TestPage /></DepartmentProvider>}
+            />
 
             {/* Conference */}
             <Route path="/conference/*" element={<DeptRoutes department="konferencje" />} />
