@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from "react";
-import { AlertTriangle, FileText, Loader2, Home, Search, BellRing, ClipboardList } from "lucide-react";
+import { AlertTriangle, FileText, Loader2, Home, Search, BellRing, ClipboardList, ClipboardCheck, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,7 +11,8 @@ import InventoryTable from "@/components/InventoryTable";
 import { Input } from "@/components/ui/input";
 import { generateBlankCountSheet } from "@/lib/generateReport";
 import ReportDialog from "@/components/ReportDialog";
-import { formatFlaggedAt, type Category } from "@/lib/inventory";
+import StocktakeDialog from "@/components/StocktakeDialog";
+import { formatFlaggedAt, isStockStale, STALE_STOCK_DAYS, type Category } from "@/lib/inventory";
 import { useInventory } from "@/hooks/useInventory";
 import { useDepartment } from "@/contexts/DepartmentContext";
 import { deptHomePath } from "@/lib/department";
@@ -19,13 +20,14 @@ import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function Index() {
-  const { items, isLoading, flagItem, clearFlag } = useInventory();
+  const { items, isLoading, flagItem, clearFlag, confirmStock } = useInventory();
   const { user } = useAuth();
   const { tables, department, meta } = useDepartment();
   const [activeCategory, setActiveCategory] = useState<Category>("spirits");
   const [activeSubcategory, setActiveSubcategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [reportOpen, setReportOpen] = useState(false);
+  const [stocktakeOpen, setStocktakeOpen] = useState(false);
 
   const { data: subcategories = [] } = useQuery({
     queryKey: ["subcategories", department],
