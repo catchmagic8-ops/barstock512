@@ -17,6 +17,8 @@ import { useDepartment } from "@/contexts/DepartmentContext";
 import { deptSubPath, DEPT_TABLES } from "@/lib/department";
 import { useAuth } from "@/contexts/AuthContext";
 import { AmbientBackgroundForDepartment } from "@/components/AmbientBackground";
+import { useHandoverRealtime } from "@/hooks/useHandoverRealtime";
+
 
 function LowStockBadge() {
   const { tables, department } = useDepartment();
