@@ -71,7 +71,7 @@ export default function Events() {
                 <ArrowLeft className="h-5 w-5" />
               </Button>
             </Link>
-            <h1 className="font-heading text-lg font-bold text-foreground">Events</h1>
+            <h1 className="font-heading text-lg font-bold text-foreground">Wydarzenia</h1>
             <span className="text-xs text-muted-foreground hidden sm:inline">· {meta.label}</span>
           </div>
         </div>
@@ -84,14 +84,14 @@ export default function Events() {
             <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search events…"
+              placeholder="Szukaj wydarzeń…"
               className="pl-9 pr-9 bg-card border-border h-11 text-base md:text-sm"
             />
             {search && (
               <button
                 onClick={() => setSearch("")}
                 className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground"
-                aria-label="Clear search"
+                aria-label="Wyczyść wyszukiwanie"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -126,9 +126,9 @@ export default function Events() {
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
             <Calendar className="h-12 w-12 mb-3 opacity-40" />
-            <p className="text-lg">{events.length === 0 ? "No events yet" : "No matching events"}</p>
+            <p className="text-lg">{events.length === 0 ? "Brak wydarzeń" : "Brak pasujących wydarzeń"}</p>
             <p className="text-sm">
-              {events.length === 0 ? "Events are managed from the Admin panel" : "Try a different search or filter"}
+              {events.length === 0 ? "Wydarzenia są zarządzane z panelu administratora" : "Spróbuj innego wyszukiwania lub filtra"}
             </p>
           </div>
         ) : (
@@ -178,14 +178,14 @@ export default function Events() {
                 {ev.guest_count != null && (
                   <Badge variant="outline" className="bg-muted/50 text-muted-foreground border-border">
                     <Users className="h-3 w-3 mr-1" />
-                    {ev.guest_count} {ev.guest_count === 1 ? "guest" : "guests"}
+                    {ev.guest_count} {ev.guest_count === 1 ? "gość" : "gości"}
                   </Badge>
                 )}
 
                 {ev.is_recurring && (
                   <Badge variant="outline" className="bg-primary/15 text-primary border-primary/30">
                     <Repeat className="h-3 w-3 mr-1" />
-                    {ev.recurrence_rule || "recurring"}
+                    {ev.recurrence_rule || "cykliczne"}
                   </Badge>
                 )}
               </div>
@@ -195,7 +195,7 @@ export default function Events() {
                   {ev.food_menu && (
                     <div className="rounded-lg border border-border bg-secondary/40 p-3">
                       <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">
-                        <UtensilsCrossed className="h-3.5 w-3.5" /> Food
+                        <UtensilsCrossed className="h-3.5 w-3.5" /> Jedzenie
                       </div>
                       <p className="text-sm text-foreground whitespace-pre-line">{ev.food_menu}</p>
                     </div>
@@ -203,7 +203,7 @@ export default function Events() {
                   {ev.beverage_menu && (
                     <div className="rounded-lg border border-border bg-secondary/40 p-3">
                       <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">
-                        <Wine className="h-3.5 w-3.5" /> Beverage
+                        <Wine className="h-3.5 w-3.5" /> Napoje
                       </div>
                       <p className="text-sm text-foreground whitespace-pre-line">{ev.beverage_menu}</p>
                     </div>

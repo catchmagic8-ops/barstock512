@@ -57,13 +57,13 @@ export function buildReport(items: InventoryItem[], opts: ReportOptions): jsPDF 
   // Title
   doc.setFontSize(20);
   doc.setTextColor(215, 76, 90);
-  doc.text(sanitize(`${dept}${scope === "low" ? "LOW STOCK REPORT" : "INVENTORY RESTOCK REPORT"}`), 14, 22);
+  doc.text(sanitize(`${dept}${scope === "low" ? "RAPORT NISKICH STANOW" : "RAPORT UZUPELNIEN MAGAZYNU"}`), 14, 22);
 
   // Subtitle
   doc.setFontSize(10);
   doc.setTextColor(120, 120, 120);
-  doc.text(sanitize(`Generated: ${now}`), 14, 30);
-  doc.text(sanitize(`Total items: ${items.length}  |  Flagged for restock: ${flagged.length}`), 14, 36);
+  doc.text(sanitize(`Wygenerowano: ${now}`), 14, 30);
+  doc.text(sanitize(`Liczba pozycji: ${items.length}  |  Zgloszone do uzupelnienia: ${flagged.length}`), 14, 36);
 
   let y = 44;
 
@@ -71,12 +71,12 @@ export function buildReport(items: InventoryItem[], opts: ReportOptions): jsPDF 
   if (flagged.length > 0) {
     doc.setFontSize(13);
     doc.setTextColor(215, 76, 90);
-    doc.text(sanitize(`ITEMS NEEDING RESTOCK (sorted by ${sortBy.replace("-", " ")})`), 14, y);
+    doc.text(sanitize(`POZYCJE DO UZUPELNIENIA (sortowanie: ${sortBy.replace("-", " ")})`), 14, y);
     y += 4;
 
     autoTable(doc, {
       startY: y,
-      head: [["Item", "Category", "Storehouse", "Qty Left", "To Order", "Note"]],
+      head: [["Pozycja", "Kategoria", "Magazyn", "Pozostalo", "Do zamowienia", "Notatka"]],
       body: flagged.map((i) => [
         sanitize(i.name),
         sanitize(i.category.replace("-", " ")),
@@ -95,7 +95,7 @@ export function buildReport(items: InventoryItem[], opts: ReportOptions): jsPDF 
   } else {
     doc.setFontSize(11);
     doc.setTextColor(80, 80, 80);
-    doc.text("No items currently flagged for restock.", 14, y);
+    doc.text("Brak pozycji zgloszonych do uzupelnienia.", 14, y);
     y += 10;
   }
 
@@ -117,13 +117,13 @@ export function buildReport(items: InventoryItem[], opts: ReportOptions): jsPDF 
 
       autoTable(doc, {
         startY: y,
-        head: [["Item", "Subcategory", "Unit", "Storehouse", "Status"]],
+        head: [["Pozycja", "Podkategoria", "Jednostka", "Magazyn", "Status"]],
         body: catItems.map((i) => [
           sanitize(i.name),
           sanitize(i.subcategory || "—"),
           sanitize(i.unit),
           sanitize(i.storehouse || "—"),
-          i.needsRestock ? "NEEDS RESTOCK" : "OK",
+          i.needsRestock ? "DO UZUPELNIENIA" : "OK",
         ]),
         theme: "grid",
         headStyles: { fillColor: [40, 44, 58], textColor: 255 },
@@ -131,7 +131,7 @@ export function buildReport(items: InventoryItem[], opts: ReportOptions): jsPDF 
         margin: { left: 14 },
         didParseCell: (data: any) => {
           if (data.section === "body" && data.column.index === 4) {
-            if (typeof data.cell.raw === "string" && data.cell.raw.includes("NEEDS")) {
+            if (typeof data.cell.raw === "string" && data.cell.raw.includes("UZUPELNIENIA")) {
               data.cell.styles.textColor = [215, 76, 90];
               data.cell.styles.fontStyle = "bold";
             }
@@ -162,14 +162,14 @@ export function generateBlankCountSheet(items: InventoryItem[], deptLabel = "INV
   // Title
   doc.setFontSize(18);
   doc.setTextColor(215, 76, 90);
-  doc.text(sanitize(`${deptLabel.toUpperCase()} — PHYSICAL COUNT SHEET`), 14, 20);
+  doc.text(sanitize(`${deptLabel.toUpperCase()} — ARKUSZ INWENTARYZACJI`), 14, 20);
 
   // Meta header lines (date / counted by / shift)
   doc.setFontSize(10);
   doc.setTextColor(80, 80, 80);
-  doc.text(`Date: ${now}`, 14, 28);
-  doc.text("Counted by: ____________________________", 70, 28);
-  doc.text("Shift / Notes: ____________________________", 14, 34);
+  doc.text(`Data: ${now}`, 14, 28);
+  doc.text("Policzyl: ____________________________", 70, 28);
+  doc.text("Zmiana / Notatki: ____________________________", 14, 34);
 
   let y = 42;
 
@@ -214,7 +214,7 @@ export function generateBlankCountSheet(items: InventoryItem[], deptLabel = "INV
 
     autoTable(doc, {
       startY: y,
-      head: [["Item", "Qty", "Item", "Qty"]],
+      head: [["Pozycja", "Ilosc", "Pozycja", "Ilosc"]],
       body: rows,
       theme: "grid",
       headStyles: { fillColor: [40, 44, 58], textColor: 255, fontSize: 8 },

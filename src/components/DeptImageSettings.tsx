@@ -26,7 +26,7 @@ const DEPTS = [
   },
   {
     id: "konferencje",
-    label: "Conference",
+    label: "Konferencje",
     tile: konferencjeTile,
     ambient: konferencjeAmbient,
   },

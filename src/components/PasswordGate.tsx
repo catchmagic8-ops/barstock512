@@ -37,17 +37,17 @@ export default function PasswordGate({ children }: { children: React.ReactNode }
           <div className="flex flex-col items-center gap-2 text-center">
             <Lock className="h-7 w-7 sm:h-8 sm:w-8 text-primary" />
             <h2 className="font-heading text-lg sm:text-xl font-bold text-foreground">
-              Staff Access
+              Dostęp dla pracowników
             </h2>
             <p className="text-sm text-muted-foreground">
-              Enter password to continue
+              Wprowadź hasło, aby kontynuować
             </p>
           </div>
 
           <div className="space-y-3">
             <Input
               type="password"
-              placeholder="Password"
+              placeholder="Hasło"
               value={value}
               onChange={(e) => {
                 setValue(e.target.value);
@@ -59,10 +59,10 @@ export default function PasswordGate({ children }: { children: React.ReactNode }
               className="bg-card h-11 text-base"
             />
             {error && (
-              <p className="text-sm text-destructive">Incorrect password</p>
+              <p className="text-sm text-destructive">Nieprawidłowe hasło</p>
             )}
             <Button type="submit" className="w-full h-11 text-base">
-              Unlock
+              Odblokuj
             </Button>
           </div>
         </form>

@@ -32,24 +32,24 @@ export default function OptionsPasswordGate({ children }: { children: React.Reac
               <ArrowLeft className="h-5 w-5" />
             </Button>
           </Link>
-          <h2 className="font-heading text-xl font-bold text-foreground">Options Access</h2>
+          <h2 className="font-heading text-xl font-bold text-foreground">Dostęp do opcji</h2>
         </div>
 
         <div className="flex flex-col items-center gap-2">
           <Lock className="h-8 w-8 text-primary" />
-          <p className="text-sm text-muted-foreground">Enter password to access options</p>
+          <p className="text-sm text-muted-foreground">Wprowadź hasło, aby uzyskać dostęp do opcji</p>
         </div>
 
         <Input
           type="password"
-          placeholder="Password"
+          placeholder="Hasło"
           value={value}
           onChange={(e) => { setValue(e.target.value); setError(false); }}
           autoFocus
           className="bg-card"
         />
-        {error && <p className="text-sm text-destructive">Incorrect password</p>}
-        <Button type="submit" className="w-full">Unlock</Button>
+        {error && <p className="text-sm text-destructive">Nieprawidłowe hasło</p>}
+        <Button type="submit" className="w-full">Odblokuj</Button>
       </form>
     </div>
   );

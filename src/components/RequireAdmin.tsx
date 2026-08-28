@@ -13,7 +13,7 @@ export default function RequireAdmin({ children }: { children: React.ReactNode }
 
   useEffect(() => {
     if (user && !allowed) {
-      toast.error("Access denied — admin only");
+      toast.error("Brak dostępu — tylko dla administratorów");
       navigate("/", { replace: true });
     }
   }, [allowed, user, navigate]);

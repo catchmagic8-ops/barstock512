@@ -36,13 +36,13 @@ function LowStockBadge() {
   if (count > 0) {
     return (
       <span className="rounded-full bg-warning/15 px-2.5 py-0.5 text-xs font-semibold text-warning">
-        {count} low
+        {count} mało
       </span>
     );
   }
   return (
     <span className="rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-xs font-semibold text-emerald-400">
-      All good
+      Wszystko OK
     </span>
   );
 }
@@ -73,7 +73,7 @@ function EventsBadge() {
   }
   return (
     <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs text-muted-foreground">
-      No events yet
+      Brak wydarzeń
     </span>
   );
 }
@@ -91,13 +91,13 @@ function RecipesBadge() {
   if (count > 0) {
     return (
       <span className="rounded-full bg-primary/15 px-2.5 py-0.5 text-xs font-semibold text-primary">
-        {count} recipes
+        {count} przepisów
       </span>
     );
   }
   return (
     <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs text-muted-foreground">
-      0 recipes
+      0 przepisów
     </span>
   );
 }
@@ -120,7 +120,7 @@ function ContactsBadge() {
   });
   return (
     <span className="rounded-full bg-primary/15 px-2.5 py-0.5 text-xs font-semibold text-primary">
-      {count} contacts
+      {count} kontaktów
     </span>
   );
 }
@@ -128,7 +128,7 @@ function ContactsBadge() {
 function AdminBadge() {
   return (
     <span className="rounded-full bg-warning/15 px-2.5 py-0.5 text-xs font-semibold text-warning">
-      Password protected
+      Chronione hasłem
     </span>
   );
 }
@@ -148,7 +148,7 @@ function ALaCarteBadge() {
   });
   return (
     <span className="rounded-full bg-primary/15 px-2.5 py-0.5 text-xs font-semibold text-primary">
-      {count} item{count === 1 ? "" : "s"}
+      {count} pozycj{count === 1 ? "a" : "e"}
     </span>
   );
 }
@@ -208,19 +208,19 @@ interface NavCard {
 }
 
 const cards: NavCard[] = [
-  { title: "INVENTORY", icon: Package, subtitle: "Track stock levels & low alerts", sub: "inventory", badge: LowStockBadge, size: "large" },
-  { title: "EVENTS", icon: Calendar, subtitle: "Upcoming events & promotions", sub: "events", badge: EventsBadge, size: "small" },
-  { title: "COCKTAIL RECIPES", icon: BookOpen, subtitle: "Cocktail recipe library & instructions", sub: "recipes", badge: RecipesBadge, size: "small" },
-  { title: "TELEPHONE", icon: Phone, subtitle: "Useful contacts & numbers", sub: "telephone", badge: ContactsBadge, size: "small" },
+  { title: "INVENTORY", icon: Package, subtitle: "Śledź stany magazynowe i alerty o niskim stanie", sub: "inventory", badge: LowStockBadge, size: "large" },
+  { title: "EVENTS", icon: Calendar, subtitle: "Nadchodzące wydarzenia i promocje", sub: "events", badge: EventsBadge, size: "small" },
+  { title: "COCKTAIL RECIPES", icon: BookOpen, subtitle: "Biblioteka przepisów na koktajle i instrukcje", sub: "recipes", badge: RecipesBadge, size: "small" },
+  { title: "TELEPHONE", icon: Phone, subtitle: "Przydatne kontakty i numery", sub: "telephone", badge: ContactsBadge, size: "small" },
   { title: "INFO", icon: MessageSquare, subtitle: "Wiadomości i handover dla zespołu", sub: "info", badge: InfoBadge, size: "large" },
   { title: "MENU QUIZ", icon: FlaskConical, subtitle: "Szkolenie z karty menu: tryby na czas, bez limitu i nauka", sub: "test", badge: TestBadge, size: "small" },
-  { title: "ADMIN", icon: Shield, subtitle: "Manage all content for this dept.", sub: "admin", badge: AdminBadge, size: "large" },
+  { title: "ADMIN", icon: Shield, subtitle: "Zarządzaj całą zawartością dla tego działu", sub: "admin", badge: AdminBadge, size: "large" },
 ];
 
 const aLaCarteCard: NavCard = {
   title: "A LA CARTE",
   icon: Utensils,
-  subtitle: "Menu of dishes, allergens & prices",
+  subtitle: "Menu dań, alergeny i ceny",
   sub: "a-la-carte",
   badge: ALaCarteBadge,
   size: "large",
@@ -243,7 +243,7 @@ function ReservationsBadge() {
   });
   return (
     <span className="rounded-full bg-primary/15 px-2.5 py-0.5 text-xs font-semibold text-primary">
-      {count} upcoming
+      {count} nadchodzących
     </span>
   );
 }
@@ -251,7 +251,7 @@ function ReservationsBadge() {
 const reservationsCard: NavCard = {
   title: "RESERVATIONS",
   icon: BookMarked,
-  subtitle: "Table bookings, guests & requests",
+  subtitle: "Rezerwacje stolików, goście i prośby",
   sub: "reservations",
   badge: ReservationsBadge,
   size: "large",
@@ -270,7 +270,7 @@ function UpsellingBadge() {
   });
   return (
     <span className="rounded-full bg-primary/15 px-2.5 py-0.5 text-xs font-semibold text-primary">
-      {count} bottle{count === 1 ? "" : "s"}
+      {count} butelk{count === 1 ? "a" : "i"}
     </span>
   );
 }
@@ -278,7 +278,7 @@ function UpsellingBadge() {
 const upsellingCard: NavCard = {
   title: "UPSELLING",
   icon: Sparkles,
-  subtitle: "Scan bottles & get pitch tips",
+  subtitle: "Skanuj butelki i otrzymuj wskazówki sprzedażowe",
   sub: "upselling",
   badge: UpsellingBadge,
   size: "large",
@@ -324,7 +324,7 @@ export default function Home() {
             variant="ghost"
             size="icon"
             onClick={() => navigate("/")}
-            title="Back to Departments"
+            title="Powrót do działów"
             className="text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft className="h-5 w-5" />
@@ -359,11 +359,11 @@ export default function Home() {
             )}
             <DropdownMenuItem onClick={toggleTheme} className="gap-2">
               {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-              {theme === "dark" ? "Light mode" : "Dark mode"}
+              {theme === "dark" ? "Tryb jasny" : "Tryb ciemny"}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={logout} className="gap-2">
               <LogOut className="h-4 w-4" />
-              Sign out
+              Wyloguj się
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

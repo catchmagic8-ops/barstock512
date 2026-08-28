@@ -47,7 +47,7 @@ export default function Recipes() {
         map.set(key, label);
       }
     }
-    return [{ key: "all", label: "All" }, ...Array.from(map, ([key, label]) => ({ key, label }))];
+    return [{ key: "all", label: "Wszystkie" }, ...Array.from(map, ([key, label]) => ({ key, label }))];
   }, [recipes]);
 
   const filtered = useMemo(() => {
@@ -72,9 +72,9 @@ export default function Recipes() {
               </Button>
             </Link>
             <div>
-              <h1 className="font-heading text-lg font-bold text-foreground">Recipes</h1>
+              <h1 className="font-heading text-lg font-bold text-foreground">Przepisy</h1>
               <p className="text-xs text-muted-foreground">
-                {activeLabel} · {filtered.length} {filtered.length === 1 ? "recipe" : "recipes"}
+                {activeLabel} · {filtered.length} {filtered.length === 1 ? "przepis" : "przepisów"}
               </p>
             </div>
           </div>
@@ -86,7 +86,7 @@ export default function Recipes() {
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search recipes by name..."
+            placeholder="Szukaj przepisów po nazwie..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-9 bg-card border-border rounded-lg"
@@ -117,8 +117,8 @@ export default function Recipes() {
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
             <BookOpen className="h-12 w-12 mb-3 opacity-40" />
-            <p className="text-lg">No recipes yet</p>
-            <p className="text-sm">Recipes are managed from the Admin panel</p>
+            <p className="text-lg">Brak przepisów</p>
+            <p className="text-sm">Przepisy są zarządzane z panelu administratora</p>
           </div>
         ) : (
           filtered.map((r: any) => {
@@ -155,11 +155,11 @@ export default function Recipes() {
                       />
                     )}
                     <div>
-                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Ingredients</p>
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Składniki</p>
                       <p className="text-sm text-foreground whitespace-pre-line">{r.ingredients}</p>
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Instructions</p>
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Instrukcje</p>
                       <p className="text-sm text-foreground whitespace-pre-line">{r.instructions}</p>
                     </div>
                   </div>

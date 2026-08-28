@@ -10,12 +10,12 @@ import { toast } from "sonner";
 import { useDepartment } from "@/contexts/DepartmentContext";
 
 const CATEGORIES: { value: Category; label: string }[] = [
-  { value: "spirits", label: "Spirits" },
-  { value: "wine", label: "Wine" },
-  { value: "beer", label: "Beer" },
-  { value: "soft-drinks", label: "Soft Drinks" },
-  { value: "tea-coffee", label: "Tea & Coffee" },
-  { value: "reusables", label: "Reusables" },
+  { value: "spirits", label: "Alkohole mocne" },
+  { value: "wine", label: "Wino" },
+  { value: "beer", label: "Piwo" },
+  { value: "soft-drinks", label: "Napoje bezalkoholowe" },
+  { value: "tea-coffee", label: "Herbata i kawa" },
+  { value: "reusables", label: "Wielorazowe" },
 ];
 
 export function useSubcategories() {
@@ -53,9 +53,9 @@ export default function SubcategoryManager() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEY });
       setName("");
-      toast.success("Subcategory added");
+      toast.success("Podkategoria dodana");
     },
-    onError: (e: any) => toast.error(e.message?.includes("duplicate") ? "Already exists" : "Failed to add"),
+    onError: (e: any) => toast.error(e.message?.includes("duplicate") ? "Już istnieje" : "Nie udało się dodać"),
   });
 
   const deleteSub = useMutation({
@@ -65,23 +65,23 @@ export default function SubcategoryManager() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEY });
-      toast.success("Deleted");
+      toast.success("Usunięto");
     },
-    onError: () => toast.error("Failed to delete"),
+    onError: () => toast.error("Nie udało się usunąć"),
   });
 
   const handleAdd = () => {
-    if (!name.trim()) { toast.error("Name is required"); return; }
+    if (!name.trim()) { toast.error("Nazwa jest wymagana"); return; }
     addSub.mutate();
   };
 
   return (
     <div className="space-y-4">
-      <h2 className="font-heading text-lg font-semibold text-foreground">Manage Subcategories</h2>
+      <h2 className="font-heading text-lg font-semibold text-foreground">Zarządzaj podkategoriami</h2>
 
       <div className="flex flex-col sm:flex-row gap-2">
         <Input
-          placeholder="Subcategory name"
+          placeholder="Nazwa podkategorii"
           value={name}
           onChange={(e) => setName(e.target.value)}
           className="bg-card flex-1"
@@ -93,21 +93,21 @@ export default function SubcategoryManager() {
           </SelectContent>
         </Select>
         <Button size="sm" onClick={handleAdd} disabled={addSub.isPending} className="gap-1.5">
-          <Plus className="h-4 w-4" /> Add
+          <Plus className="h-4 w-4" /> Dodaj
         </Button>
       </div>
 
       <Select value={filterCat} onValueChange={(v) => setFilterCat(v as Category | "all")}>
-        <SelectTrigger className="w-48 bg-card"><SelectValue placeholder="Filter" /></SelectTrigger>
+        <SelectTrigger className="w-48 bg-card"><SelectValue placeholder="Filtruj" /></SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Categories</SelectItem>
+          <SelectItem value="all">Wszystkie kategorie</SelectItem>
           {CATEGORIES.map((c) => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}
         </SelectContent>
       </Select>
 
       <div className="space-y-1.5 max-h-[40vh] overflow-y-auto">
         {filtered.length === 0 && (
-          <p className="text-sm text-muted-foreground py-4 text-center">No subcategories yet</p>
+          <p className="text-sm text-muted-foreground py-4 text-center">Brak podkategorii</p>
         )}
         {filtered.map((sub: any) => (
           <div key={sub.id} className="flex items-center justify-between rounded-lg border border-border bg-card px-3 py-2">

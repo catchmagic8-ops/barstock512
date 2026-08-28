@@ -72,15 +72,15 @@ import { toast } from "sonner";
 
 const TABLE = "reservations_polskie_smaki" as const;
 
-const OCCASIONS = ["None", "Birthday", "Anniversary", "Business Dinner", "Proposal", "Other"] as const;
-const SEATING = ["No Preference", "Window", "Quiet Corner", "Outside"] as const;
-const DIETARY = ["Vegetarian", "Vegan", "Gluten-free", "Halal", "Kosher"] as const;
-const BEVERAGE = ["None", "Wine Pairing", "Champagne on Arrival", "Open Bar", "Soft Drinks Only"] as const;
-const MENU_PREF = ["No Preference", "À La Carte", "Set Menu", "Tasting Menu"] as const;
-const LANGUAGES = ["Polish", "English", "German", "Russian", "Other"] as const;
-const MOBILITY = ["Wheelchair Access", "High Chair"] as const;
-const SOURCES = ["Phone", "Walk-in", "Online", "Hotel Concierge", "Other"] as const;
-const STATUSES = ["Confirmed", "Pending", "Cancelled", "No-show"] as const;
+const OCCASIONS = ["Brak", "Urodziny", "Rocznica", "Kolacja biznesowa", "Zaręczyny", "Inne"] as const;
+const SEATING = ["Bez preferencji", "Przy oknie", "Spokojny kącik", "Na zewnątrz"] as const;
+const DIETARY = ["Wegetariańskie", "Wegańskie", "Bezglutenowe", "Halal", "Koszerne"] as const;
+const BEVERAGE = ["Brak", "Dobór win", "Szampan na powitanie", "Open bar", "Tylko napoje bezalkoholowe"] as const;
+const MENU_PREF = ["Bez preferencji", "À La Carte", "Menu ustalone", "Menu degustacyjne"] as const;
+const LANGUAGES = ["Polski", "Angielski", "Niemiecki", "Rosyjski", "Inny"] as const;
+const MOBILITY = ["Dostęp dla wózków", "Krzesełko dla dziecka"] as const;
+const SOURCES = ["Telefon", "Bez rezerwacji", "Online", "Concierge hotelowy", "Inne"] as const;
+const STATUSES = ["Potwierdzona", "Oczekująca", "Odwołana", "Nieobecność"] as const;
 
 type Reservation = {
   id: string;
@@ -115,10 +115,10 @@ type Reservation = {
 };
 
 const STATUS_STYLES: Record<string, string> = {
-  Confirmed: "bg-emerald-500/20 text-emerald-400 border-emerald-500/40",
-  Pending: "bg-amber-500/20 text-amber-400 border-amber-500/40",
-  Cancelled: "bg-muted text-muted-foreground border-border",
-  "No-show": "bg-red-500/20 text-red-400 border-red-500/40",
+  Potwierdzona: "bg-emerald-500/20 text-emerald-400 border-emerald-500/40",
+  Oczekująca: "bg-amber-500/20 text-amber-400 border-amber-500/40",
+  Odwołana: "bg-muted text-muted-foreground border-border",
+  "Nieobecność": "bg-red-500/20 text-red-400 border-red-500/40",
 };
 
 function emptyForm(): Partial<Reservation> {
@@ -129,25 +129,25 @@ function emptyForm(): Partial<Reservation> {
     number_of_guests: 2,
     number_of_children: null,
     table_number: "",
-    occasion: "None",
-    seating_request: "No Preference",
+    occasion: "Brak",
+    seating_request: "Bez preferencji",
     dietary_requirements: [],
     allergies: "",
-    beverage_preference: "None",
+    beverage_preference: "Brak",
     pre_ordered_items: "",
-    menu_preference: "No Preference",
+    menu_preference: "Bez preferencji",
     vip_returning: false,
     hotel_guest: false,
     room_number: "",
-    language: "Polish",
+    language: "Polski",
     mobility_needs: [],
     decoration_requests: "",
-    reservation_source: "Phone",
+    reservation_source: "Telefon",
     deposit_paid: false,
     deposit_amount: null,
     contact_phone: "",
     notes: "",
-    status: "Pending",
+    status: "Oczekująca",
   };
 }
 
@@ -282,7 +282,7 @@ function ReservationCard({
             )}
             {r.hotel_guest && (
               <Badge className="border-cyan-500/40 bg-cyan-500/15 text-cyan-400">
-                <BedDouble className="mr-1 h-3 w-3" /> Hotel guest
+                <BedDouble className="mr-1 h-3 w-3" /> Gość hotelowy
               </Badge>
             )}
           </div>
@@ -295,11 +295,11 @@ function ReservationCard({
             </span>
             <span className="inline-flex items-center gap-1">
               <Users className="h-4 w-4" /> {r.number_of_guests}
-              {has(r.number_of_children) ? ` + ${r.number_of_children} child` : ""}
+              {has(r.number_of_children) ? ` + ${r.number_of_children} dzieci` : ""}
             </span>
             {has(r.table_number) && (
               <span className="inline-flex items-center gap-1">
-                <Hash className="h-4 w-4" /> Table {r.table_number}
+                <Hash className="h-4 w-4" /> Stolik {r.table_number}
               </span>
             )}
           </div>
@@ -313,10 +313,10 @@ function ReservationCard({
             disabled={statusUpdating}
           >
             <SelectTrigger
-              title="Click to change status"
+              title="Kliknij, aby zmienić status"
               className={cn(
                 "h-7 w-auto gap-1 rounded-full border px-3 py-0 text-xs font-semibold shadow-none transition hover:opacity-90 focus:ring-0 focus:ring-offset-0",
-                STATUS_STYLES[r.status] ?? STATUS_STYLES.Pending,
+                STATUS_STYLES[r.status] ?? STATUS_STYLES.Oczekująca,
                 statusUpdating && "opacity-60"
               )}
             >
@@ -332,14 +332,14 @@ function ReservationCard({
           </Select>
           {canAdmin && (
             <>
-              <Button size="icon" variant="ghost" onClick={onEdit} title="Edit">
+              <Button size="icon" variant="ghost" onClick={onEdit} title="Edytuj">
                 <Pencil className="h-4 w-4" />
               </Button>
               <Button
                 size="icon"
                 variant="ghost"
                 onClick={onDelete}
-                title="Delete"
+                title="Usuń"
                 className="text-red-400 hover:text-red-300"
               >
                 <Trash2 className="h-4 w-4" />
@@ -352,21 +352,21 @@ function ReservationCard({
       {r.created_by_username && (
         <div className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-border bg-muted/40 px-2.5 py-0.5 text-[11px] text-muted-foreground">
           <UserCircle2 className="h-3.5 w-3.5" />
-          Created by <span className="font-semibold text-foreground">{r.created_by_username}</span>
+          Utworzone przez <span className="font-semibold text-foreground">{r.created_by_username}</span>
         </div>
       )}
 
       {/* Highlight strip: occasion + allergies */}
-      {(has(r.occasion) && r.occasion !== "None") || has(r.allergies) ? (
+      {(has(r.occasion) && r.occasion !== "Brak") || has(r.allergies) ? (
         <div className="mb-4 flex flex-wrap gap-2">
-          {has(r.occasion) && r.occasion !== "None" && (
+          {has(r.occasion) && r.occasion !== "Brak" && (
             <div className="inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/15 px-3 py-1 text-xs font-semibold text-primary">
               <Sparkles className="h-3.5 w-3.5" /> {r.occasion}
             </div>
           )}
           {has(r.allergies) && (
             <div className="inline-flex items-center gap-1.5 rounded-full border border-red-500/40 bg-red-500/15 px-3 py-1 text-xs font-semibold text-red-400">
-              <AlertTriangle className="h-3.5 w-3.5" /> Allergy: {r.allergies}
+              <AlertTriangle className="h-3.5 w-3.5" /> Alergia: {r.allergies}
             </div>
           )}
         </div>
@@ -374,11 +374,11 @@ function ReservationCard({
 
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
         {/* Food & Beverage */}
-        <Section title="Food & Beverage">
+        <Section title="Jedzenie i napoje">
           {has(r.dietary_requirements) && (
             <Field
               icon={Utensils}
-              label="Dietary"
+              label="Dieta"
               value={
                 <div className="flex flex-wrap gap-1">
                   {r.dietary_requirements.map((d) => (
@@ -394,30 +394,30 @@ function ReservationCard({
               }
             />
           )}
-          {has(r.beverage_preference) && r.beverage_preference !== "None" && (
-            <Field icon={Wine} label="Beverage" value={r.beverage_preference} />
+          {has(r.beverage_preference) && r.beverage_preference !== "Brak" && (
+            <Field icon={Wine} label="Napój" value={r.beverage_preference} />
           )}
-          {has(r.menu_preference) && r.menu_preference !== "No Preference" && (
+          {has(r.menu_preference) && r.menu_preference !== "Bez preferencji" && (
             <Field icon={Utensils} label="Menu" value={r.menu_preference} />
           )}
           {has(r.pre_ordered_items) && (
-            <Field icon={Inbox} label="Pre-ordered" value={r.pre_ordered_items} />
+            <Field icon={Inbox} label="Zamówione wcześniej" value={r.pre_ordered_items} />
           )}
         </Section>
 
         {/* Guest Info */}
-        <Section title="Guest Info">
-          {has(r.seating_request) && r.seating_request !== "No Preference" && (
-            <Field icon={Armchair} label="Seating" value={r.seating_request} />
+        <Section title="Informacje o gościu">
+          {has(r.seating_request) && r.seating_request !== "Bez preferencji" && (
+            <Field icon={Armchair} label="Miejsce" value={r.seating_request} />
           )}
           {r.hotel_guest && has(r.room_number) && (
-            <Field icon={BedDouble} label="Room" value={r.room_number} />
+            <Field icon={BedDouble} label="Pokój" value={r.room_number} />
           )}
-          {has(r.language) && <Field icon={Languages} label="Language" value={r.language} />}
+          {has(r.language) && <Field icon={Languages} label="Język" value={r.language} />}
           {has(r.mobility_needs) && (
             <Field
               icon={Accessibility}
-              label="Mobility"
+              label="Mobilność"
               value={
                 <div className="flex flex-wrap gap-1">
                   {r.mobility_needs.map((m) => (
@@ -430,26 +430,26 @@ function ReservationCard({
             />
           )}
           {has(r.decoration_requests) && (
-            <Field icon={Flower2} label="Decoration" value={r.decoration_requests} />
+            <Field icon={Flower2} label="Dekoracje" value={r.decoration_requests} />
           )}
         </Section>
 
         {/* Operational */}
-        <Section title="Operational">
+        <Section title="Informacje operacyjne">
           {has(r.contact_phone) && (
-            <Field icon={Phone} label="Phone" value={r.contact_phone} />
+            <Field icon={Phone} label="Telefon" value={r.contact_phone} />
           )}
           {has(r.reservation_source) && (
-            <Field icon={Inbox} label="Source" value={r.reservation_source} />
+            <Field icon={Inbox} label="Źródło" value={r.reservation_source} />
           )}
           {r.deposit_paid && (
             <Field
               icon={Wallet}
-              label="Deposit"
-              value={`Paid${has(r.deposit_amount) ? ` · ${r.deposit_amount} PLN` : ""}`}
+              label="Zadatek"
+              value={`Wpłacony${has(r.deposit_amount) ? ` · ${r.deposit_amount} PLN` : ""}`}
             />
           )}
-          {has(r.notes) && <Field icon={StickyNote} label="Notes" value={r.notes} />}
+          {has(r.notes) && <Field icon={StickyNote} label="Notatki" value={r.notes} />}
         </Section>
       </div>
     </div>
@@ -475,10 +475,10 @@ function ReservationForm({
   return (
     <div className="space-y-6">
       {/* Essential */}
-      <Section title="Essential">
+      <Section title="Podstawowe">
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
-            <Label>Guest Name *</Label>
+            <Label>Imię i nazwisko gościa *</Label>
             <Input
               value={f.guest_name ?? ""}
               onChange={(e) => set("guest_name", e.target.value)}
@@ -486,7 +486,7 @@ function ReservationForm({
             />
           </div>
           <div>
-            <Label>Date *</Label>
+            <Label>Data *</Label>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
@@ -497,7 +497,7 @@ function ReservationForm({
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {dateObj ? format(dateObj, "PPP") : "Pick a date"}
+                  {dateObj ? format(dateObj, "PPP") : "Wybierz datę"}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
@@ -512,7 +512,7 @@ function ReservationForm({
             </Popover>
           </div>
           <div>
-            <Label>Arrival Time *</Label>
+            <Label>Godzina przybycia *</Label>
             <Input
               type="time"
               value={formatTime(f.arrival_time as string)}
@@ -521,7 +521,7 @@ function ReservationForm({
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label>Guests *</Label>
+              <Label>Liczba gości *</Label>
               <Input
                 type="number"
                 min={1}
@@ -530,7 +530,7 @@ function ReservationForm({
               />
             </div>
             <div>
-              <Label>Children</Label>
+              <Label>Dzieci</Label>
               <Input
                 type="number"
                 min={0}
@@ -542,7 +542,7 @@ function ReservationForm({
             </div>
           </div>
           <div>
-            <Label>Table Number</Label>
+            <Label>Numer stolika</Label>
             <Input
               value={f.table_number ?? ""}
               onChange={(e) => set("table_number", e.target.value)}
@@ -550,9 +550,9 @@ function ReservationForm({
             />
           </div>
           <div>
-            <Label>Occasion</Label>
+            <Label>Okazja</Label>
             {(() => {
-              const current = f.occasion ?? "None";
+              const current = f.occasion ?? "Brak";
               const isPreset = (OCCASIONS as readonly string[]).includes(current);
               const selectValue = isPreset ? current : "Other";
               return (
@@ -577,7 +577,7 @@ function ReservationForm({
                     <Input
                       value={isPreset ? "" : current}
                       onChange={(e) => set("occasion", e.target.value)}
-                      placeholder="Specify occasion"
+                      placeholder="Podaj okazję"
                       maxLength={120}
                     />
                   )}
@@ -586,8 +586,8 @@ function ReservationForm({
             })()}
           </div>
           <div className="sm:col-span-2">
-            <Label>Special Seating Request</Label>
-            <Select value={f.seating_request ?? "No Preference"} onValueChange={(v) => set("seating_request", v)}>
+            <Label>Specjalna prośba dot. miejsca</Label>
+            <Select value={f.seating_request ?? "Bez preferencji"} onValueChange={(v) => set("seating_request", v)}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
                 {SEATING.map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}
@@ -598,9 +598,9 @@ function ReservationForm({
       </Section>
 
       {/* Food & Beverage */}
-      <Section title="Food & Beverage">
+      <Section title="Jedzenie i napoje">
         <div>
-          <Label>Dietary Requirements</Label>
+          <Label>Wymagania dietetyczne</Label>
           <MultiCheck
             options={DIETARY}
             value={f.dietary_requirements ?? []}
@@ -609,17 +609,17 @@ function ReservationForm({
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
-            <Label>Allergies</Label>
+            <Label>Alergie</Label>
             <Input
               value={f.allergies ?? ""}
               onChange={(e) => set("allergies", e.target.value)}
-              placeholder="e.g. severe nut allergy"
+              placeholder="np. silna alergia na orzechy"
               maxLength={300}
             />
           </div>
           <div>
-            <Label>Beverage Preference</Label>
-            <Select value={f.beverage_preference ?? "None"} onValueChange={(v) => set("beverage_preference", v)}>
+            <Label>Preferencje dot. napojów</Label>
+            <Select value={f.beverage_preference ?? "Brak"} onValueChange={(v) => set("beverage_preference", v)}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
                 {BEVERAGE.map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}
@@ -627,17 +627,17 @@ function ReservationForm({
             </Select>
           </div>
           <div>
-            <Label>Pre-ordered Items</Label>
+            <Label>Zamówione wcześniej pozycje</Label>
             <Input
               value={f.pre_ordered_items ?? ""}
               onChange={(e) => set("pre_ordered_items", e.target.value)}
-              placeholder="e.g. birthday cake, roses"
+              placeholder="np. tort urodzinowy, róże"
               maxLength={300}
             />
           </div>
           <div>
-            <Label>Menu Preference</Label>
-            <Select value={f.menu_preference ?? "No Preference"} onValueChange={(v) => set("menu_preference", v)}>
+            <Label>Preferencje dot. menu</Label>
+            <Select value={f.menu_preference ?? "Bez preferencji"} onValueChange={(v) => set("menu_preference", v)}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
                 {MENU_PREF.map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}
@@ -648,19 +648,19 @@ function ReservationForm({
       </Section>
 
       {/* Guest Info */}
-      <Section title="Guest Info">
+      <Section title="Informacje o gościu">
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="flex items-center justify-between rounded-md border border-border px-3 py-2">
             <Label className="!m-0">VIP / Returning Guest</Label>
             <Switch checked={!!f.vip_returning} onCheckedChange={(c) => set("vip_returning", c)} />
           </div>
           <div className="flex items-center justify-between rounded-md border border-border px-3 py-2">
-            <Label className="!m-0">Hotel Guest</Label>
+            <Label className="!m-0">Gość hotelowy</Label>
             <Switch checked={!!f.hotel_guest} onCheckedChange={(c) => set("hotel_guest", c)} />
           </div>
           {f.hotel_guest && (
             <div className="sm:col-span-2">
-              <Label>Room Number</Label>
+              <Label>Numer pokoju</Label>
               <Input
                 value={f.room_number ?? ""}
                 onChange={(e) => set("room_number", e.target.value)}
@@ -669,8 +669,8 @@ function ReservationForm({
             </div>
           )}
           <div>
-            <Label>Language</Label>
-            <Select value={f.language ?? "English"} onValueChange={(v) => set("language", v)}>
+            <Label>Język</Label>
+            <Select value={f.language ?? "Polski"} onValueChange={(v) => set("language", v)}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
                 {LANGUAGES.map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}
@@ -678,16 +678,16 @@ function ReservationForm({
             </Select>
           </div>
           <div>
-            <Label>Decoration Requests</Label>
+            <Label>Prośby dot. dekoracji</Label>
             <Input
               value={f.decoration_requests ?? ""}
               onChange={(e) => set("decoration_requests", e.target.value)}
-              placeholder="e.g. rose petals, candles"
+              placeholder="np. płatki róż, świece"
               maxLength={300}
             />
           </div>
           <div className="sm:col-span-2">
-            <Label>Mobility Needs</Label>
+            <Label>Potrzeby dot. mobilności</Label>
             <MultiCheck
               options={MOBILITY}
               value={f.mobility_needs ?? []}
@@ -698,11 +698,11 @@ function ReservationForm({
       </Section>
 
       {/* Operational */}
-      <Section title="Operational">
+      <Section title="Informacje operacyjne">
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
-            <Label>Reservation Source</Label>
-            <Select value={f.reservation_source ?? "Phone"} onValueChange={(v) => set("reservation_source", v)}>
+            <Label>Źródło rezerwacji</Label>
+            <Select value={f.reservation_source ?? "Telefon"} onValueChange={(v) => set("reservation_source", v)}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
                 {SOURCES.map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}
@@ -711,7 +711,7 @@ function ReservationForm({
           </div>
           <div>
             <Label>Status</Label>
-            <Select value={f.status ?? "Pending"} onValueChange={(v) => set("status", v)}>
+            <Select value={f.status ?? "Oczekująca"} onValueChange={(v) => set("status", v)}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
                 {STATUSES.map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}
@@ -719,12 +719,12 @@ function ReservationForm({
             </Select>
           </div>
           <div className="flex items-center justify-between rounded-md border border-border px-3 py-2">
-            <Label className="!m-0">Deposit Paid</Label>
+            <Label className="!m-0">Zadatek wpłacony</Label>
             <Switch checked={!!f.deposit_paid} onCheckedChange={(c) => set("deposit_paid", c)} />
           </div>
           {f.deposit_paid && (
             <div>
-              <Label>Deposit Amount (PLN)</Label>
+              <Label>Kwota zadatku (PLN)</Label>
               <Input
                 type="number"
                 min={0}
@@ -737,7 +737,7 @@ function ReservationForm({
             </div>
           )}
           <div className="sm:col-span-2">
-            <Label>Contact Phone</Label>
+            <Label>Telefon kontaktowy</Label>
             <Input
               value={f.contact_phone ?? ""}
               onChange={(e) => set("contact_phone", e.target.value)}
@@ -745,7 +745,7 @@ function ReservationForm({
             />
           </div>
           <div className="sm:col-span-2">
-            <Label>Notes</Label>
+            <Label>Notatki</Label>
             <Textarea
               value={f.notes ?? ""}
               onChange={(e) => set("notes", e.target.value)}
@@ -757,15 +757,15 @@ function ReservationForm({
       </Section>
 
       <DialogFooter>
-        <Button variant="ghost" onClick={onCancel} disabled={saving}>Cancel</Button>
+        <Button variant="ghost" onClick={onCancel} disabled={saving}>Anuluj</Button>
         <Button
           onClick={() => {
             if (!f.guest_name?.trim()) {
-              toast.error("Guest name is required");
+              toast.error("Imię i nazwisko gościa jest wymagane");
               return;
             }
             if (!f.reservation_date || !f.arrival_time) {
-              toast.error("Date and arrival time are required");
+              toast.error("Data i godzina przybycia są wymagane");
               return;
             }
             onSubmit(f);
@@ -775,7 +775,7 @@ function ReservationForm({
           className="text-white hover:opacity-90"
         >
           {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Save Reservation
+          Zapisz rezerwację
         </Button>
       </DialogFooter>
     </div>
@@ -836,7 +836,7 @@ export default function Reservations() {
         deposit_amount: v.deposit_paid ? (v.deposit_amount ?? null) : null,
         contact_phone: v.contact_phone?.trim() || null,
         notes: v.notes?.trim() || null,
-        status: v.status || "Pending",
+        status: v.status || "Oczekująca",
       };
       if (editing?.id) {
         const { error } = await (supabase as any).from(TABLE).update(payload).eq("id", editing.id);
@@ -849,12 +849,12 @@ export default function Reservations() {
       }
     },
     onSuccess: () => {
-      toast.success(editing ? "Reservation updated" : "Reservation created");
+      toast.success(editing ? "Rezerwacja zaktualizowana" : "Rezerwacja utworzona");
       qc.invalidateQueries({ queryKey: ["reservations", department] });
       setDialogOpen(false);
       setEditing(null);
     },
-    onError: (err: any) => toast.error(err?.message ?? "Save failed"),
+    onError: (err: any) => toast.error(err?.message ?? "Nie udało się zapisać"),
   });
 
   const deleteMutation = useMutation({
@@ -863,11 +863,11 @@ export default function Reservations() {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Reservation deleted");
+      toast.success("Rezerwacja usunięta");
       qc.invalidateQueries({ queryKey: ["reservations", department] });
       setToDelete(null);
     },
-    onError: (err: any) => toast.error(err?.message ?? "Delete failed"),
+    onError: (err: any) => toast.error(err?.message ?? "Nie udało się usunąć"),
   });
 
   const statusMutation = useMutation({
@@ -879,10 +879,10 @@ export default function Reservations() {
       if (error) throw error;
     },
     onSuccess: (_d, vars) => {
-      toast.success(`Status set to ${vars.status}`);
+      toast.success(`Status ustawiony na ${vars.status}`);
       qc.invalidateQueries({ queryKey: ["reservations", department] });
     },
-    onError: (err: any) => toast.error(err?.message ?? "Status update failed"),
+    onError: (err: any) => toast.error(err?.message ?? "Nie udało się zaktualizować statusu"),
   });
 
   const filtered = useMemo(() => {
@@ -923,7 +923,7 @@ export default function Reservations() {
               className="text-xl font-bold sm:text-2xl"
               style={{ fontFamily: "'Playfair Display', serif", color: "hsl(var(--brand))" }}
             >
-              Table Reservations
+              Rezerwacje stolików
             </h1>
             <p className="text-xs text-muted-foreground">{meta.label}</p>
           </div>
@@ -934,7 +934,7 @@ export default function Reservations() {
             style={{ background: "hsl(var(--brand))" }}
             className="text-white hover:opacity-90"
           >
-            <Plus className="mr-2 h-4 w-4" /> New Reservation
+            <Plus className="mr-2 h-4 w-4" /> Nowa rezerwacja
           </Button>
         )}
       </header>
@@ -944,7 +944,7 @@ export default function Reservations() {
           <div className="relative flex-1 min-w-[200px]">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Search by guest, phone, table, occasion…"
+              placeholder="Szukaj po gościu, telefonie, stoliku, okazji…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-9"
@@ -961,7 +961,7 @@ export default function Reservations() {
           <Select value={statusFilter} onValueChange={setStatusFilter}>
             <SelectTrigger className="w-[170px]"><SelectValue /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All statuses</SelectItem>
+              <SelectItem value="all">Wszystkie statusy</SelectItem>
               {STATUSES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
             </SelectContent>
           </Select>
@@ -973,7 +973,7 @@ export default function Reservations() {
           </div>
         ) : filtered.length === 0 ? (
           <div className="rounded-xl border border-dashed border-border p-12 text-center text-muted-foreground">
-            No reservations yet.{canCreate && " Click \"New Reservation\" to add one."}
+            Brak rezerwacji.{canCreate && " Kliknij \"Nowa rezerwacja\", aby dodać pierwszą."}
           </div>
         ) : (
           <div className="space-y-4">
@@ -998,7 +998,7 @@ export default function Reservations() {
         <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto">
           <DialogHeader>
             <DialogTitle style={{ fontFamily: "'Playfair Display', serif" }}>
-              {editing ? "Edit Reservation" : "New Reservation"}
+              {editing ? "Edytuj rezerwację" : "Nowa rezerwacja"}
             </DialogTitle>
           </DialogHeader>
           <ReservationForm
@@ -1013,19 +1013,19 @@ export default function Reservations() {
       <AlertDialog open={!!toDelete} onOpenChange={(o) => !o && setToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete reservation?</AlertDialogTitle>
+            <AlertDialogTitle>Usunąć rezerwację?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently remove the reservation for{" "}
-              <strong>{toDelete?.guest_name}</strong>. This action cannot be undone.
+              To trwale usunie rezerwację dla{" "}
+              <strong>{toDelete?.guest_name}</strong>. Tej czynności nie można cofnąć.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>Anuluj</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => toDelete && deleteMutation.mutate(toDelete.id)}
               className="bg-red-500 text-white hover:bg-red-600"
             >
-              Delete
+              Usuń
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

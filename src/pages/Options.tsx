@@ -7,7 +7,7 @@ import SubcategoryManager from "@/components/SubcategoryManager";
 
 export default function Options() {
   const handleReset = () => {
-    if (window.confirm("Reset all inventory to default values?")) {
+    if (window.confirm("Zresetować cały magazyn do wartości domyślnych?")) {
       localStorage.removeItem("bar-inventory");
       window.location.href = "/";
     }
@@ -23,7 +23,7 @@ export default function Options() {
                 <ArrowLeft className="h-5 w-5" />
               </Button>
             </Link>
-            <h1 className="font-heading text-2xl font-bold text-foreground">Options</h1>
+            <h1 className="font-heading text-2xl font-bold text-foreground">Opcje</h1>
           </div>
 
           <div className="space-y-4">
@@ -36,20 +36,20 @@ export default function Options() {
             </div>
 
             <div className="rounded-lg border border-border bg-card p-4">
-              <h2 className="font-heading text-lg font-semibold text-foreground mb-2">Data Management</h2>
+              <h2 className="font-heading text-lg font-semibold text-foreground mb-2">Zarządzanie danymi</h2>
               <p className="text-sm text-muted-foreground mb-4">
-                Reset inventory to default sample data. This cannot be undone.
+                Zresetuj magazyn do domyślnych danych przykładowych. Tej operacji nie można cofnąć.
               </p>
               <Button variant="destructive" onClick={handleReset} className="gap-2">
                 <Trash2 className="h-4 w-4" />
-                Reset Inventory
+                Resetuj magazyn
               </Button>
             </div>
 
             <div className="rounded-lg border border-border bg-card p-4">
-              <h2 className="font-heading text-lg font-semibold text-foreground mb-2">About</h2>
+              <h2 className="font-heading text-lg font-semibold text-foreground mb-2">O aplikacji</h2>
               <p className="text-sm text-muted-foreground">
-                Bar Inventory Tracker — a shift-ready tool for tracking stock, usage, and restocking. Data is stored in the cloud.
+                Bar Inventory Tracker — narzędzie gotowe do pracy na zmianie do śledzenia zapasów, zużycia i uzupełnień. Dane są przechowywane w chmurze.
               </p>
             </div>
           </div>
