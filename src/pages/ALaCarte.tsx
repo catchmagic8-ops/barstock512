@@ -161,6 +161,11 @@ export default function ALaCarte() {
     return [...set].sort((a, b) => a.localeCompare(b));
   }, [items]);
 
+  const totalCount = useMemo(
+    () => grouped.reduce((sum, [, list]) => sum + list.length, 0),
+    [grouped]
+  );
+
   function toggleAllergen(a: string) {
     setExcludedAllergens((curr) =>
       curr.includes(a) ? curr.filter((x) => x !== a) : [...curr, a]
