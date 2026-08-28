@@ -77,6 +77,10 @@ function isBeverage(category: string) {
   return /napoje|drinki|kawa|herbata|wino|piwo|napój/i.test(category);
 }
 
+function isFood(category: string) {
+  return /przystaw|zup|sałat|dan|deser|śniadanie|burger|makar|pizza|ryb|mięs|wege|vege|vegan|street|bowl|talerz|stek|grill|kuchnia/i.test(category);
+}
+
 function buildQuestions(items: MenuItem[], count: number): Question[] {
   const usable = items.filter((i) => i.name && i.category);
   const categories = Array.from(new Set(usable.map((i) => i.category)));
@@ -140,7 +144,7 @@ function buildQuestions(items: MenuItem[], count: number): Question[] {
         };
       },
       () => {
-        if (isBeverage(item.category)) return null;
+        if (!isFood(item.category)) return null;
         const d = (item.dietary || []).filter(Boolean);
         const isVegan = d.some((x) => /wega|vegan/i.test(x));
         const isVege = d.some((x) => /wegetar|vegetar/i.test(x));
@@ -386,7 +390,7 @@ export default function TestPage() {
                 </h2>
                 <p className="mx-auto mt-3 max-w-sm text-sm text-muted-foreground">
                   {QUESTIONS_PER_ROUND} losowych pytań o kategorie, ceny, opisy, alergeny i oznaczenia
-                  dietetyczne z karty Bar 512. Wybierz tempo nauki.
+                  dietetyczne dań z karty Bar 512. Wybierz tempo nauki.
                 </p>
               </div>
 
