@@ -27,6 +27,8 @@ import { useInventory } from "@/hooks/useInventory";
 import { useDepartment } from "@/contexts/DepartmentContext";
 import { deptHomePath } from "@/lib/department";
 import { useAuth } from "@/contexts/AuthContext";
+import { cn } from "@/lib/utils";
+import { AmbientBackgroundForDepartment } from "@/components/AmbientBackground";
 
 function AdminSection({
   title,
@@ -778,23 +780,25 @@ function RecipesManager() {
 export default function Admin() {
   const { department, meta } = useDepartment();
   const { isGlobalAdmin } = useAuth();
+  const flaggedCount = useFlaggedCount();
   return (
-    <div className="min-h-screen bg-background">
-        <header className="sticky top-0 z-30 border-b border-border bg-card/80 backdrop-blur-md">
-          <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">
+    <div className="relative min-h-screen">
+        <AmbientBackgroundForDepartment intensity={0.4} blur={3} />
+        <header className="sticky top-0 z-30 border-b border-border/40 bg-background/40 backdrop-blur-xl backdrop-saturate-150">
+          <div className="mx-auto flex max-w-4xl items-center justify-between px-5 py-4 sm:px-8">
             <div className="flex items-center gap-3">
               <Link to={deptHomePath(department)}>
                 <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
                   <ArrowLeft className="h-5 w-5" />
                 </Button>
               </Link>
-              <h1 className="font-heading text-lg font-bold text-foreground">Admin Panel</h1>
+              <h1 className="font-heading text-xl font-bold tracking-wide text-brand sm:text-2xl">Admin Panel</h1>
               <span className="text-xs text-muted-foreground hidden sm:inline">· {meta.label}</span>
             </div>
           </div>
         </header>
 
-        <main className="mx-auto max-w-3xl px-4 py-6 space-y-4">
+        <main className="relative z-10 mx-auto max-w-4xl px-5 py-8 space-y-5 sm:px-8">
           {isGlobalAdmin && (
             <AdminSection title="User Management" icon={Users}>
               <UserManagement />
