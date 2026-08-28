@@ -59,6 +59,7 @@ export function rowToItem(row: {
     qtyLeft: row.qty_left ?? undefined,
     qtyToOrder: row.qty_to_order ?? undefined,
     updatedAt: row.updated_at ?? undefined,
+    stockConfirmedAt: row.stock_confirmed_at ?? undefined,
   };
 }
 
