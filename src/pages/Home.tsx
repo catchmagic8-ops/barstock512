@@ -153,6 +153,7 @@ function ALaCarteBadge() {
 
 function InfoBadge() {
   const { department } = useDepartment();
+  useHandoverRealtime(department);
   const { data: count = 0 } = useQuery({
     queryKey: ["handover-notes-count", department],
     queryFn: async () => {
@@ -165,6 +166,7 @@ function InfoBadge() {
       return data?.length ?? 0;
     },
   });
+
   if (count > 0) {
     return (
       <span className="rounded-full bg-primary/15 px-2.5 py-0.5 text-xs font-semibold text-primary">
