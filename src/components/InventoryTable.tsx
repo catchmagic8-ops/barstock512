@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
 } from "@/components/ui/dialog";
-import type { InventoryItem } from "@/lib/inventory";
+import { formatFlaggedAt, type InventoryItem } from "@/lib/inventory";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -87,6 +87,7 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
                   {flagged && item.flaggedBy && (
                     <p className="mt-0.5 text-[10px] text-muted-foreground truncate">
                       zgłosił: {item.flaggedBy}
+                      {item.flaggedAt && <> · {formatFlaggedAt(item.flaggedAt)}</>}
                     </p>
                   )}
                 </div>
@@ -186,6 +187,7 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
                         {item.flaggedBy && (
                           <span className="block text-[10px] text-muted-foreground">
                             zgłosił: {item.flaggedBy}
+                            {item.flaggedAt && <> · {formatFlaggedAt(item.flaggedAt)}</>}
                           </span>
                         )}
                       </span>
