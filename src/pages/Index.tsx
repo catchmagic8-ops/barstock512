@@ -221,6 +221,16 @@ export default function Index() {
               <ClipboardList className="h-4 w-4" />
               <span className="hidden sm:inline text-sm">Arkusz</span>
             </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setStocktakeOpen(true)}
+              title="Tryb inwentaryzacji krok po kroku"
+              className="h-8 w-8 text-muted-foreground hover:text-foreground sm:h-9 sm:w-auto sm:px-3 sm:gap-1.5"
+            >
+              <ClipboardCheck className="h-4 w-4" />
+              <span className="hidden sm:inline text-sm">Inwentaryzacja</span>
+            </Button>
           </div>
         </div>
       </header>
