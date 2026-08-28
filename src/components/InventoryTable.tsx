@@ -106,7 +106,16 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
                 </div>
               </div>
 
-              <div className="flex-shrink-0">
+              <div className="flex flex-shrink-0 items-center gap-1">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-muted-foreground"
+                  onClick={() => setHistoryItem(item)}
+                  title="Historia zmian stanu"
+                >
+                  <History className="h-4 w-4" />
+                </Button>
                 {flagged ? (
                   onClear ? (
                     <Button
