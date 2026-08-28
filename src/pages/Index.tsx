@@ -110,6 +110,9 @@ export default function Index() {
     [items]
   );
 
+  const staleCount = useMemo(() => items.filter(isStockStale).length, [items]);
+
+
   const flaggedItems = useMemo(
     () => items.filter((i) => i.needsRestock),
     [items]
