@@ -18,8 +18,10 @@ interface AuthContextValue {
   isAdminFor: (dept: Exclude<AppDepartment, "all">) => boolean;
   loading: boolean;
   login: (username: string, password: string) => Promise<{ ok: true } | { ok: false; error: string }>;
+  register: (username: string, password: string) => Promise<{ ok: true } | { ok: false; error: string }>;
   logout: () => void;
 }
+
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 const STORAGE_KEY = "sheraton-auth-user";
