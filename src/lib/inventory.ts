@@ -45,3 +45,10 @@ export function rowToItem(row: {
     qtyToOrder: row.qty_to_order ?? undefined,
   };
 }
+
+// Format a flag timestamp as "28.08.2026, 03:22"
+export function formatFlaggedAt(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  return `${d.toLocaleDateString("pl-PL")}, ${d.toLocaleTimeString("pl-PL", { hour: "2-digit", minute: "2-digit" })}`;
+}
