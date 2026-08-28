@@ -76,8 +76,15 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
                   </p>
                   <p className="text-[11px] text-muted-foreground truncate">
                     stan: {item.qtyLeft != null ? `${item.qtyLeft} ${item.unit}` : "brak danych"}
-                    {(item.flaggedAt || item.updatedAt) && <> · {formatRelative(item.flaggedAt ?? item.updatedAt!)}</>}
+                    {(item.stockConfirmedAt || item.flaggedAt || item.updatedAt) && (
+                      <> · {formatRelative(item.stockConfirmedAt ?? item.flaggedAt ?? item.updatedAt!)}</>
+                    )}
                   </p>
+                  {isStockStale(item) && (
+                    <span className="mt-0.5 inline-flex items-center gap-1 rounded-full bg-destructive/15 px-1.5 py-0.5 text-[10px] font-semibold text-destructive">
+                      <Clock className="h-3 w-3" /> nieaktualne
+                    </span>
+                  )}
                   {flagged && (item.qtyLeft != null || item.qtyToOrder != null) && (
                     <p className="mt-0.5 text-[11px] font-medium text-warning">
                       {item.qtyLeft != null && <>zostało: {item.qtyLeft}</>}
