@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from "react";
-import { AlertTriangle, FileText, Loader2, Home, Search, BellRing, ClipboardList } from "lucide-react";
+import { AlertTriangle, FileText, Loader2, Home, Search, BellRing, ClipboardList, ClipboardCheck, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,7 +11,8 @@ import InventoryTable from "@/components/InventoryTable";
 import { Input } from "@/components/ui/input";
 import { generateBlankCountSheet } from "@/lib/generateReport";
 import ReportDialog from "@/components/ReportDialog";
-import { formatFlaggedAt, type Category } from "@/lib/inventory";
+import StocktakeDialog from "@/components/StocktakeDialog";
+import { formatFlaggedAt, isStockStale, STALE_STOCK_DAYS, type Category } from "@/lib/inventory";
 import { useInventory } from "@/hooks/useInventory";
 import { useDepartment } from "@/contexts/DepartmentContext";
 import { deptHomePath } from "@/lib/department";
@@ -19,13 +20,14 @@ import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function Index() {
-  const { items, isLoading, flagItem, clearFlag } = useInventory();
+  const { items, isLoading, flagItem, clearFlag, confirmStock } = useInventory();
   const { user } = useAuth();
   const { tables, department, meta } = useDepartment();
   const [activeCategory, setActiveCategory] = useState<Category>("spirits");
   const [activeSubcategory, setActiveSubcategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [reportOpen, setReportOpen] = useState(false);
+  const [stocktakeOpen, setStocktakeOpen] = useState(false);
 
   const { data: subcategories = [] } = useQuery({
     queryKey: ["subcategories", department],
@@ -61,12 +63,23 @@ export default function Index() {
 
   const handleClear = useCallback(
     (id: string) => {
-      clearFlag.mutate(id, {
+      clearFlag.mutate({ id, username: user?.username ?? null }, {
         onSuccess: () => toast.success("Oznaczono jako uzupełnione"),
         onError: () => toast.error("Nie udało się zaktualizować"),
       });
     },
-    [clearFlag]
+    [clearFlag, user]
+  );
+
+  const handleConfirmStock = useCallback(
+    async (id: string, qtyLeft: number) => {
+      try {
+        await confirmStock.mutateAsync({ id, qtyLeft, username: user?.username ?? null });
+      } catch {
+        toast.error("Nie udało się zapisać stanu");
+      }
+    },
+    [confirmStock, user]
   );
 
   const counts = useMemo(
@@ -96,6 +109,9 @@ export default function Index() {
     () => items.filter((i) => i.needsRestock).length,
     [items]
   );
+
+  const staleCount = useMemo(() => items.filter(isStockStale).length, [items]);
+
 
   const flaggedItems = useMemo(
     () => items.filter((i) => i.needsRestock),
@@ -205,6 +221,16 @@ export default function Index() {
               <ClipboardList className="h-4 w-4" />
               <span className="hidden sm:inline text-sm">Arkusz</span>
             </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setStocktakeOpen(true)}
+              title="Tryb inwentaryzacji krok po kroku"
+              className="h-8 w-8 text-muted-foreground hover:text-foreground sm:h-9 sm:w-auto sm:px-3 sm:gap-1.5"
+            >
+              <ClipboardCheck className="h-4 w-4" />
+              <span className="hidden sm:inline text-sm">Inwentaryzacja</span>
+            </Button>
           </div>
         </div>
       </header>
@@ -261,6 +287,17 @@ export default function Index() {
                 <span>{flaggedCount} pozycj{flaggedCount === 1 ? "a" : "e"} oznaczon{flaggedCount === 1 ? "a" : "e"} do uzupełnienia — kierownicy zostali powiadomieni.</span>
               </div>
             )}
+            {staleCount > 0 && (
+              <button
+                onClick={() => setStocktakeOpen(true)}
+                className="flex w-full items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-left text-xs text-destructive transition-colors hover:bg-destructive/10"
+              >
+                <Clock className="h-3.5 w-3.5 flex-shrink-0" />
+                <span>
+                  {staleCount} pozycji nie potwierdzono od ponad {STALE_STOCK_DAYS} dni — kliknij, aby rozpocząć inwentaryzację.
+                </span>
+              </button>
+            )}
             <div className="rounded-lg border border-border bg-card p-2 sm:p-4">
               <InventoryTable items={filtered} onFlag={handleFlag} onClear={handleClear} />
             </div>
@@ -269,6 +306,14 @@ export default function Index() {
       </main>
 
       <ReportDialog open={reportOpen} onOpenChange={setReportOpen} items={items} deptLabel={meta.label} />
+      <StocktakeDialog
+        open={stocktakeOpen}
+        onOpenChange={setStocktakeOpen}
+        items={items}
+        deptLabel={meta.label}
+        onConfirm={handleConfirmStock}
+      />
+
     </div>
   );
 }

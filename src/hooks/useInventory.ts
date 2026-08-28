@@ -20,6 +20,30 @@ export function useInventory() {
     },
   });
 
+  // Append an entry to the shared change history
+  async function logChange(entry: {
+    item: InventoryItem | undefined;
+    itemId: string;
+    qtyAfter?: number | null;
+    qtyToOrder?: number | null;
+    action: "flag" | "stocktake" | "restock";
+    note?: string | null;
+    username?: string | null;
+  }) {
+    await (supabase as any).from("inventory_log").insert({
+      department,
+      item_id: entry.itemId,
+      item_name: entry.item?.name ?? entry.itemId,
+      unit: entry.item?.unit ?? null,
+      qty_before: entry.item?.qtyLeft ?? null,
+      qty_after: entry.qtyAfter ?? null,
+      qty_to_order: entry.qtyToOrder ?? null,
+      action: entry.action,
+      note: entry.note ?? null,
+      username: entry.username ?? null,
+    });
+  }
+
   const flagItem = useMutation({
     mutationFn: async ({
       id,
@@ -28,6 +52,8 @@ export function useInventory() {
       qtyToOrder,
       flaggedBy,
     }: { id: string; note?: string; qtyLeft?: number | null; qtyToOrder?: number | null; flaggedBy?: string | null }) => {
+      const before = items.find((i) => i.id === id);
+      const now = new Date().toISOString();
       const { error } = await (supabase as any)
         .from(tables.inventory)
         .update({
@@ -35,22 +61,62 @@ export function useInventory() {
           restock_note: note ?? null,
           qty_left: qtyLeft ?? null,
           qty_to_order: qtyToOrder ?? null,
-          flagged_at: new Date().toISOString(),
+          flagged_at: now,
           flagged_by: flaggedBy ?? null,
+          stock_confirmed_at: qtyLeft != null ? now : null,
         })
         .eq("id", id);
       if (error) throw error;
+      await logChange({
+        item: before,
+        itemId: id,
+        qtyAfter: qtyLeft ?? null,
+        qtyToOrder: qtyToOrder ?? null,
+        action: "flag",
+        note: note ?? null,
+        username: flaggedBy ?? null,
+      });
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
+  });
+
+  // Confirm the current stock level without raising a low-stock alert (stocktake)
+  const confirmStock = useMutation({
+    mutationFn: async ({
+      id,
+      qtyLeft,
+      note,
+      username,
+    }: { id: string; qtyLeft: number | null; note?: string | null; username?: string | null }) => {
+      const before = items.find((i) => i.id === id);
+      const { error } = await (supabase as any)
+        .from(tables.inventory)
+        .update({ qty_left: qtyLeft, stock_confirmed_at: new Date().toISOString() })
+        .eq("id", id);
+      if (error) throw error;
+      await logChange({
+        item: before,
+        itemId: id,
+        qtyAfter: qtyLeft,
+        action: "stocktake",
+        note: note ?? null,
+        username: username ?? null,
+      });
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
   });
 
   const clearFlag = useMutation({
-    mutationFn: async (id: string) => {
+    mutationFn: async (input: string | { id: string; username?: string | null }) => {
+      const id = typeof input === "string" ? input : input.id;
+      const username = typeof input === "string" ? null : input.username ?? null;
+      const before = items.find((i) => i.id === id);
       const { error } = await (supabase as any)
         .from(tables.inventory)
         .update({ needs_restock: false, restock_note: null, qty_left: null, qty_to_order: null, flagged_at: null, flagged_by: null })
         .eq("id", id);
       if (error) throw error;
+      await logChange({ item: before, itemId: id, qtyAfter: null, action: "restock", username });
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
   });
@@ -95,7 +161,7 @@ export function useInventory() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
   });
 
-  return { items, isLoading, flagItem, clearFlag, clearAllFlags, addItem, editItem, deleteItem };
+  return { items, isLoading, flagItem, clearFlag, clearAllFlags, addItem, editItem, deleteItem, confirmStock };
 }
 
 export type { InventoryItem };

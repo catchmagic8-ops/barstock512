@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { AlertTriangle, BellRing, Check } from "lucide-react";
+import { AlertTriangle, BellRing, Check, Clock, History } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
 } from "@/components/ui/dialog";
-import { formatFlaggedAt, formatRelative, type InventoryItem } from "@/lib/inventory";
+import { formatFlaggedAt, formatRelative, isStockStale, STALE_STOCK_DAYS, type InventoryItem } from "@/lib/inventory";
+import InventoryHistoryDialog from "@/components/InventoryHistoryDialog";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -16,6 +17,7 @@ interface Props {
 
 export default function InventoryTable({ items, onFlag, onClear }: Props) {
   const [flagging, setFlagging] = useState<InventoryItem | null>(null);
+  const [historyItem, setHistoryItem] = useState<InventoryItem | null>(null);
   const [note, setNote] = useState("");
   const [qtyLeft, setQtyLeft] = useState("");
   const [qtyToOrder, setQtyToOrder] = useState("");
@@ -74,8 +76,15 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
                   </p>
                   <p className="text-[11px] text-muted-foreground truncate">
                     stan: {item.qtyLeft != null ? `${item.qtyLeft} ${item.unit}` : "brak danych"}
-                    {(item.flaggedAt || item.updatedAt) && <> · {formatRelative(item.flaggedAt ?? item.updatedAt!)}</>}
+                    {(item.stockConfirmedAt || item.flaggedAt || item.updatedAt) && (
+                      <> · {formatRelative(item.stockConfirmedAt ?? item.flaggedAt ?? item.updatedAt!)}</>
+                    )}
                   </p>
+                  {isStockStale(item) && (
+                    <span className="mt-0.5 inline-flex items-center gap-1 rounded-full bg-destructive/15 px-1.5 py-0.5 text-[10px] font-semibold text-destructive">
+                      <Clock className="h-3 w-3" /> nieaktualne
+                    </span>
+                  )}
                   {flagged && (item.qtyLeft != null || item.qtyToOrder != null) && (
                     <p className="mt-0.5 text-[11px] font-medium text-warning">
                       {item.qtyLeft != null && <>zostało: {item.qtyLeft}</>}
@@ -97,7 +106,16 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
                 </div>
               </div>
 
-              <div className="flex-shrink-0">
+              <div className="flex flex-shrink-0 items-center gap-1">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-muted-foreground"
+                  onClick={() => setHistoryItem(item)}
+                  title="Historia zmian stanu"
+                >
+                  <History className="h-4 w-4" />
+                </Button>
                 {flagged ? (
                   onClear ? (
                     <Button
@@ -182,9 +200,17 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
                     ) : (
                       <span className="text-xs text-muted-foreground">brak danych</span>
                     )}
-                    {(item.flaggedAt || item.updatedAt) && (
+                    {(item.stockConfirmedAt || item.flaggedAt || item.updatedAt) && (
                       <span className="block text-[10px] text-muted-foreground">
-                        {formatRelative(item.flaggedAt ?? item.updatedAt!)}
+                        {formatRelative(item.stockConfirmedAt ?? item.flaggedAt ?? item.updatedAt!)}
+                      </span>
+                    )}
+                    {isStockStale(item) && (
+                      <span
+                        className="mt-0.5 inline-flex items-center gap-1 rounded-full bg-destructive/15 px-1.5 py-0.5 text-[10px] font-semibold text-destructive"
+                        title={`Stan nie był potwierdzony od ponad ${STALE_STOCK_DAYS} dni`}
+                      >
+                        <Clock className="h-3 w-3" /> nieaktualne
                       </span>
                     )}
                   </td>
@@ -216,34 +242,45 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
                     )}
                   </td>
                   <td className="py-3 text-right">
-                    {flagged ? (
-                      <div className="flex justify-end gap-1.5">
-                        <span className="inline-flex items-center rounded-full bg-warning/20 px-2 py-0.5 text-[10px] font-semibold text-warning">
-                          ZGŁOSZONO
-                        </span>
-                        {onClear && (
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            className="h-8 w-8"
-                            onClick={() => onClear(item.id)}
-                            title="Oznacz jako uzupełnione"
-                          >
-                            <Check className="h-3.5 w-3.5" />
-                          </Button>
-                        )}
-                      </div>
-                    ) : (
+                    <div className="flex items-center justify-end gap-1.5">
                       <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-8 text-xs gap-1 px-3 border-warning/40 text-warning hover:bg-warning/10 hover:text-warning"
-                        onClick={() => openFlag(item)}
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-muted-foreground"
+                        onClick={() => setHistoryItem(item)}
+                        title="Historia zmian stanu"
                       >
-                        <BellRing className="h-3.5 w-3.5" />
-                        Niski stan
+                        <History className="h-3.5 w-3.5" />
                       </Button>
-                    )}
+                      {flagged ? (
+                        <>
+                          <span className="inline-flex items-center rounded-full bg-warning/20 px-2 py-0.5 text-[10px] font-semibold text-warning">
+                            ZGŁOSZONO
+                          </span>
+                          {onClear && (
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              className="h-8 w-8"
+                              onClick={() => onClear(item.id)}
+                              title="Oznacz jako uzupełnione"
+                            >
+                              <Check className="h-3.5 w-3.5" />
+                            </Button>
+                          )}
+                        </>
+                      ) : (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-8 text-xs gap-1 px-3 border-warning/40 text-warning hover:bg-warning/10 hover:text-warning"
+                          onClick={() => openFlag(item)}
+                        >
+                          <BellRing className="h-3.5 w-3.5" />
+                          Niski stan
+                        </Button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               );
@@ -337,6 +374,9 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <InventoryHistoryDialog item={historyItem} onOpenChange={(o) => !o && setHistoryItem(null)} />
     </>
+
   );
 }

@@ -487,6 +487,7 @@ export type Database = {
           qty_left: number | null
           qty_to_order: number | null
           restock_note: string | null
+          stock_confirmed_at: string | null
           storehouse: string | null
           subcategory: string | null
           unit: string
@@ -503,6 +504,7 @@ export type Database = {
           qty_left?: number | null
           qty_to_order?: number | null
           restock_note?: string | null
+          stock_confirmed_at?: string | null
           storehouse?: string | null
           subcategory?: string | null
           unit: string
@@ -519,6 +521,7 @@ export type Database = {
           qty_left?: number | null
           qty_to_order?: number | null
           restock_note?: string | null
+          stock_confirmed_at?: string | null
           storehouse?: string | null
           subcategory?: string | null
           unit?: string
@@ -538,6 +541,7 @@ export type Database = {
           qty_left: number | null
           qty_to_order: number | null
           restock_note: string | null
+          stock_confirmed_at: string | null
           storehouse: string | null
           subcategory: string | null
           unit: string
@@ -554,6 +558,7 @@ export type Database = {
           qty_left?: number | null
           qty_to_order?: number | null
           restock_note?: string | null
+          stock_confirmed_at?: string | null
           storehouse?: string | null
           subcategory?: string | null
           unit: string
@@ -570,6 +575,7 @@ export type Database = {
           qty_left?: number | null
           qty_to_order?: number | null
           restock_note?: string | null
+          stock_confirmed_at?: string | null
           storehouse?: string | null
           subcategory?: string | null
           unit?: string
@@ -589,6 +595,7 @@ export type Database = {
           qty_left: number | null
           qty_to_order: number | null
           restock_note: string | null
+          stock_confirmed_at: string | null
           storehouse: string | null
           subcategory: string | null
           unit: string
@@ -605,6 +612,7 @@ export type Database = {
           qty_left?: number | null
           qty_to_order?: number | null
           restock_note?: string | null
+          stock_confirmed_at?: string | null
           storehouse?: string | null
           subcategory?: string | null
           unit: string
@@ -621,10 +629,59 @@ export type Database = {
           qty_left?: number | null
           qty_to_order?: number | null
           restock_note?: string | null
+          stock_confirmed_at?: string | null
           storehouse?: string | null
           subcategory?: string | null
           unit?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      inventory_log: {
+        Row: {
+          action: string
+          created_at: string
+          department: string
+          id: string
+          item_id: string
+          item_name: string
+          note: string | null
+          qty_after: number | null
+          qty_before: number | null
+          qty_to_order: number | null
+          unit: string | null
+          updated_at: string
+          username: string | null
+        }
+        Insert: {
+          action?: string
+          created_at?: string
+          department: string
+          id?: string
+          item_id: string
+          item_name: string
+          note?: string | null
+          qty_after?: number | null
+          qty_before?: number | null
+          qty_to_order?: number | null
+          unit?: string | null
+          updated_at?: string
+          username?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          department?: string
+          id?: string
+          item_id?: string
+          item_name?: string
+          note?: string | null
+          qty_after?: number | null
+          qty_before?: number | null
+          qty_to_order?: number | null
+          unit?: string | null
+          updated_at?: string
+          username?: string | null
         }
         Relationships: []
       }
