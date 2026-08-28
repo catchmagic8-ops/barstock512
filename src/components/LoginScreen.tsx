@@ -6,7 +6,7 @@ import { Lock, Loader2, UserPlus, ArrowLeft } from "lucide-react";
 import barLogo from "@/assets/sheraton-logo.png";
 import { useAuth } from "@/contexts/AuthContext";
 
-type Mode = "choose" | "login" | "register";
+type Mode = "choose" | "login" | "register" | "pending";
 
 export default function LoginScreen() {
   const { login, register } = useAuth();
@@ -38,6 +38,7 @@ export default function LoginScreen() {
       : await login(username, password);
     setSubmitting(false);
     if (res.ok === false) setError(res.error);
+    else if (mode === "register") reset("pending");
   };
 
   const isRegister = mode === "register";
