@@ -304,8 +304,11 @@ export default function Info() {
           </div>
         ) : (
           <div className="space-y-3">
-            {visible.map((n) => (
+            {visible.map((n) => {
+              const replies = repliesByParent.get(n.id) ?? [];
+              return (
               <article
+
                 key={n.id}
                 className={cn(
                   "rounded-2xl border border-border/40 bg-gradient-to-b from-foreground/[0.03] to-primary/[0.05] p-4 transition-colors",
