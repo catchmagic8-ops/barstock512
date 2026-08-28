@@ -59,6 +59,8 @@ export default function Recipes() {
     });
   }, [recipes, filter, search]);
 
+  const activeLabel = categoryOptions.find((f) => f.key === filter)?.label ?? filter;
+
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-30 border-b border-border bg-card/80 backdrop-blur-md">
@@ -69,9 +71,14 @@ export default function Recipes() {
                 <ArrowLeft className="h-5 w-5" />
               </Button>
             </Link>
-            <h1 className="font-heading text-lg font-bold text-foreground">Recipes</h1>
-            <span className="text-xs text-muted-foreground hidden sm:inline">· {meta.label}</span>
+            <div>
+              <h1 className="font-heading text-lg font-bold text-foreground">Recipes</h1>
+              <p className="text-xs text-muted-foreground">
+                {activeLabel} · {filtered.length} {filtered.length === 1 ? "recipe" : "recipes"}
+              </p>
+            </div>
           </div>
+          <span className="text-xs text-muted-foreground hidden sm:inline">· {meta.label}</span>
         </div>
       </header>
 
@@ -86,16 +93,17 @@ export default function Recipes() {
           />
         </div>
 
-        <div className="flex gap-1.5 overflow-x-auto scrollbar-hide pb-1">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
           {categoryOptions.map((f) => (
             <button
               key={f.key}
               onClick={() => setFilter(f.key)}
-              className={`rounded-full px-3 py-1 text-xs font-medium whitespace-nowrap transition-all ${
+              className={cn(
+                "rounded-lg px-2 py-2 text-xs font-medium text-center transition-all border",
                 filter === f.key
-                  ? "bg-primary/20 text-primary border border-primary/40"
-                  : "bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-transparent"
-              }`}
+                  ? "bg-primary text-primary-foreground border-primary shadow-[0_0_0_2px_hsl(var(--primary)/0.25)]"
+                  : "bg-card text-muted-foreground border-border hover:border-primary/40 hover:text-foreground"
+              )}
             >
               {f.label}
             </button>
