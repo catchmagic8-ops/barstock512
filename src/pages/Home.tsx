@@ -169,16 +169,9 @@ function InfoBadge() {
     },
   });
 
-  if (count > 0) {
-    return (
-      <span className="rounded-full bg-primary/15 px-2.5 py-0.5 text-xs font-semibold text-primary">
-        {count} wiadomoś{count === 1 ? "ć" : "ci"}
-      </span>
-    );
-  }
   return (
     <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs text-muted-foreground">
-      Brak wiadomości
+      Wiadomości
     </span>
   );
 }
