@@ -154,20 +154,6 @@ function ALaCarteBadge() {
 }
 
 function InfoBadge() {
-  const { department } = useDepartment();
-  useHandoverRealtime(department);
-  const { data: count = 0 } = useQuery({
-    queryKey: ["handover-notes-count", department],
-    queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from("handover_notes")
-        .select("id")
-        .eq("department", department)
-        .eq("resolved", false);
-      if (error) throw error;
-      return data?.length ?? 0;
-    },
-  });
 
   return (
     <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs text-muted-foreground">
