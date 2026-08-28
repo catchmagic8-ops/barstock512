@@ -178,6 +178,7 @@ export default function Index() {
                           {it.flaggedBy && (
                             <div className="truncate text-[10px] text-muted-foreground">
                               zgłosił: {it.flaggedBy}
+                              {it.flaggedAt && <> · {formatFlaggedAt(it.flaggedAt)}</>}
                             </div>
                           )}
                         </div>
