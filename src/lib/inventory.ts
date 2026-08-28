@@ -43,6 +43,7 @@ export function rowToItem(row: {
   qty_left?: number | null;
   qty_to_order?: number | null;
   updated_at?: string | null;
+  stock_confirmed_at?: string | null;
 }): InventoryItem {
   return {
     id: row.id,
