@@ -64,7 +64,7 @@ function AdminSection({
           <h2 className="font-heading font-bold tracking-wide text-foreground">{title}</h2>
           {hasAlert && (
             <span className="rounded-full bg-destructive/15 px-2.5 py-0.5 text-xs font-semibold text-destructive">
-              {alertCount} alert{alertCount === 1 ? "" : "s"}
+              {alertCount} {alertCount === 1 ? "alert" : "alerty"}
             </span>
           )}
         </div>
@@ -89,23 +89,23 @@ function LowStockAlerts() {
       <div className="flex justify-between items-center gap-2">
         <p className="text-sm text-muted-foreground">
           {flagged.length === 0
-            ? "No low-stock notifications."
-            : `${flagged.length} item${flagged.length === 1 ? "" : "s"} flagged by staff.`}
+            ? "Brak powiadomień o niskim stanie."
+            : `${flagged.length} ${flagged.length === 1 ? "pozycja oznaczona" : "pozycji oznaczonych"} przez personel.`}
         </p>
         {flagged.length > 0 && (
           <Button
             size="sm"
             variant="outline"
             onClick={() => {
-              if (window.confirm("Clear all low-stock flags?")) {
+              if (window.confirm("Wyczyścić wszystkie oznaczenia niskiego stanu?")) {
                 clearAllFlags.mutate(undefined, {
-                  onSuccess: () => toast.success("All flags cleared"),
+                  onSuccess: () => toast.success("Wszystkie oznaczenia wyczyszczone"),
                 });
               }
             }}
             className="gap-1.5"
           >
-            <Check className="h-4 w-4" /> Clear all
+            <Check className="h-4 w-4" /> Wyczyść wszystko
           </Button>
         )}
       </div>
@@ -135,7 +135,7 @@ function LowStockAlerts() {
                 )}
                 {item.flaggedAt && (
                   <p className="text-[10px] text-muted-foreground mt-0.5 ml-5">
-                    Flagged {new Date(item.flaggedAt).toLocaleString()}
+                    Oznaczono {new Date(item.flaggedAt).toLocaleString()}
                   </p>
                 )}
               </div>
@@ -145,11 +145,11 @@ function LowStockAlerts() {
                 className="gap-1 text-xs"
                 onClick={() =>
                   clearFlag.mutate(item.id, {
-                    onSuccess: () => toast.success("Marked as restocked"),
+                    onSuccess: () => toast.success("Oznaczono jako uzupełnione"),
                   })
                 }
               >
-                <Check className="h-3.5 w-3.5" /> Done
+                <Check className="h-3.5 w-3.5" /> Gotowe
               </Button>
             </div>
           ))}
@@ -231,9 +231,9 @@ function ContactsManager() {
       setOpen(false);
       const wasEditing = !!editingId;
       resetForm();
-      toast.success(wasEditing ? "Contact updated" : "Contact added");
+      toast.success(wasEditing ? "Kontakt zaktualizowany" : "Kontakt dodany");
     },
-    onError: () => toast.error(editingId ? "Failed to update contact" : "Failed to add contact"),
+    onError: () => toast.error(editingId ? "Nie udało się zaktualizować kontaktu" : "Nie udało się dodać kontaktu"),
   });
 
   const deleteContact = useMutation({
@@ -243,23 +243,23 @@ function ContactsManager() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: QKEY });
-      toast.success("Contact deleted");
+      toast.success("Kontakt usunięty");
     },
   });
 
   return (
     <div className="space-y-3">
       <div className="flex justify-between items-center">
-        <p className="text-sm text-muted-foreground">Manage useful contacts visible to all staff.</p>
+        <p className="text-sm text-muted-foreground">Zarządzaj przydatnymi kontaktami widocznymi dla całego personelu.</p>
         <Button size="sm" onClick={openAdd} className="gap-1.5">
-          <Plus className="h-4 w-4" /> Add
+          <Plus className="h-4 w-4" /> Dodaj
         </Button>
       </div>
 
       {isLoading ? (
         <Loader2 className="h-5 w-5 animate-spin text-primary mx-auto" />
       ) : contacts.length === 0 ? (
-        <p className="text-sm text-muted-foreground text-center py-4">No contacts yet</p>
+        <p className="text-sm text-muted-foreground text-center py-4">Brak kontaktów</p>
       ) : (
         <div className="space-y-2">
           {contacts.map((c: any) => (
@@ -267,7 +267,7 @@ function ContactsManager() {
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-medium text-foreground truncate">{c.name}</p>
                 <p className="text-xs text-muted-foreground truncate">
-                  {[c.category, c.role, c.extension && `Ext ${c.extension}`, c.phone, c.email].filter(Boolean).join(" · ")}
+                  {[c.category, c.role, c.extension && `Wew. ${c.extension}`, c.phone, c.email].filter(Boolean).join(" · ")}
                 </p>
               </div>
               <div className="flex items-center gap-1 flex-shrink-0">
@@ -287,22 +287,22 @@ function ContactsManager() {
         <DialogContent className="bg-card border-border">
           <DialogHeader>
             <DialogTitle className="font-heading text-foreground">
-              {editingId ? "Edit Contact" : "Add Contact"}
+              {editingId ? "Edytuj kontakt" : "Dodaj kontakt"}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-3 py-2">
-            <Input placeholder="Category (e.g. Front Desk, Kitchen)" value={category} onChange={(e) => setCategory(e.target.value)} className="bg-secondary border-border" />
-            <Input placeholder="Role / Title (e.g. Manager)" value={role} onChange={(e) => setRole(e.target.value)} className="bg-secondary border-border" />
-            <Input placeholder="Name *" value={name} onChange={(e) => setName(e.target.value)} className="bg-secondary border-border" />
-            <Input placeholder="Extension (e.g. 1700)" value={extension} onChange={(e) => setExtension(e.target.value)} className="bg-secondary border-border" />
-            <Input placeholder="Mobile number" value={phone} onChange={(e) => setPhone(e.target.value)} className="bg-secondary border-border" />
-            <Input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className="bg-secondary border-border" />
-            <Textarea placeholder="Notes (optional)" value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} className="bg-secondary border-border" />
+            <Input placeholder="Kategoria (np. Recepcja, Kuchnia)" value={category} onChange={(e) => setCategory(e.target.value)} className="bg-secondary border-border" />
+            <Input placeholder="Rola / Stanowisko (np. Kierownik)" value={role} onChange={(e) => setRole(e.target.value)} className="bg-secondary border-border" />
+            <Input placeholder="Imię i nazwisko *" value={name} onChange={(e) => setName(e.target.value)} className="bg-secondary border-border" />
+            <Input placeholder="Numer wewnętrzny (np. 1700)" value={extension} onChange={(e) => setExtension(e.target.value)} className="bg-secondary border-border" />
+            <Input placeholder="Numer telefonu" value={phone} onChange={(e) => setPhone(e.target.value)} className="bg-secondary border-border" />
+            <Input placeholder="E-mail" value={email} onChange={(e) => setEmail(e.target.value)} className="bg-secondary border-border" />
+            <Textarea placeholder="Notatki (opcjonalnie)" value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} className="bg-secondary border-border" />
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => { setOpen(false); resetForm(); }}>Cancel</Button>
+            <Button variant="outline" onClick={() => { setOpen(false); resetForm(); }}>Anuluj</Button>
             <Button onClick={() => saveContact.mutate()} disabled={!name || saveContact.isPending}>
-              {saveContact.isPending ? "Saving…" : editingId ? "Save Changes" : "Add Contact"}
+              {saveContact.isPending ? "Zapisywanie…" : editingId ? "Zapisz zmiany" : "Dodaj kontakt"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -416,10 +416,10 @@ function EventsManager() {
       setIsRecurring(!!ev.is_recurring);
       setRecurrenceRule(ev.recurrence_rule ?? "weekly");
       setOpen(true);
-      toast.success("Event sheet scanned — review and save");
+      toast.success("Karta wydarzenia zeskanowana — sprawdź i zapisz");
     } catch (err: any) {
       console.error(err);
-      const msg = err?.context?.error || err?.message || "Failed to scan sheet";
+      const msg = err?.context?.error || err?.message || "Nie udało się zeskanować karty";
       toast.error(msg);
     } finally {
       setScanning(false);
@@ -466,9 +466,9 @@ function EventsManager() {
       qc.invalidateQueries({ queryKey: QKEY });
       const wasEditing = !!editingId;
       setOpen(false); resetForm();
-      toast.success(wasEditing ? "Event updated" : "Event added");
+      toast.success(wasEditing ? "Wydarzenie zaktualizowane" : "Wydarzenie dodane");
     },
-    onError: () => toast.error(editingId ? "Failed to update event" : "Failed to add event"),
+    onError: () => toast.error(editingId ? "Nie udało się zaktualizować wydarzenia" : "Nie udało się dodać wydarzenia"),
   });
 
   const deleteEvent = useMutation({
@@ -478,7 +478,7 @@ function EventsManager() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: QKEY });
-      toast.success("Event deleted");
+      toast.success("Wydarzenie usunięte");
     },
   });
 
@@ -500,7 +500,7 @@ function EventsManager() {
         onChange={(e) => e.target.files?.[0] && handleScanFile(e.target.files[0])}
       />
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
-        <p className="text-sm text-muted-foreground">Add, view and delete events. Scan a physical sheet to auto-fill.</p>
+        <p className="text-sm text-muted-foreground">Dodawaj, przeglądaj i usuwaj wydarzenia. Zeskanuj papierową kartę, aby uzupełnić automatycznie.</p>
         <div className="flex gap-2">
           <Button
             size="sm"
@@ -510,7 +510,7 @@ function EventsManager() {
             className="gap-1.5 sm:hidden"
           >
             {scanning ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-            {scanning ? "Scanning…" : "Camera"}
+            {scanning ? "Skanowanie…" : "Aparat"}
           </Button>
           <Button
             size="sm"
@@ -520,11 +520,11 @@ function EventsManager() {
             className="gap-1.5"
           >
             {scanning ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
-            <span className="sm:hidden">Upload</span>
-            <span className="hidden sm:inline">{scanning ? "Scanning…" : "Scan Sheet"}</span>
+            <span className="sm:hidden">Prześlij</span>
+            <span className="hidden sm:inline">{scanning ? "Skanowanie…" : "Skanuj kartę"}</span>
           </Button>
           <Button size="sm" onClick={openAdd} className="gap-1.5">
-            <Plus className="h-4 w-4" /> Add Event
+            <Plus className="h-4 w-4" /> Dodaj wydarzenie
           </Button>
         </div>
       </div>
@@ -532,7 +532,7 @@ function EventsManager() {
       {isLoading ? (
         <Loader2 className="h-5 w-5 animate-spin text-primary mx-auto" />
       ) : events.length === 0 ? (
-        <p className="text-sm text-muted-foreground text-center py-4">No events</p>
+        <p className="text-sm text-muted-foreground text-center py-4">Brak wydarzeń</p>
       ) : (
         <div className="space-y-2">
           {events.map((ev: any) => (
@@ -559,47 +559,47 @@ function EventsManager() {
       <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) resetForm(); }}>
         <DialogContent className="bg-card border-border max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="font-heading text-foreground">{editingId ? "Edit Event" : "Add Event"}</DialogTitle>
+            <DialogTitle className="font-heading text-foreground">{editingId ? "Edytuj wydarzenie" : "Dodaj wydarzenie"}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
-            <Input placeholder="Event title" value={title} onChange={(e) => setTitle(e.target.value)} className="bg-secondary border-border" />
-            <Textarea placeholder="Description (optional)" value={description} onChange={(e) => setDescription(e.target.value)} className="bg-secondary border-border" rows={3} />
+            <Input placeholder="Tytuł wydarzenia" value={title} onChange={(e) => setTitle(e.target.value)} className="bg-secondary border-border" />
+            <Textarea placeholder="Opis (opcjonalnie)" value={description} onChange={(e) => setDescription(e.target.value)} className="bg-secondary border-border" rows={3} />
             <div>
-              <Label className="text-xs text-muted-foreground mb-1.5 block">Location (optional)</Label>
+              <Label className="text-xs text-muted-foreground mb-1.5 block">Lokalizacja (opcjonalnie)</Label>
               <Select value={location} onValueChange={setLocation}>
-                <SelectTrigger className="bg-secondary border-border"><SelectValue placeholder="Select a room" /></SelectTrigger>
+                <SelectTrigger className="bg-secondary border-border"><SelectValue placeholder="Wybierz salę" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={NO_LOCATION}>— No location —</SelectItem>
+                  <SelectItem value={NO_LOCATION}>— Brak lokalizacji —</SelectItem>
                   {CONFERENCE_ROOMS.map((r) => <SelectItem key={r} value={r}>{r}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label className="text-xs text-muted-foreground mb-1.5 block">Date</Label>
+                <Label className="text-xs text-muted-foreground mb-1.5 block">Data</Label>
                 <Input type="date" value={eventDate} onChange={(e) => setEventDate(e.target.value)} className="bg-secondary border-border" />
               </div>
               <div>
-                <Label className="text-xs text-muted-foreground mb-1.5 block">Time (optional)</Label>
+                <Label className="text-xs text-muted-foreground mb-1.5 block">Godzina (opcjonalnie)</Label>
                 <Input type="time" value={eventTime} onChange={(e) => setEventTime(e.target.value)} className="bg-secondary border-border" />
               </div>
             </div>
             <div>
-              <Label className="text-xs text-muted-foreground mb-1.5 block">Number of guests (optional)</Label>
+              <Label className="text-xs text-muted-foreground mb-1.5 block">Liczba gości (opcjonalnie)</Label>
               <Input
                 type="number"
                 min="0"
                 step="1"
-                placeholder="e.g. 50"
+                placeholder="np. 50"
                 value={guestCount}
                 onChange={(e) => setGuestCount(e.target.value)}
                 className="bg-secondary border-border"
               />
             </div>
             <div>
-              <Label className="text-xs text-muted-foreground mb-1.5 block">Food menu (optional)</Label>
+              <Label className="text-xs text-muted-foreground mb-1.5 block">Menu kulinarne (opcjonalnie)</Label>
               <Textarea
-                placeholder="One item per line"
+                placeholder="Jedna pozycja w wierszu"
                 value={foodMenu}
                 onChange={(e) => setFoodMenu(e.target.value)}
                 rows={3}
@@ -607,9 +607,9 @@ function EventsManager() {
               />
             </div>
             <div>
-              <Label className="text-xs text-muted-foreground mb-1.5 block">Beverage menu (optional)</Label>
+              <Label className="text-xs text-muted-foreground mb-1.5 block">Menu napojów (opcjonalnie)</Label>
               <Textarea
-                placeholder="One item per line"
+                placeholder="Jedna pozycja w wierszu"
                 value={beverageMenu}
                 onChange={(e) => setBeverageMenu(e.target.value)}
                 rows={3}
@@ -619,13 +619,13 @@ function EventsManager() {
             <div className="flex items-center justify-between rounded-lg border border-border bg-secondary px-4 py-3">
               <div className="flex items-center gap-2">
                 <Repeat className="h-4 w-4 text-muted-foreground" />
-                <Label className="text-sm text-foreground">Recurring event</Label>
+                <Label className="text-sm text-foreground">Wydarzenie cykliczne</Label>
               </div>
               <Switch checked={isRecurring} onCheckedChange={setIsRecurring} />
             </div>
             {isRecurring && (
               <Select value={recurrenceRule} onValueChange={setRecurrenceRule}>
-                <SelectTrigger className="bg-secondary border-border"><SelectValue placeholder="Repeat frequency" /></SelectTrigger>
+                <SelectTrigger className="bg-secondary border-border"><SelectValue placeholder="Częstotliwość powtarzania" /></SelectTrigger>
                 <SelectContent>
                   {RECURRENCE_OPTIONS.map((r) => <SelectItem key={r} value={r} className="capitalize">{r}</SelectItem>)}
                 </SelectContent>
@@ -633,9 +633,9 @@ function EventsManager() {
             )}
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => { setOpen(false); resetForm(); }}>Cancel</Button>
+            <Button variant="outline" onClick={() => { setOpen(false); resetForm(); }}>Anuluj</Button>
             <Button onClick={() => saveEvent.mutate()} disabled={!title || !eventDate || saveEvent.isPending}>
-              {saveEvent.isPending ? "Saving…" : editingId ? "Save Changes" : "Add Event"}
+              {saveEvent.isPending ? "Zapisywanie…" : editingId ? "Zapisz zmiany" : "Dodaj wydarzenie"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -715,9 +715,9 @@ function RecipesManager() {
       const wasEdit = !!editingId;
       setOpen(false);
       resetForm();
-      toast.success(wasEdit ? "Recipe updated" : "Recipe added");
+      toast.success(wasEdit ? "Przepis zaktualizowany" : "Przepis dodany");
     },
-    onError: () => toast.error(editingId ? "Failed to update recipe" : "Failed to add recipe"),
+    onError: () => toast.error(editingId ? "Nie udało się zaktualizować przepisu" : "Nie udało się dodać przepisu"),
   });
 
   const deleteRecipe = useMutation({
@@ -727,7 +727,7 @@ function RecipesManager() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: QKEY });
-      toast.success("Recipe deleted");
+      toast.success("Przepis usunięty");
     },
   });
 
@@ -745,16 +745,16 @@ function RecipesManager() {
   return (
     <div className="space-y-3">
       <div className="flex justify-between items-center">
-        <p className="text-sm text-muted-foreground">Add, edit and delete recipes.</p>
+        <p className="text-sm text-muted-foreground">Dodawaj, edytuj i usuwaj przepisy.</p>
         <Button size="sm" onClick={openAdd} className="gap-1.5">
-          <Plus className="h-4 w-4" /> Add Recipe
+          <Plus className="h-4 w-4" /> Dodaj przepis
         </Button>
       </div>
 
       {isLoading ? (
         <Loader2 className="h-5 w-5 animate-spin text-primary mx-auto" />
       ) : recipes.length === 0 ? (
-        <p className="text-sm text-muted-foreground text-center py-4">No recipes</p>
+        <p className="text-sm text-muted-foreground text-center py-4">Brak przepisów</p>
       ) : (
         <div className="space-y-2">
           {recipes.map((r: any) => (
@@ -764,10 +764,10 @@ function RecipesManager() {
                 <p className="text-xs text-muted-foreground capitalize">{r.category}</p>
               </div>
               <div className="flex flex-shrink-0 items-center gap-1">
-                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary h-8 w-8" onClick={() => openEdit(r)} aria-label={`Edit ${r.name}`}>
+                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary h-8 w-8" onClick={() => openEdit(r)} aria-label={`Edytuj ${r.name}`}>
                   <Pencil className="h-3.5 w-3.5" />
                 </Button>
-                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive h-8 w-8" onClick={() => deleteRecipe.mutate(r.id)} aria-label={`Delete ${r.name}`}>
+                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive h-8 w-8" onClick={() => deleteRecipe.mutate(r.id)} aria-label={`Usuń ${r.name}`}>
                   <Trash2 className="h-3.5 w-3.5" />
                 </Button>
               </div>
@@ -779,34 +779,34 @@ function RecipesManager() {
       <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) resetForm(); }}>
         <DialogContent className="bg-card border-border max-h-[85vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="font-heading text-foreground">{editingId ? "Edit Recipe" : "Add Recipe"}</DialogTitle>
+            <DialogTitle className="font-heading text-foreground">{editingId ? "Edytuj przepis" : "Dodaj przepis"}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
-            <Input placeholder="Recipe name" value={name} onChange={(e) => setName(e.target.value)} className="bg-secondary border-border" />
-            <Input placeholder="Category (e.g. cocktail, mocktail, shot)" value={category} onChange={(e) => setCategory(e.target.value)} className="bg-secondary border-border" />
-            <Textarea placeholder="Ingredients (one per line)" value={ingredients} onChange={(e) => setIngredients(e.target.value)} rows={4} className="bg-secondary border-border" />
-            <Textarea placeholder="Instructions" value={instructions} onChange={(e) => setInstructions(e.target.value)} rows={4} className="bg-secondary border-border" />
+            <Input placeholder="Nazwa przepisu" value={name} onChange={(e) => setName(e.target.value)} className="bg-secondary border-border" />
+            <Input placeholder="Kategoria (np. koktajl, mocktail, shot)" value={category} onChange={(e) => setCategory(e.target.value)} className="bg-secondary border-border" />
+            <Textarea placeholder="Składniki (jeden w wierszu)" value={ingredients} onChange={(e) => setIngredients(e.target.value)} rows={4} className="bg-secondary border-border" />
+            <Textarea placeholder="Instrukcje" value={instructions} onChange={(e) => setInstructions(e.target.value)} rows={4} className="bg-secondary border-border" />
             <div>
               <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
               {shownImage ? (
                 <div className="relative">
                   <img src={shownImage} alt="Preview" className="w-full max-h-48 rounded-lg object-cover" />
                   <div className="absolute top-2 right-2 flex gap-2">
-                    <Button type="button" variant="secondary" size="sm" onClick={() => fileRef.current?.click()}>Change</Button>
-                    <Button type="button" variant="destructive" size="sm" onClick={() => { setImageFile(null); setImagePreview(null); setExistingImage(null); }}>Remove</Button>
+                    <Button type="button" variant="secondary" size="sm" onClick={() => fileRef.current?.click()}>Zmień</Button>
+                    <Button type="button" variant="destructive" size="sm" onClick={() => { setImageFile(null); setImagePreview(null); setExistingImage(null); }}>Usuń</Button>
                   </div>
                 </div>
               ) : (
                 <Button type="button" variant="outline" className="w-full gap-2 border-dashed border-border text-muted-foreground" onClick={() => fileRef.current?.click()}>
-                  <ImagePlus className="h-4 w-4" /> Add Photo
+                  <ImagePlus className="h-4 w-4" /> Dodaj zdjęcie
                 </Button>
               )}
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => { setOpen(false); resetForm(); }}>Cancel</Button>
+            <Button variant="outline" onClick={() => { setOpen(false); resetForm(); }}>Anuluj</Button>
             <Button onClick={() => saveRecipe.mutate()} disabled={!name || !ingredients || !instructions || saveRecipe.isPending}>
-              {saveRecipe.isPending ? "Saving…" : editingId ? "Save Changes" : "Add Recipe"}
+              {saveRecipe.isPending ? "Zapisywanie…" : editingId ? "Zapisz zmiany" : "Dodaj przepis"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -831,7 +831,7 @@ export default function Admin() {
                   <ArrowLeft className="h-5 w-5" />
                 </Button>
               </Link>
-              <h1 className="font-heading text-xl font-bold tracking-wide text-brand sm:text-2xl">Admin Panel</h1>
+              <h1 className="font-heading text-xl font-bold tracking-wide text-brand sm:text-2xl">Panel administracyjny</h1>
               <span className="text-xs text-muted-foreground hidden sm:inline">· {meta.label}</span>
             </div>
           </div>
@@ -839,7 +839,7 @@ export default function Admin() {
 
         <main className="relative z-10 mx-auto max-w-4xl px-5 py-8 space-y-5 sm:px-8">
           {isGlobalAdmin && (
-            <AdminSection title="User Management" icon={Users}>
+            <AdminSection title="Zarządzanie użytkownikami" icon={Users}>
               <UserManagement />
             </AdminSection>
           )}
@@ -854,11 +854,11 @@ export default function Admin() {
             </div>
           </AdminSection>
 
-          <AdminSection title="Low Stock Alerts" icon={BellRing} alertCount={flaggedCount}>
+          <AdminSection title="Alerty niskiego stanu" icon={BellRing} alertCount={flaggedCount}>
             <LowStockAlerts />
           </AdminSection>
 
-          <AdminSection title="Inventory Management" icon={Package}>
+          <AdminSection title="Zarządzanie zapasami" icon={Package}>
             <div className="space-y-4">
               <SubcategoryManager />
               <div className="border-t border-border pt-4">
@@ -867,20 +867,20 @@ export default function Admin() {
             </div>
           </AdminSection>
 
-          <AdminSection title="Contacts Management" icon={Phone}>
+          <AdminSection title="Zarządzanie kontaktami" icon={Phone}>
             <ContactsManager />
           </AdminSection>
 
-          <AdminSection title="Events Management" icon={Calendar}>
+          <AdminSection title="Zarządzanie wydarzeniami" icon={Calendar}>
             <EventsManager />
           </AdminSection>
 
-          <AdminSection title="Recipes Management" icon={BookOpen}>
+          <AdminSection title="Zarządzanie przepisami" icon={BookOpen}>
             <RecipesManager />
           </AdminSection>
 
           {department !== "konferencje" && (
-            <AdminSection title="A La Carte Menu" icon={Utensils}>
+            <AdminSection title="Menu à la carte" icon={Utensils}>
               <ALaCarteManager />
             </AdminSection>
           )}

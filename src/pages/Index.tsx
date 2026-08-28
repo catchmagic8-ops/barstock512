@@ -51,8 +51,8 @@ export default function Index() {
       flagItem.mutate(
         { id, note, qtyLeft, qtyToOrder, flaggedBy: user?.username ?? null },
         {
-          onSuccess: () => toast.success("Manager notified"),
-          onError: () => toast.error("Failed to notify"),
+          onSuccess: () => toast.success("Kierownik powiadomiony"),
+          onError: () => toast.error("Nie udało się powiadomić"),
         }
       );
     },
@@ -62,8 +62,8 @@ export default function Index() {
   const handleClear = useCallback(
     (id: string) => {
       clearFlag.mutate(id, {
-        onSuccess: () => toast.success("Marked as restocked"),
-        onError: () => toast.error("Failed to update"),
+        onSuccess: () => toast.success("Oznaczono jako uzupełnione"),
+        onError: () => toast.error("Nie udało się zaktualizować"),
       });
     },
     [clearFlag]
@@ -120,17 +120,17 @@ export default function Index() {
             )}
             <div>
               <h1 className="font-heading text-base font-bold leading-tight text-foreground sm:text-lg">
-                {meta.label.toUpperCase()} INVENTORY
+                {meta.label.toUpperCase()} MAGAZYN
               </h1>
               <p className="text-[10px] text-muted-foreground sm:text-xs">
-                {items.length} items tracked
+                {items.length} pozycji śledzonych
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-0.5 sm:gap-1.5">
             <Link to={deptHomePath(department)}>
-              <Button variant="ghost" size="icon" title="Back to Home" className="h-8 w-8 text-muted-foreground hover:text-foreground sm:h-9 sm:w-auto sm:px-3 sm:gap-1.5">
+              <Button variant="ghost" size="icon" title="Powrót do strony głównej" className="h-8 w-8 text-muted-foreground hover:text-foreground sm:h-9 sm:w-auto sm:px-3 sm:gap-1.5">
                 <Home className="h-4 w-4" />
                 <span className="hidden sm:inline text-sm">Home</span>
               </Button>
@@ -141,7 +141,7 @@ export default function Index() {
                   <button
                     type="button"
                     className="flex items-center gap-1 rounded-full bg-warning/20 px-2 py-0.5 text-[10px] font-semibold text-warning transition-colors hover:bg-warning/30 sm:px-2.5 sm:py-1 sm:text-xs"
-                    aria-label="Show low stock items"
+                    aria-label="Pokaż pozycje z niskim stanem"
                   >
                     <BellRing className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                     {flaggedCount}
@@ -153,7 +153,7 @@ export default function Index() {
                 >
                   <div className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-warning">
                     <BellRing className="h-3.5 w-3.5" />
-                    Low stock ({flaggedCount})
+                    Niski stan ({flaggedCount})
                   </div>
                   <ul className="max-h-64 space-y-1.5 overflow-y-auto pr-1">
                     {flaggedItems.map((it) => (
@@ -165,9 +165,9 @@ export default function Index() {
                           <div className="truncate font-medium text-foreground">{it.name}</div>
                           {(it.qtyLeft != null || it.qtyToOrder != null) && (
                             <div className="text-[10px] font-medium text-warning">
-                              {it.qtyLeft != null && <>{it.qtyLeft} left</>}
+                              {it.qtyLeft != null && <>{it.qtyLeft} pozostało</>}
                               {it.qtyLeft != null && it.qtyToOrder != null && " · "}
-                              {it.qtyToOrder != null && <>order {it.qtyToOrder}</>}
+                              {it.qtyToOrder != null && <>zamów {it.qtyToOrder}</>}
                             </div>
                           )}
                           {it.restockNote && (
@@ -191,7 +191,7 @@ export default function Index() {
                 </HoverCardContent>
               </HoverCard>
             )}
-            <Button variant="ghost" size="icon" onClick={() => setReportOpen(true)} title="Generate report" className="h-8 w-8 text-muted-foreground hover:text-foreground sm:h-9 sm:w-auto sm:px-3 sm:gap-1.5">
+            <Button variant="ghost" size="icon" onClick={() => setReportOpen(true)} title="Generuj raport" className="h-8 w-8 text-muted-foreground hover:text-foreground sm:h-9 sm:w-auto sm:px-3 sm:gap-1.5">
               <FileText className="h-4 w-4" />
               <span className="hidden sm:inline text-sm">Raport</span>
             </Button>
@@ -199,11 +199,11 @@ export default function Index() {
               variant="ghost"
               size="icon"
               onClick={() => generateBlankCountSheet(items, meta.label)}
-              title="Blank count sheet for hand-checking inventory"
+              title="Pusty arkusz do ręcznego liczenia zapasów"
               className="h-8 w-8 text-muted-foreground hover:text-foreground sm:h-9 sm:w-auto sm:px-3 sm:gap-1.5"
             >
               <ClipboardList className="h-4 w-4" />
-              <span className="hidden sm:inline text-sm">Count Sheet</span>
+              <span className="hidden sm:inline text-sm">Arkusz</span>
             </Button>
           </div>
         </div>
@@ -221,7 +221,7 @@ export default function Index() {
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search items..."
+                placeholder="Szukaj pozycji..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-9 bg-card border-border rounded-lg"
@@ -238,7 +238,7 @@ export default function Index() {
                       : "bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-transparent"
                   }`}
                 >
-                  All
+                  Wszystkie
                 </button>
                 {currentSubs.map((sub: any) => (
                   <button
@@ -258,7 +258,7 @@ export default function Index() {
             {flaggedCount > 0 && (
               <div className="flex items-center gap-2 rounded-lg border border-warning/30 bg-warning/5 px-3 py-2 text-xs text-warning">
                 <AlertTriangle className="h-3.5 w-3.5 flex-shrink-0" />
-                <span>{flaggedCount} item{flaggedCount === 1 ? "" : "s"} flagged for restock — managers have been notified.</span>
+                <span>{flaggedCount} pozycj{flaggedCount === 1 ? "a" : "e"} oznaczon{flaggedCount === 1 ? "a" : "e"} do uzupełnienia — kierownicy zostali powiadomieni.</span>
               </div>
             )}
             <div className="rounded-lg border border-border bg-card p-2 sm:p-4">

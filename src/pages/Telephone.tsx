@@ -89,7 +89,7 @@ export default function Telephone() {
                 <ArrowLeft className="h-5 w-5" />
               </Button>
             </Link>
-            <h1 className="font-heading text-lg font-bold text-foreground truncate">Useful Contacts</h1>
+            <h1 className="font-heading text-lg font-bold text-foreground truncate">Przydatne kontakty</h1>
             <span className="text-xs text-muted-foreground hidden sm:inline">· {meta.label}</span>
           </div>
           {grouped.length > 0 && (
@@ -99,15 +99,15 @@ export default function Telephone() {
                   variant="outline"
                   size="sm"
                   className="lg:hidden gap-1.5 flex-shrink-0"
-                  aria-label="Jump to category"
+                  aria-label="Przejdź do kategorii"
                 >
                   <List className="h-4 w-4" />
-                  <span className="hidden sm:inline">Categories</span>
+                  <span className="hidden sm:inline">Kategorie</span>
                 </Button>
               </SheetTrigger>
               <SheetContent side="right" className="w-72 bg-card border-border p-0 flex flex-col">
                 <SheetHeader className="px-4 py-3 border-b border-border">
-                  <SheetTitle className="font-heading text-foreground text-left">Jump to category</SheetTitle>
+                  <SheetTitle className="font-heading text-foreground text-left">Przejdź do kategorii</SheetTitle>
                 </SheetHeader>
                 <nav className="flex-1 overflow-y-auto p-2">
                   <ul className="space-y-0.5">
@@ -134,7 +134,7 @@ export default function Telephone() {
             <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search name, role, ext, mobile…"
+              placeholder="Szukaj po nazwie, stanowisku, numerze wew., komórce…"
               className="pl-9 bg-secondary border-border"
             />
           </div>
@@ -147,11 +147,11 @@ export default function Telephone() {
           {grouped.length > 0 && (
             <aside className="hidden lg:block w-56 flex-shrink-0">
               <nav
-                aria-label="Jump to category"
+                aria-label="Przejdź do kategorii"
                 className="sticky top-[140px] max-h-[calc(100vh-160px)] overflow-y-auto rounded-xl border border-border bg-card/80 backdrop-blur-md p-2"
               >
                 <p className="px-2 pb-2 pt-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                  Categories
+                  Kategorie
                 </p>
                 <ul className="space-y-0.5">
                   {grouped.map(([category, items]) => (
@@ -178,8 +178,8 @@ export default function Telephone() {
             ) : grouped.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
                 <Phone className="h-12 w-12 mb-3 opacity-40" />
-                <p className="text-lg">No contacts found</p>
-                <p className="text-sm">Contacts can be added from the Admin panel</p>
+                <p className="text-lg">Nie znaleziono kontaktów</p>
+                <p className="text-sm">Kontakty można dodać w panelu administracyjnym</p>
               </div>
             ) : (
               grouped.map(([category, items]) => (

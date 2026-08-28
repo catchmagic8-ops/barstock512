@@ -30,7 +30,7 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
   if (items.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
-        <p className="text-lg">No items in this category</p>
+        <p className="text-lg">Brak pozycji w tej kategorii</p>
       </div>
     );
   }
@@ -101,13 +101,13 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
                       size="icon"
                       className="h-8 w-8 border-warning/40 text-warning"
                       onClick={() => onClear(item.id)}
-                      title="Mark as restocked"
+                      title="Oznacz jako uzupełnione"
                     >
                       <Check className="h-4 w-4" />
                     </Button>
                   ) : (
                     <span className="inline-flex items-center rounded-full bg-warning/20 px-2 py-0.5 text-[10px] font-semibold text-warning">
-                      NOTIFIED
+                      ZGŁOSZONO
                     </span>
                   )
                 ) : (
@@ -118,7 +118,7 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
                     onClick={() => openFlag(item)}
                   >
                     <BellRing className="h-3.5 w-3.5" />
-                    Low
+                    Niski stan
                   </Button>
                 )}
               </div>
@@ -137,8 +137,8 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
           </colgroup>
           <thead>
             <tr className="border-b border-border text-left text-muted-foreground">
-              <th className="pb-3 pr-4 font-medium">Item</th>
-              <th className="pb-3 pr-4 font-medium hidden md:table-cell">Note</th>
+              <th className="pb-3 pr-4 font-medium">Pozycja</th>
+              <th className="pb-3 pr-4 font-medium hidden md:table-cell">Notatka</th>
               <th className="pb-3 font-medium text-right">Status</th>
             </tr>
           </thead>
@@ -173,9 +173,9 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
                       <span className="text-xs text-warning/90">
                         {(item.qtyLeft != null || item.qtyToOrder != null) && (
                           <span className="font-medium">
-                            {item.qtyLeft != null && <>{item.qtyLeft} left</>}
+                            {item.qtyLeft != null && <>zostało: {item.qtyLeft}</>}
                             {item.qtyLeft != null && item.qtyToOrder != null && " · "}
-                            {item.qtyToOrder != null && <>order {item.qtyToOrder}</>}
+                            {item.qtyToOrder != null && <>zamów: {item.qtyToOrder}</>}
                           </span>
                         )}
                         {item.restockNote && (
@@ -199,7 +199,7 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
                     {flagged ? (
                       <div className="flex justify-end gap-1.5">
                         <span className="inline-flex items-center rounded-full bg-warning/20 px-2 py-0.5 text-[10px] font-semibold text-warning">
-                          NOTIFIED
+                          ZGŁOSZONO
                         </span>
                         {onClear && (
                           <Button
@@ -207,7 +207,7 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
                             size="icon"
                             className="h-8 w-8"
                             onClick={() => onClear(item.id)}
-                            title="Mark as restocked"
+                            title="Oznacz jako uzupełnione"
                           >
                             <Check className="h-3.5 w-3.5" />
                           </Button>
@@ -221,7 +221,7 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
                         onClick={() => openFlag(item)}
                       >
                         <BellRing className="h-3.5 w-3.5" />
-                        Low Stock
+                        Niski stan
                       </Button>
                     )}
                   </td>
@@ -235,23 +235,23 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
       <Dialog open={!!flagging} onOpenChange={(o) => !o && setFlagging(null)}>
         <DialogContent className="max-w-[calc(100vw-2rem)] sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>Notify manager: low stock</DialogTitle>
+            <DialogTitle>Zgłoś kierownikowi: niski stan</DialogTitle>
             <DialogDescription>
-              {flagging?.name} — note how much is left and how much to order.
+              {flagging?.name} — podaj ile zostało i ile zamówić.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-3">
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
                 <label className="text-xs font-medium text-muted-foreground">
-                  How much is left {flagging?.unit ? `(${flagging.unit})` : ""}
+                  Ile zostało {flagging?.unit ? `(${flagging.unit})` : ""}
                 </label>
                 <Input
                   type="number"
                   min="0"
                   step="any"
                   inputMode="decimal"
-                  placeholder="e.g. 1"
+                  placeholder="np. 1"
                   value={qtyLeft}
                   onChange={(e) => setQtyLeft(e.target.value)}
                   autoFocus
@@ -274,14 +274,14 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
               </div>
               <div className="space-y-1">
                 <label className="text-xs font-medium text-muted-foreground">
-                  How much to order {flagging?.unit ? `(${flagging.unit})` : ""}
+                  Ile zamówić {flagging?.unit ? `(${flagging.unit})` : ""}
                 </label>
                 <Input
                   type="number"
                   min="0"
                   step="any"
                   inputMode="decimal"
-                  placeholder="e.g. 6"
+                  placeholder="np. 6"
                   value={qtyToOrder}
                   onChange={(e) => setQtyToOrder(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && submitFlag()}
@@ -303,16 +303,16 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
               </div>
             </div>
             <Input
-              placeholder="Optional note…"
+              placeholder="Opcjonalna notatka…"
               value={note}
               onChange={(e) => setNote(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && submitFlag()}
             />
           </div>
           <DialogFooter className="flex-row justify-end gap-2">
-            <Button variant="ghost" onClick={() => setFlagging(null)}>Cancel</Button>
+            <Button variant="ghost" onClick={() => setFlagging(null)}>Anuluj</Button>
             <Button onClick={submitFlag} className="gap-1.5">
-              <BellRing className="h-4 w-4" /> Notify
+              <BellRing className="h-4 w-4" /> Zgłoś
             </Button>
           </DialogFooter>
         </DialogContent>

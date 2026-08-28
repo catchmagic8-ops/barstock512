@@ -28,7 +28,7 @@ export default function Departments() {
   const tiles: Tile[] = [
     {
       title: "Bar 512",
-      tagline: "Cocktails · Stock · Service",
+      tagline: "Koktajle · Zapasy · Obsługa",
       image: settings[DEPT_TILE_IMAGE_KEY] || bar512Img,
       to: "/home",
     },
@@ -39,7 +39,7 @@ export default function Departments() {
       <AmbientBackground src={settings[DEPT_AMBIENT_IMAGE_KEY] || DEPT_AMBIENT.bar512} intensity={0.35} blur={4} />
       <header className="sticky top-0 z-20 flex items-center justify-between border-b border-border/40 bg-background/40 px-5 py-4 backdrop-blur-xl backdrop-saturate-150 sm:px-8">
         <h1 className="font-heading text-xl font-bold tracking-wide text-brand sm:text-2xl">
-          Departments
+          Działy
         </h1>
         <div className="flex items-center gap-2">
           {user && (
@@ -52,7 +52,7 @@ export default function Departments() {
             variant="ghost"
             size="icon"
             onClick={logout}
-            title="Sign out"
+            title="Wyloguj się"
             className="text-muted-foreground hover:text-foreground"
           >
             <LogOut className="h-5 w-5" />
