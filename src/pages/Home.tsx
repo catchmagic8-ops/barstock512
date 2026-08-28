@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Package, Calendar, BookOpen, Phone, Shield, ArrowLeft, Utensils, LogOut, BookMarked, Sparkles, MoreVertical, Moon, Sun, User } from "lucide-react";
+import { Package, Calendar, BookOpen, Phone, Shield, ArrowLeft, Utensils, LogOut, BookMarked, Sparkles, MoreVertical, Moon, Sun, User, MessageSquare, FlaskConical } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
