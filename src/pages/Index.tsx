@@ -63,12 +63,23 @@ export default function Index() {
 
   const handleClear = useCallback(
     (id: string) => {
-      clearFlag.mutate(id, {
+      clearFlag.mutate({ id, username: user?.username ?? null }, {
         onSuccess: () => toast.success("Oznaczono jako uzupełnione"),
         onError: () => toast.error("Nie udało się zaktualizować"),
       });
     },
-    [clearFlag]
+    [clearFlag, user]
+  );
+
+  const handleConfirmStock = useCallback(
+    async (id: string, qtyLeft: number) => {
+      try {
+        await confirmStock.mutateAsync({ id, qtyLeft, username: user?.username ?? null });
+      } catch {
+        toast.error("Nie udało się zapisać stanu");
+      }
+    },
+    [confirmStock, user]
   );
 
   const counts = useMemo(
