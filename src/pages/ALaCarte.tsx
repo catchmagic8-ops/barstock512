@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Link, Navigate } from "react-router-dom";
-import { ArrowLeft, Loader2, Utensils, Search, X, AlertTriangle, Leaf, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Loader2, Utensils, Search, X, AlertTriangle, Leaf, ShieldCheck, ChevronUp, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useDepartment } from "@/contexts/DepartmentContext";
