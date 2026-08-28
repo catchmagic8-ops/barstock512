@@ -658,12 +658,14 @@ function RecipesManager() {
   const { tables, department } = useDepartment();
   const QKEY = ["recipes", department];
   const [open, setOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [category, setCategory] = useState("cocktail");
   const [ingredients, setIngredients] = useState("");
   const [instructions, setInstructions] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [existingImage, setExistingImage] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const { data: recipes = [], isLoading } = useQuery({
@@ -675,21 +677,47 @@ function RecipesManager() {
     },
   });
 
-  const addRecipe = useMutation({
+  const resetForm = () => {
+    setEditingId(null);
+    setName(""); setCategory("cocktail"); setIngredients(""); setInstructions("");
+    setImageFile(null); setImagePreview(null); setExistingImage(null);
+  };
+
+  const openAdd = () => { resetForm(); setOpen(true); };
+
+  const openEdit = (r: any) => {
+    setEditingId(r.id);
+    setName(r.name ?? "");
+    setCategory(r.category ?? "cocktail");
+    setIngredients(r.ingredients ?? "");
+    setInstructions(r.instructions ?? "");
+    setImageFile(null);
+    setImagePreview(null);
+    setExistingImage(r.image_url ?? null);
+    setOpen(true);
+  };
+
+  const saveRecipe = useMutation({
     mutationFn: async () => {
-      let image_url: string | null = null;
+      let image_url: string | null = existingImage;
       if (imageFile) image_url = await uploadRecipeImage(imageFile, department);
-      const { error } = await (supabase as any).from(tables.recipes).insert({ name, category, ingredients, instructions, image_url });
-      if (error) throw error;
+      const payload = { name, category, ingredients, instructions, image_url };
+      if (editingId) {
+        const { error } = await (supabase as any).from(tables.recipes).update(payload).eq("id", editingId);
+        if (error) throw error;
+      } else {
+        const { error } = await (supabase as any).from(tables.recipes).insert(payload);
+        if (error) throw error;
+      }
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: QKEY });
+      const wasEdit = !!editingId;
       setOpen(false);
-      setName(""); setCategory("cocktail"); setIngredients(""); setInstructions("");
-      setImageFile(null); setImagePreview(null);
-      toast.success("Recipe added");
+      resetForm();
+      toast.success(wasEdit ? "Recipe updated" : "Recipe added");
     },
-    onError: () => toast.error("Failed to add recipe"),
+    onError: () => toast.error(editingId ? "Failed to update recipe" : "Failed to add recipe"),
   });
 
   const deleteRecipe = useMutation({
@@ -712,11 +740,13 @@ function RecipesManager() {
     reader.readAsDataURL(file);
   };
 
+  const shownImage = imagePreview ?? existingImage;
+
   return (
     <div className="space-y-3">
       <div className="flex justify-between items-center">
-        <p className="text-sm text-muted-foreground">Add, view and delete recipes.</p>
-        <Button size="sm" onClick={() => setOpen(true)} className="gap-1.5">
+        <p className="text-sm text-muted-foreground">Add, edit and delete recipes.</p>
+        <Button size="sm" onClick={openAdd} className="gap-1.5">
           <Plus className="h-4 w-4" /> Add Recipe
         </Button>
       </div>
@@ -733,18 +763,23 @@ function RecipesManager() {
                 <p className="text-sm font-medium text-foreground">{r.name}</p>
                 <p className="text-xs text-muted-foreground capitalize">{r.category}</p>
               </div>
-              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive flex-shrink-0 h-8 w-8" onClick={() => deleteRecipe.mutate(r.id)}>
-                <Trash2 className="h-3.5 w-3.5" />
-              </Button>
+              <div className="flex flex-shrink-0 items-center gap-1">
+                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary h-8 w-8" onClick={() => openEdit(r)} aria-label={`Edit ${r.name}`}>
+                  <Pencil className="h-3.5 w-3.5" />
+                </Button>
+                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive h-8 w-8" onClick={() => deleteRecipe.mutate(r.id)} aria-label={`Delete ${r.name}`}>
+                  <Trash2 className="h-3.5 w-3.5" />
+                </Button>
+              </div>
             </div>
           ))}
         </div>
       )}
 
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) resetForm(); }}>
         <DialogContent className="bg-card border-border max-h-[85vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="font-heading text-foreground">Add Recipe</DialogTitle>
+            <DialogTitle className="font-heading text-foreground">{editingId ? "Edit Recipe" : "Add Recipe"}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <Input placeholder="Recipe name" value={name} onChange={(e) => setName(e.target.value)} className="bg-secondary border-border" />
@@ -753,10 +788,13 @@ function RecipesManager() {
             <Textarea placeholder="Instructions" value={instructions} onChange={(e) => setInstructions(e.target.value)} rows={4} className="bg-secondary border-border" />
             <div>
               <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
-              {imagePreview ? (
+              {shownImage ? (
                 <div className="relative">
-                  <img src={imagePreview} alt="Preview" className="w-full max-h-48 rounded-lg object-cover" />
-                  <Button type="button" variant="destructive" size="sm" className="absolute top-2 right-2" onClick={() => { setImageFile(null); setImagePreview(null); }}>Remove</Button>
+                  <img src={shownImage} alt="Preview" className="w-full max-h-48 rounded-lg object-cover" />
+                  <div className="absolute top-2 right-2 flex gap-2">
+                    <Button type="button" variant="secondary" size="sm" onClick={() => fileRef.current?.click()}>Change</Button>
+                    <Button type="button" variant="destructive" size="sm" onClick={() => { setImageFile(null); setImagePreview(null); setExistingImage(null); }}>Remove</Button>
+                  </div>
                 </div>
               ) : (
                 <Button type="button" variant="outline" className="w-full gap-2 border-dashed border-border text-muted-foreground" onClick={() => fileRef.current?.click()}>
@@ -766,9 +804,9 @@ function RecipesManager() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-            <Button onClick={() => addRecipe.mutate()} disabled={!name || !ingredients || !instructions || addRecipe.isPending}>
-              {addRecipe.isPending ? "Adding…" : "Add Recipe"}
+            <Button variant="outline" onClick={() => { setOpen(false); resetForm(); }}>Cancel</Button>
+            <Button onClick={() => saveRecipe.mutate()} disabled={!name || !ingredients || !instructions || saveRecipe.isPending}>
+              {saveRecipe.isPending ? "Saving…" : editingId ? "Save Changes" : "Add Recipe"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -776,6 +814,7 @@ function RecipesManager() {
     </div>
   );
 }
+
 
 export default function Admin() {
   const { department, meta } = useDepartment();
