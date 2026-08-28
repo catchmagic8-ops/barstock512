@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Loader2, MessageSquare, Pin, PinOff, Plus, Check, Trash2, RotateCcw, User } from "lucide-react";
+import { ArrowLeft, Loader2, MessageSquare, Pin, PinOff, Plus, Check, Trash2, RotateCcw, User, Reply } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
