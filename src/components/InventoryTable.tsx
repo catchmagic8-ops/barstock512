@@ -131,13 +131,15 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
       <div className="hidden sm:block overflow-x-auto -mx-1">
         <table className="w-full text-sm table-fixed">
           <colgroup>
-            <col className="w-[45%]" />
-            <col className="w-[35%]" />
-            <col className="w-[20%]" />
+            <col className="w-[36%]" />
+            <col className="w-[19%]" />
+            <col className="w-[27%]" />
+            <col className="w-[18%]" />
           </colgroup>
           <thead>
             <tr className="border-b border-border text-left text-muted-foreground">
               <th className="pb-3 pr-4 font-medium">Pozycja</th>
+              <th className="pb-3 pr-4 font-medium">Stan / aktualizacja</th>
               <th className="pb-3 pr-4 font-medium hidden md:table-cell">Notatka</th>
               <th className="pb-3 font-medium text-right">Status</th>
             </tr>
