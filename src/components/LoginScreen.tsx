@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Lock, Loader2, UserPlus, ArrowLeft } from "lucide-react";
+import { Lock, Loader2, UserPlus, ArrowLeft, Clock } from "lucide-react";
 import barLogo from "@/assets/sheraton-logo.png";
 import { useAuth } from "@/contexts/AuthContext";
 
