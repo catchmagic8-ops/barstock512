@@ -95,6 +95,7 @@ export default function ALaCarte() {
   const [activeCat, setActiveCat] = useState<string | null>(null);
   const [excludedAllergens, setExcludedAllergens] = useState<string[]>([]);
   const [headerOpen, setHeaderOpen] = useState(true);
+  const [allergOpen, setAllergOpen] = useState(false);
 
   const tableName = tables.alaCarte;
 
