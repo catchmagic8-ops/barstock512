@@ -287,6 +287,17 @@ export default function Index() {
                 <span>{flaggedCount} pozycj{flaggedCount === 1 ? "a" : "e"} oznaczon{flaggedCount === 1 ? "a" : "e"} do uzupełnienia — kierownicy zostali powiadomieni.</span>
               </div>
             )}
+            {staleCount > 0 && (
+              <button
+                onClick={() => setStocktakeOpen(true)}
+                className="flex w-full items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-left text-xs text-destructive transition-colors hover:bg-destructive/10"
+              >
+                <Clock className="h-3.5 w-3.5 flex-shrink-0" />
+                <span>
+                  {staleCount} pozycji nie potwierdzono od ponad {STALE_STOCK_DAYS} dni — kliknij, aby rozpocząć inwentaryzację.
+                </span>
+              </button>
+            )}
             <div className="rounded-lg border border-border bg-card p-2 sm:p-4">
               <InventoryTable items={filtered} onFlag={handleFlag} onClear={handleClear} />
             </div>
@@ -295,6 +306,14 @@ export default function Index() {
       </main>
 
       <ReportDialog open={reportOpen} onOpenChange={setReportOpen} items={items} deptLabel={meta.label} />
+      <StocktakeDialog
+        open={stocktakeOpen}
+        onOpenChange={setStocktakeOpen}
+        items={items}
+        deptLabel={meta.label}
+        onConfirm={handleConfirmStock}
+      />
+
     </div>
   );
 }
