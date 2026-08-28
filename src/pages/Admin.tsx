@@ -81,8 +81,43 @@ function useFlaggedCount() {
 }
 
 function LowStockAlerts() {
-  const { items, clearFlag, clearAllFlags } = useInventory();
+  const { items, clearFlag, clearAllFlags, confirmStock } = useInventory();
+  const { user } = useAuth();
   const flagged = items.filter((i: any) => i.needsRestock);
+  const stale = items.filter((i: any) => isStockStale(i));
+  const [staleOpen, setStaleOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  const confirmOne = async (item: any) => {
+    try {
+      await confirmStock.mutateAsync({
+        id: item.id,
+        qtyLeft: item.qtyLeft ?? null,
+        note: "Potwierdzono bez zmian (panel admina)",
+        username: user?.username ?? null,
+      });
+    } catch {
+      toast.error(`Nie udało się potwierdzić: ${item.name}`);
+      throw new Error("fail");
+    }
+  };
+
+  const confirmAllStale = async () => {
+    if (!window.confirm(`Potwierdzić aktualność stanu dla ${stale.length} pozycji? Alerty „nieaktualne" zostaną zdjęte.`)) return;
+    setBusy(true);
+    let ok = 0;
+    for (const item of stale) {
+      try {
+        await confirmOne(item);
+        ok++;
+      } catch {
+        /* already toasted */
+      }
+    }
+    setBusy(false);
+    if (ok > 0) toast.success(`Odświeżono ${ok} ${ok === 1 ? "pozycję" : "pozycji"}`);
+  };
+
 
   return (
     <div className="space-y-3">
