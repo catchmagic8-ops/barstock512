@@ -52,7 +52,20 @@ export default function LoginScreen() {
           className="h-32 w-32 sm:h-40 sm:w-40 object-contain opacity-90"
         />
 
-        {mode === "choose" ? (
+        {mode === "pending" ? (
+          <div className="w-full space-y-6 text-center">
+            <Clock className="mx-auto h-8 w-8 text-brand" />
+            <div className="space-y-2">
+              <h2 className="font-heading text-lg font-bold text-brand sm:text-xl">Konto oczekuje na zatwierdzenie</h2>
+              <p className="text-sm text-muted-foreground">
+                Twoje zgłoszenie trafiło do panelu administratora. Zalogujesz się po zatwierdzeniu dostępu.
+              </p>
+            </div>
+            <Button variant="ghost" onClick={() => reset("choose")} className="w-full gap-1.5 text-muted-foreground">
+              <ArrowLeft className="h-4 w-4" /> Wróć
+            </Button>
+          </div>
+        ) : mode === "choose" ? (
           <div className="w-full space-y-6">
             <div className="flex flex-col items-center gap-2 text-center">
               <h2 className="font-heading text-lg font-bold text-brand sm:text-xl">Witaj w Sheraton F&amp;B</h2>
