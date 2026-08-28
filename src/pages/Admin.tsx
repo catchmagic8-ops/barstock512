@@ -190,6 +190,71 @@ function LowStockAlerts() {
           ))}
         </div>
       )}
+
+      {/* Nieaktualne stany — pozycje bez potwierdzenia od ponad STALE_STOCK_DAYS dni */}
+      <div className="rounded-lg border border-border/60 bg-foreground/[0.03] p-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="min-w-0">
+            <p className="flex items-center gap-2 text-sm font-medium text-foreground">
+              <Clock className="h-4 w-4 text-muted-foreground" />
+              Stany nieaktualne
+              {stale.length > 0 && (
+                <span className="rounded-full bg-destructive/15 px-2 py-0.5 text-[11px] font-semibold text-destructive">
+                  {stale.length}
+                </span>
+              )}
+            </p>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              {stale.length === 0
+                ? `Wszystkie pozycje potwierdzone w ciągu ${STALE_STOCK_DAYS} dni.`
+                : `Brak potwierdzenia od ponad ${STALE_STOCK_DAYS} dni. Potwierdź, aby zdjąć alert bez zmiany ilości.`}
+            </p>
+          </div>
+          {stale.length > 0 && (
+            <div className="flex gap-2">
+              <Button size="sm" variant="ghost" onClick={() => setStaleOpen(!staleOpen)} className="text-xs">
+                {staleOpen ? "Ukryj listę" : "Pokaż listę"}
+              </Button>
+              <Button size="sm" variant="outline" disabled={busy} onClick={confirmAllStale} className="gap-1.5">
+                {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+                Wyczyść wszystkie alerty
+              </Button>
+            </div>
+          )}
+        </div>
+
+        {staleOpen && stale.length > 0 && (
+          <div className="mt-3 max-h-[40vh] space-y-1.5 overflow-y-auto">
+            {stale.map((item: any) => (
+              <div
+                key={item.id}
+                className="flex items-center justify-between gap-3 rounded-md border border-border/50 bg-background/40 px-3 py-2"
+              >
+                <div className="min-w-0">
+                  <p className="truncate text-sm text-foreground">{item.name}</p>
+                  <p className="truncate text-[11px] text-muted-foreground">
+                    {[item.category, item.subcategory, item.storehouse].filter(Boolean).join(" · ")}
+                  </p>
+                </div>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="gap-1 text-xs"
+                  disabled={busy}
+                  onClick={() =>
+                    confirmOne(item)
+                      .then(() => toast.success("Stan potwierdzony"))
+                      .catch(() => {})
+                  }
+                >
+                  <Check className="h-3.5 w-3.5" /> Potwierdź
+                </Button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
     </div>
   );
 }
