@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useDepartment } from "@/contexts/DepartmentContext";
 import { deptHomePath } from "@/lib/department";
+import { cn } from "@/lib/utils";
 
 export default function Recipes() {
   const [expanded, setExpanded] = useState<string | null>(null);
