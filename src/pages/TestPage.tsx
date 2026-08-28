@@ -77,6 +77,10 @@ function isBeverage(category: string) {
   return /napoje|drinki|kawa|herbata|wino|piwo|napój/i.test(category);
 }
 
+function isFood(category: string) {
+  return /przystaw|zup|sałat|dan|deser|śniadanie|burger|makar|pizza|ryb|mięs|wege|vege|vegan|street|bowl|talerz|stek|grill|kuchnia/i.test(category);
+}
+
 function buildQuestions(items: MenuItem[], count: number): Question[] {
   const usable = items.filter((i) => i.name && i.category);
   const categories = Array.from(new Set(usable.map((i) => i.category)));
