@@ -171,49 +171,54 @@ export default function ALaCarte() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-30 border-b border-border/60 bg-background/85 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-3xl items-center gap-3 px-4 py-3 min-w-0">
-          <Link to={deptHomePath(department)}>
+      <header className="sticky top-0 z-30 border-b border-border/60 bg-background/90 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-3xl items-center gap-2 px-3 py-2.5 min-w-0 sm:px-4">
+          <Link to={deptHomePath(department)} className="flex-shrink-0">
             <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
               <ArrowLeft className="h-5 w-5" />
             </Button>
           </Link>
-          <div className="min-w-0 flex-1 text-center">
-            <p className="text-[0.6rem] uppercase tracking-[0.45em] text-muted-foreground">
-              {meta.label}
-            </p>
+          <div className="min-w-0 flex-1">
             <h1
-              className="truncate text-lg font-bold tracking-[0.2em] uppercase"
+              className="truncate text-base font-semibold tracking-wide sm:text-lg"
               style={{ fontFamily: "'Playfair Display', serif", color: "hsl(var(--brand))" }}
             >
-              Menu
+              Karta Menu
             </h1>
+            <p className="truncate text-[0.7rem] text-muted-foreground">
+              {activeCat ? (activeCat === DRINKS_KEY ? "Napoje" : activeCat) : "Wszystkie kategorie"}
+              {" · "}
+              {totalCount} poz.
+            </p>
           </div>
           <Button
-            variant="ghost"
-            size="icon"
+            variant={headerOpen ? "secondary" : "ghost"}
+            size="sm"
             onClick={() => setHeaderOpen((v) => !v)}
-            className="text-muted-foreground hover:text-foreground flex-shrink-0"
+            className="flex-shrink-0 gap-1.5 text-xs"
             aria-label={headerOpen ? "Zwiń filtry" : "Rozwiń filtry"}
           >
-            {headerOpen ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+            <SlidersHorizontal className="h-4 w-4" />
+            <span className="hidden sm:inline">Filtry</span>
+            {headerOpen ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
           </Button>
         </div>
 
-        {headerOpen ? (
-          <div className="mx-auto max-w-3xl px-4 pb-3 space-y-3">
+        {headerOpen && (
+          <div className="mx-auto max-w-3xl space-y-2.5 px-3 pb-3 sm:px-4">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Szukaj pozycji w menu..."
-                className="pl-9 pr-9 bg-secondary/60 border-border/70"
+                placeholder="Szukaj w menu..."
+                className="h-10 border-border/70 bg-secondary/50 pl-9 pr-9"
               />
               {search && (
                 <button
                   onClick={() => setSearch("")}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded text-muted-foreground hover:text-foreground"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-muted-foreground hover:text-foreground"
+                  aria-label="Wyczyść wyszukiwanie"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -221,14 +226,14 @@ export default function ALaCarte() {
             </div>
 
             {categories.length > 0 && (
-              <div className="flex flex-wrap gap-2 -mx-1 px-1">
+              <div className="-mx-3 flex gap-2 overflow-x-auto px-3 pb-1 sm:-mx-4 sm:px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 <button
                   onClick={() => setActiveCat(null)}
                   className={cn(
-                    "flex-1 min-w-[5.5rem] max-w-[7rem] rounded-lg px-2 py-2 text-[0.65rem] uppercase tracking-[0.1em] transition-colors border text-center leading-tight",
+                    "flex-shrink-0 whitespace-nowrap rounded-full border px-3.5 py-1.5 text-xs font-medium transition-colors",
                     activeCat === null
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-card text-muted-foreground border-border/70 hover:text-foreground hover:border-primary/50"
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border/70 bg-card text-muted-foreground hover:border-primary/50 hover:text-foreground"
                   )}
                 >
                   Wszystko
@@ -238,81 +243,73 @@ export default function ALaCarte() {
                     key={c}
                     onClick={() => setActiveCat(c === activeCat ? null : c)}
                     className={cn(
-                      "flex-1 min-w-[5.5rem] max-w-[7rem] rounded-lg px-2 py-2 text-[0.65rem] uppercase tracking-[0.1em] transition-colors border text-center leading-tight",
+                      "flex-shrink-0 whitespace-nowrap rounded-full border px-3.5 py-1.5 text-xs font-medium transition-colors",
                       activeCat === c
-                        ? "bg-primary text-primary-foreground border-primary"
-                        : "bg-card text-muted-foreground border-border/70 hover:text-foreground hover:border-primary/50"
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-border/70 bg-card text-muted-foreground hover:border-primary/50 hover:text-foreground"
                     )}
                   >
                     {c === DRINKS_KEY ? "Napoje" : c}
                   </button>
-
                 ))}
               </div>
             )}
 
             {allAllergens.length > 0 && (
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                    <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
-                    <span>Ukryj pozycje zawierające:</span>
-                  </div>
-                  {excludedAllergens.length > 0 && (
-                    <button
-                      onClick={() => setExcludedAllergens([])}
-                      className="text-xs text-muted-foreground hover:text-foreground underline"
-                    >
-                      Wyczyść
-                    </button>
-                  )}
-                </div>
-                <div className="flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1">
-                  {allAllergens.map((a) => {
-                    const active = excludedAllergens.includes(a);
-                    return (
+              <div className="rounded-lg border border-border/60 bg-card/50">
+                <button
+                  onClick={() => setAllergOpen((v) => !v)}
+                  className="flex w-full items-center justify-between gap-2 px-3 py-2 text-xs text-muted-foreground hover:text-foreground"
+                >
+                  <span className="flex items-center gap-1.5">
+                    <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" />
+                    Ukryj alergeny
+                    {excludedAllergens.length > 0 && (
+                      <span className="rounded-full bg-primary/15 px-1.5 py-0.5 text-[0.65rem] font-semibold text-primary">
+                        {excludedAllergens.length}
+                      </span>
+                    )}
+                  </span>
+                  {allergOpen ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+                </button>
+
+                {allergOpen && (
+                  <div className="flex flex-wrap gap-1.5 border-t border-border/50 px-3 py-2.5">
+                    {allAllergens.map((a) => {
+                      const active = excludedAllergens.includes(a);
+                      return (
+                        <button
+                          key={a}
+                          onClick={() => toggleAllergen(a)}
+                          className={cn(
+                            "inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium transition-colors",
+                            active
+                              ? "border-primary/50 bg-primary/15 text-primary"
+                              : "border-border bg-secondary text-muted-foreground hover:text-foreground"
+                          )}
+                        >
+                          {active && <X className="h-3 w-3" />}
+                          {a}
+                        </button>
+                      );
+                    })}
+                    {excludedAllergens.length > 0 && (
                       <button
-                        key={a}
-                        onClick={() => toggleAllergen(a)}
-                        className={cn(
-                          "flex-shrink-0 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium border whitespace-nowrap transition-colors",
-                          active
-                            ? "bg-amber-500/20 text-amber-400 border-amber-500/50"
-                            : "bg-secondary text-muted-foreground border-border hover:text-foreground"
-                        )}
+                        onClick={() => setExcludedAllergens([])}
+                        className="ml-auto text-xs text-muted-foreground underline hover:text-foreground"
                       >
-                        {active ? <X className="h-3 w-3" /> : <AlertTriangle className="h-3 w-3" />}
-                        {a}
+                        Wyczyść
                       </button>
-                    );
-                  })}
-                </div>
+                    )}
+                  </div>
+                )}
               </div>
             )}
-          </div>
-        ) : (
-          <div className="mx-auto max-w-3xl px-4 pb-3">
-            <button
-              onClick={() => setHeaderOpen(true)}
-              className="flex w-full items-center justify-between gap-2 rounded-lg border border-border/70 bg-card/60 px-3 py-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <span className="flex items-center gap-2 min-w-0">
-                <Search className="h-3.5 w-3.5 flex-shrink-0" />
-                <span className="truncate">
-                  {activeCat ? (activeCat === DRINKS_KEY ? "Napoje" : activeCat) : "Wszystkie kategorie"}
-                  {search && ` · „${search}”`}
-                  {excludedAllergens.length > 0 && ` · bez ${excludedAllergens.length} alergenów`}
-                </span>
-              </span>
-              <span className="flex-shrink-0 text-primary font-medium">
-                {grouped.reduce((sum, [, list]) => sum + list.length, 0)} poz.
-              </span>
-            </button>
           </div>
         )}
       </header>
 
-      <main className="mx-auto max-w-3xl px-4 py-8">
+      <main className="mx-auto max-w-3xl px-3 py-6 sm:px-4 sm:py-8">
         {isLoading ? (
           <div className="flex justify-center py-16">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -324,81 +321,58 @@ export default function ALaCarte() {
             <p className="text-sm">Pozycje dodaje się w panelu administratora</p>
           </div>
         ) : grouped.length === 0 ? (
-          <p className="text-center text-sm text-muted-foreground py-12">Brak wyników.</p>
+          <p className="py-12 text-center text-sm text-muted-foreground">Brak wyników.</p>
         ) : (
-          <div className="rounded-2xl border border-border/60 bg-card/40 px-5 py-8 sm:px-10 shadow-[0_20px_60px_-30px_hsl(var(--primary)/0.35)]">
-            <div className="mb-10 text-center">
-              <div className="mx-auto mb-3 h-px w-24 bg-border" />
-              <p
-                className="text-2xl tracking-[0.35em] uppercase"
-                style={{ fontFamily: "'Playfair Display', serif", color: "hsl(var(--brand))" }}
-              >
-                512
-              </p>
-              <p className="mt-1 text-[0.6rem] uppercase tracking-[0.4em] text-muted-foreground">
-                Karta Menu
-              </p>
-              <div className="mx-auto mt-3 h-px w-24 bg-border" />
-            </div>
+          <div className="space-y-8">
+            {grouped.map(([cat, list]) => (
+              <section key={cat} className="overflow-hidden rounded-xl border border-border/60 bg-card/40">
+                <div className="flex items-center justify-between gap-3 border-b border-border/60 bg-secondary/40 px-4 py-2.5">
+                  <h2
+                    className="text-sm font-semibold uppercase tracking-[0.18em] sm:text-base"
+                    style={{ fontFamily: "'Playfair Display', serif", color: "hsl(var(--brand))" }}
+                  >
+                    {cat}
+                  </h2>
+                  <span className="flex-shrink-0 text-[0.7rem] text-muted-foreground">{list.length}</span>
+                </div>
 
-            <div className="space-y-12">
-              {grouped.map(([cat, list]) => (
-                <section key={cat}>
-                  <div className="mb-5 flex items-center gap-4">
-                    <span className="h-px flex-1 bg-border/70" />
-                    <h2
-                      className="text-center text-base sm:text-lg uppercase tracking-[0.3em]"
-                      style={{ fontFamily: "'Playfair Display', serif", color: "hsl(var(--brand))" }}
-                    >
-                      {cat}
-                    </h2>
-                    <span className="h-px flex-1 bg-border/70" />
-                  </div>
+                <div className="divide-y divide-border/50">
+                  {list.map((it) => (
+                    <article key={it.id} className="px-4 py-3.5">
+                      <div className="flex items-start justify-between gap-3">
+                        <h3 className="text-[0.95rem] font-semibold leading-snug text-foreground">
+                          {it.name}
+                        </h3>
+                        <span className="flex-shrink-0 whitespace-nowrap text-[0.95rem] font-bold text-primary">
+                          {Number(it.price_pln).toFixed(0)} zł
+                        </span>
+                      </div>
 
-                  <div className="space-y-6">
-                    {list.map((it) => (
-                      <article key={it.id} className="group">
-                        <div className="flex items-baseline gap-2">
-                          <h3
-                            className="font-semibold uppercase tracking-wide text-foreground text-sm sm:text-base"
-                            style={{ fontFamily: "'Playfair Display', serif" }}
-                          >
-                            {it.name}
-                          </h3>
-                          <span className="flex-1 translate-y-[-0.2rem] border-b border-dotted border-border/80" />
-                          <span
-                            className="flex-shrink-0 text-sm sm:text-base font-semibold text-primary"
-                            style={{ fontFamily: "'Playfair Display', serif" }}
-                          >
-                            {Number(it.price_pln).toFixed(0)} PLN
-                          </span>
+                      {it.description && (
+                        <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                          {it.description}
+                        </p>
+                      )}
+
+                      {(it.dietary.length > 0 || it.allergens.length > 0) && (
+                        <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                          {it.dietary.map((d) => (
+                            <DietaryBadge key={`d-${d}`} tag={d} />
+                          ))}
+                          {it.allergens.map((a) => (
+                            <AllergenBadge key={`a-${a}`} tag={a} />
+                          ))}
                         </div>
-
-                        {it.description && (
-                          <p className="mt-1.5 max-w-xl text-sm italic leading-relaxed text-muted-foreground">
-                            {it.description}
-                          </p>
-                        )}
-
-                        {(it.dietary.length > 0 || it.allergens.length > 0) && (
-                          <div className="mt-2 flex flex-wrap gap-1.5">
-                            {it.dietary.map((d) => (
-                              <DietaryBadge key={`d-${d}`} tag={d} />
-                            ))}
-                            {it.allergens.map((a) => (
-                              <AllergenBadge key={`a-${a}`} tag={a} />
-                            ))}
-                          </div>
-                        )}
-                      </article>
-                    ))}
-                  </div>
-                </section>
-              ))}
-            </div>
+                      )}
+                    </article>
+                  ))}
+                </div>
+              </section>
+            ))}
           </div>
         )}
       </main>
+
 
     </div>
   );
