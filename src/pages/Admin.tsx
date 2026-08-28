@@ -33,28 +33,49 @@ function AdminSection({
   icon: Icon,
   children,
   defaultOpen = false,
+  alertCount = 0,
 }: {
   title: string;
   icon: React.ElementType;
   children: React.ReactNode;
   defaultOpen?: boolean;
+  alertCount?: number;
 }) {
   const [open, setOpen] = useState(defaultOpen);
+  const hasAlert = alertCount > 0;
   return (
-    <div className="rounded-xl border border-border bg-card overflow-hidden">
+    <div
+      className={cn(
+        "overflow-hidden rounded-2xl border transition-all duration-300",
+        hasAlert
+          ? "border-destructive/60 bg-gradient-to-b from-destructive/[0.08] to-destructive/[0.03] shadow-[0_0_24px_hsl(var(--destructive)/0.15)]"
+          : "border-border/40 bg-gradient-to-b from-foreground/[0.03] to-primary/[0.06]",
+        !hasAlert && "hover:border-primary/40"
+      )}
+    >
       <button
         onClick={() => setOpen(!open)}
-        className="flex w-full items-center justify-between gap-3 p-4 text-left"
+        className="flex w-full items-center justify-between gap-3 p-5 text-left"
       >
         <div className="flex items-center gap-3">
-          <Icon className="h-5 w-5 text-primary" />
-          <h2 className="font-heading font-bold text-foreground">{title}</h2>
+          <Icon className={cn("h-5 w-5", hasAlert ? "text-destructive" : "text-primary")} />
+          <h2 className="font-heading font-bold tracking-wide text-foreground">{title}</h2>
+          {hasAlert && (
+            <span className="rounded-full bg-destructive/15 px-2.5 py-0.5 text-xs font-semibold text-destructive">
+              {alertCount} alert{alertCount === 1 ? "" : "s"}
+            </span>
+          )}
         </div>
         {open ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
       </button>
-      {open && <div className="border-t border-border p-4">{children}</div>}
+      {open && <div className="border-t border-border/40 p-5">{children}</div>}
     </div>
   );
+}
+
+function useFlaggedCount() {
+  const { items } = useInventory();
+  return items.filter((i: any) => i.needsRestock).length;
 }
 
 function LowStockAlerts() {
