@@ -242,34 +242,45 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
                     )}
                   </td>
                   <td className="py-3 text-right">
-                    {flagged ? (
-                      <div className="flex justify-end gap-1.5">
-                        <span className="inline-flex items-center rounded-full bg-warning/20 px-2 py-0.5 text-[10px] font-semibold text-warning">
-                          ZGŁOSZONO
-                        </span>
-                        {onClear && (
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            className="h-8 w-8"
-                            onClick={() => onClear(item.id)}
-                            title="Oznacz jako uzupełnione"
-                          >
-                            <Check className="h-3.5 w-3.5" />
-                          </Button>
-                        )}
-                      </div>
-                    ) : (
+                    <div className="flex items-center justify-end gap-1.5">
                       <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-8 text-xs gap-1 px-3 border-warning/40 text-warning hover:bg-warning/10 hover:text-warning"
-                        onClick={() => openFlag(item)}
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-muted-foreground"
+                        onClick={() => setHistoryItem(item)}
+                        title="Historia zmian stanu"
                       >
-                        <BellRing className="h-3.5 w-3.5" />
-                        Niski stan
+                        <History className="h-3.5 w-3.5" />
                       </Button>
-                    )}
+                      {flagged ? (
+                        <>
+                          <span className="inline-flex items-center rounded-full bg-warning/20 px-2 py-0.5 text-[10px] font-semibold text-warning">
+                            ZGŁOSZONO
+                          </span>
+                          {onClear && (
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              className="h-8 w-8"
+                              onClick={() => onClear(item.id)}
+                              title="Oznacz jako uzupełnione"
+                            >
+                              <Check className="h-3.5 w-3.5" />
+                            </Button>
+                          )}
+                        </>
+                      ) : (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-8 text-xs gap-1 px-3 border-warning/40 text-warning hover:bg-warning/10 hover:text-warning"
+                          onClick={() => openFlag(item)}
+                        >
+                          <BellRing className="h-3.5 w-3.5" />
+                          Niski stan
+                        </Button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               );
