@@ -139,6 +139,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         accentHex,
         setAccentHex,
         savingAccent,
+        globalAccentHex,
+        personalAccentHex,
+        setPersonalAccentHex,
+
       }}
     >
       {children}
