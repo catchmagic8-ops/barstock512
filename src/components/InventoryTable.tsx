@@ -170,6 +170,20 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
                       </div>
                     </div>
                   </td>
+                  <td className="py-3 pr-4">
+                    {item.qtyLeft != null ? (
+                      <span className={cn("text-sm font-semibold", flagged ? "text-warning" : "text-foreground")}>
+                        {item.qtyLeft} {item.unit}
+                      </span>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">brak danych</span>
+                    )}
+                    {(item.flaggedAt || item.updatedAt) && (
+                      <span className="block text-[10px] text-muted-foreground">
+                        {formatRelative(item.flaggedAt ?? item.updatedAt!)}
+                      </span>
+                    )}
+                  </td>
                   <td className="py-3 pr-4 hidden md:table-cell">
                     {flagged && (item.restockNote || item.qtyLeft != null || item.qtyToOrder != null) ? (
                       <span className="text-xs text-warning/90">
