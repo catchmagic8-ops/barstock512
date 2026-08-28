@@ -48,7 +48,9 @@ interface Note {
   pinned: boolean;
   resolved: boolean;
   created_at: string;
+  parent_id: string | null;
 }
+
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleString("pl-PL", {
