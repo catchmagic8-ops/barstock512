@@ -213,7 +213,7 @@ const cards: NavCard[] = [
   { title: "COCKTAIL RECIPES", icon: BookOpen, subtitle: "Cocktail recipe library & instructions", sub: "recipes", badge: RecipesBadge, size: "small" },
   { title: "TELEPHONE", icon: Phone, subtitle: "Useful contacts & numbers", sub: "telephone", badge: ContactsBadge, size: "small" },
   { title: "INFO", icon: MessageSquare, subtitle: "Wiadomości i handover dla zespołu", sub: "info", badge: InfoBadge, size: "large" },
-  { title: "TEST", icon: FlaskConical, subtitle: "Quiz szkoleniowy z karty menu", sub: "test", badge: TestBadge, size: "small" },
+  { title: "MENU QUIZ", icon: FlaskConical, subtitle: "Szkolenie z karty menu: tryby na czas, bez limitu i nauka", sub: "test", badge: TestBadge, size: "small" },
   { title: "ADMIN", icon: Shield, subtitle: "Manage all content for this dept.", sub: "admin", badge: AdminBadge, size: "large" },
 ];
 
