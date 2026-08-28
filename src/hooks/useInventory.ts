@@ -161,7 +161,7 @@ export function useInventory() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
   });
 
-  return { items, isLoading, flagItem, clearFlag, clearAllFlags, addItem, editItem, deleteItem };
+  return { items, isLoading, flagItem, clearFlag, clearAllFlags, addItem, editItem, deleteItem, confirmStock };
 }
 
 export type { InventoryItem };
