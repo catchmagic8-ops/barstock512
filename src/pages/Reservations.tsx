@@ -72,15 +72,15 @@ import { toast } from "sonner";
 
 const TABLE = "reservations_polskie_smaki" as const;
 
-const OCCASIONS = ["None", "Birthday", "Anniversary", "Business Dinner", "Proposal", "Other"] as const;
-const SEATING = ["No Preference", "Window", "Quiet Corner", "Outside"] as const;
-const DIETARY = ["Vegetarian", "Vegan", "Gluten-free", "Halal", "Kosher"] as const;
-const BEVERAGE = ["None", "Wine Pairing", "Champagne on Arrival", "Open Bar", "Soft Drinks Only"] as const;
-const MENU_PREF = ["No Preference", "À La Carte", "Set Menu", "Tasting Menu"] as const;
-const LANGUAGES = ["Polish", "English", "German", "Russian", "Other"] as const;
-const MOBILITY = ["Wheelchair Access", "High Chair"] as const;
-const SOURCES = ["Phone", "Walk-in", "Online", "Hotel Concierge", "Other"] as const;
-const STATUSES = ["Confirmed", "Pending", "Cancelled", "No-show"] as const;
+const OCCASIONS = ["Brak", "Urodziny", "Rocznica", "Kolacja biznesowa", "Zaręczyny", "Inne"] as const;
+const SEATING = ["Bez preferencji", "Przy oknie", "Spokojny kącik", "Na zewnątrz"] as const;
+const DIETARY = ["Wegetariańskie", "Wegańskie", "Bezglutenowe", "Halal", "Koszerne"] as const;
+const BEVERAGE = ["Brak", "Dobór win", "Szampan na powitanie", "Open bar", "Tylko napoje bezalkoholowe"] as const;
+const MENU_PREF = ["Bez preferencji", "À La Carte", "Menu ustalone", "Menu degustacyjne"] as const;
+const LANGUAGES = ["Polski", "Angielski", "Niemiecki", "Rosyjski", "Inny"] as const;
+const MOBILITY = ["Dostęp dla wózków", "Krzesełko dla dziecka"] as const;
+const SOURCES = ["Telefon", "Bez rezerwacji", "Online", "Concierge hotelowy", "Inne"] as const;
+const STATUSES = ["Potwierdzona", "Oczekująca", "Odwołana", "Nieobecność"] as const;
 
 type Reservation = {
   id: string;
@@ -115,10 +115,10 @@ type Reservation = {
 };
 
 const STATUS_STYLES: Record<string, string> = {
-  Confirmed: "bg-emerald-500/20 text-emerald-400 border-emerald-500/40",
-  Pending: "bg-amber-500/20 text-amber-400 border-amber-500/40",
-  Cancelled: "bg-muted text-muted-foreground border-border",
-  "No-show": "bg-red-500/20 text-red-400 border-red-500/40",
+  Potwierdzona: "bg-emerald-500/20 text-emerald-400 border-emerald-500/40",
+  Oczekująca: "bg-amber-500/20 text-amber-400 border-amber-500/40",
+  Odwołana: "bg-muted text-muted-foreground border-border",
+  "Nieobecność": "bg-red-500/20 text-red-400 border-red-500/40",
 };
 
 function emptyForm(): Partial<Reservation> {
@@ -129,25 +129,25 @@ function emptyForm(): Partial<Reservation> {
     number_of_guests: 2,
     number_of_children: null,
     table_number: "",
-    occasion: "None",
-    seating_request: "No Preference",
+    occasion: "Brak",
+    seating_request: "Bez preferencji",
     dietary_requirements: [],
     allergies: "",
-    beverage_preference: "None",
+    beverage_preference: "Brak",
     pre_ordered_items: "",
-    menu_preference: "No Preference",
+    menu_preference: "Bez preferencji",
     vip_returning: false,
     hotel_guest: false,
     room_number: "",
-    language: "Polish",
+    language: "Polski",
     mobility_needs: [],
     decoration_requests: "",
-    reservation_source: "Phone",
+    reservation_source: "Telefon",
     deposit_paid: false,
     deposit_amount: null,
     contact_phone: "",
     notes: "",
-    status: "Pending",
+    status: "Oczekująca",
   };
 }
 
@@ -282,7 +282,7 @@ function ReservationCard({
             )}
             {r.hotel_guest && (
               <Badge className="border-cyan-500/40 bg-cyan-500/15 text-cyan-400">
-                <BedDouble className="mr-1 h-3 w-3" /> Hotel guest
+                <BedDouble className="mr-1 h-3 w-3" /> Gość hotelowy
               </Badge>
             )}
           </div>
@@ -295,11 +295,11 @@ function ReservationCard({
             </span>
             <span className="inline-flex items-center gap-1">
               <Users className="h-4 w-4" /> {r.number_of_guests}
-              {has(r.number_of_children) ? ` + ${r.number_of_children} child` : ""}
+              {has(r.number_of_children) ? ` + ${r.number_of_children} dzieci` : ""}
             </span>
             {has(r.table_number) && (
               <span className="inline-flex items-center gap-1">
-                <Hash className="h-4 w-4" /> Table {r.table_number}
+                <Hash className="h-4 w-4" /> Stolik {r.table_number}
               </span>
             )}
           </div>
@@ -313,10 +313,10 @@ function ReservationCard({
             disabled={statusUpdating}
           >
             <SelectTrigger
-              title="Click to change status"
+              title="Kliknij, aby zmienić status"
               className={cn(
                 "h-7 w-auto gap-1 rounded-full border px-3 py-0 text-xs font-semibold shadow-none transition hover:opacity-90 focus:ring-0 focus:ring-offset-0",
-                STATUS_STYLES[r.status] ?? STATUS_STYLES.Pending,
+                STATUS_STYLES[r.status] ?? STATUS_STYLES.Oczekująca,
                 statusUpdating && "opacity-60"
               )}
             >
@@ -332,14 +332,14 @@ function ReservationCard({
           </Select>
           {canAdmin && (
             <>
-              <Button size="icon" variant="ghost" onClick={onEdit} title="Edit">
+              <Button size="icon" variant="ghost" onClick={onEdit} title="Edytuj">
                 <Pencil className="h-4 w-4" />
               </Button>
               <Button
                 size="icon"
                 variant="ghost"
                 onClick={onDelete}
-                title="Delete"
+                title="Usuń"
                 className="text-red-400 hover:text-red-300"
               >
                 <Trash2 className="h-4 w-4" />
@@ -352,21 +352,21 @@ function ReservationCard({
       {r.created_by_username && (
         <div className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-border bg-muted/40 px-2.5 py-0.5 text-[11px] text-muted-foreground">
           <UserCircle2 className="h-3.5 w-3.5" />
-          Created by <span className="font-semibold text-foreground">{r.created_by_username}</span>
+          Utworzone przez <span className="font-semibold text-foreground">{r.created_by_username}</span>
         </div>
       )}
 
       {/* Highlight strip: occasion + allergies */}
-      {(has(r.occasion) && r.occasion !== "None") || has(r.allergies) ? (
+      {(has(r.occasion) && r.occasion !== "Brak") || has(r.allergies) ? (
         <div className="mb-4 flex flex-wrap gap-2">
-          {has(r.occasion) && r.occasion !== "None" && (
+          {has(r.occasion) && r.occasion !== "Brak" && (
             <div className="inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/15 px-3 py-1 text-xs font-semibold text-primary">
               <Sparkles className="h-3.5 w-3.5" /> {r.occasion}
             </div>
           )}
           {has(r.allergies) && (
             <div className="inline-flex items-center gap-1.5 rounded-full border border-red-500/40 bg-red-500/15 px-3 py-1 text-xs font-semibold text-red-400">
-              <AlertTriangle className="h-3.5 w-3.5" /> Allergy: {r.allergies}
+              <AlertTriangle className="h-3.5 w-3.5" /> Alergia: {r.allergies}
             </div>
           )}
         </div>
@@ -374,11 +374,11 @@ function ReservationCard({
 
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
         {/* Food & Beverage */}
-        <Section title="Food & Beverage">
+        <Section title="Jedzenie i napoje">
           {has(r.dietary_requirements) && (
             <Field
               icon={Utensils}
-              label="Dietary"
+              label="Dieta"
               value={
                 <div className="flex flex-wrap gap-1">
                   {r.dietary_requirements.map((d) => (
@@ -394,30 +394,30 @@ function ReservationCard({
               }
             />
           )}
-          {has(r.beverage_preference) && r.beverage_preference !== "None" && (
-            <Field icon={Wine} label="Beverage" value={r.beverage_preference} />
+          {has(r.beverage_preference) && r.beverage_preference !== "Brak" && (
+            <Field icon={Wine} label="Napój" value={r.beverage_preference} />
           )}
-          {has(r.menu_preference) && r.menu_preference !== "No Preference" && (
+          {has(r.menu_preference) && r.menu_preference !== "Bez preferencji" && (
             <Field icon={Utensils} label="Menu" value={r.menu_preference} />
           )}
           {has(r.pre_ordered_items) && (
-            <Field icon={Inbox} label="Pre-ordered" value={r.pre_ordered_items} />
+            <Field icon={Inbox} label="Zamówione wcześniej" value={r.pre_ordered_items} />
           )}
         </Section>
 
         {/* Guest Info */}
-        <Section title="Guest Info">
-          {has(r.seating_request) && r.seating_request !== "No Preference" && (
-            <Field icon={Armchair} label="Seating" value={r.seating_request} />
+        <Section title="Informacje o gościu">
+          {has(r.seating_request) && r.seating_request !== "Bez preferencji" && (
+            <Field icon={Armchair} label="Miejsce" value={r.seating_request} />
           )}
           {r.hotel_guest && has(r.room_number) && (
-            <Field icon={BedDouble} label="Room" value={r.room_number} />
+            <Field icon={BedDouble} label="Pokój" value={r.room_number} />
           )}
-          {has(r.language) && <Field icon={Languages} label="Language" value={r.language} />}
+          {has(r.language) && <Field icon={Languages} label="Język" value={r.language} />}
           {has(r.mobility_needs) && (
             <Field
               icon={Accessibility}
-              label="Mobility"
+              label="Mobilność"
               value={
                 <div className="flex flex-wrap gap-1">
                   {r.mobility_needs.map((m) => (
@@ -430,26 +430,26 @@ function ReservationCard({
             />
           )}
           {has(r.decoration_requests) && (
-            <Field icon={Flower2} label="Decoration" value={r.decoration_requests} />
+            <Field icon={Flower2} label="Dekoracje" value={r.decoration_requests} />
           )}
         </Section>
 
         {/* Operational */}
-        <Section title="Operational">
+        <Section title="Informacje operacyjne">
           {has(r.contact_phone) && (
-            <Field icon={Phone} label="Phone" value={r.contact_phone} />
+            <Field icon={Phone} label="Telefon" value={r.contact_phone} />
           )}
           {has(r.reservation_source) && (
-            <Field icon={Inbox} label="Source" value={r.reservation_source} />
+            <Field icon={Inbox} label="Źródło" value={r.reservation_source} />
           )}
           {r.deposit_paid && (
             <Field
               icon={Wallet}
-              label="Deposit"
-              value={`Paid${has(r.deposit_amount) ? ` · ${r.deposit_amount} PLN` : ""}`}
+              label="Zadatek"
+              value={`Wpłacony${has(r.deposit_amount) ? ` · ${r.deposit_amount} PLN` : ""}`}
             />
           )}
-          {has(r.notes) && <Field icon={StickyNote} label="Notes" value={r.notes} />}
+          {has(r.notes) && <Field icon={StickyNote} label="Notatki" value={r.notes} />}
         </Section>
       </div>
     </div>
@@ -552,7 +552,7 @@ function ReservationForm({
           <div>
             <Label>Occasion</Label>
             {(() => {
-              const current = f.occasion ?? "None";
+              const current = f.occasion ?? "Brak";
               const isPreset = (OCCASIONS as readonly string[]).includes(current);
               const selectValue = isPreset ? current : "Other";
               return (
@@ -587,7 +587,7 @@ function ReservationForm({
           </div>
           <div className="sm:col-span-2">
             <Label>Special Seating Request</Label>
-            <Select value={f.seating_request ?? "No Preference"} onValueChange={(v) => set("seating_request", v)}>
+            <Select value={f.seating_request ?? "Bez preferencji"} onValueChange={(v) => set("seating_request", v)}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
                 {SEATING.map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}
@@ -619,7 +619,7 @@ function ReservationForm({
           </div>
           <div>
             <Label>Beverage Preference</Label>
-            <Select value={f.beverage_preference ?? "None"} onValueChange={(v) => set("beverage_preference", v)}>
+            <Select value={f.beverage_preference ?? "Brak"} onValueChange={(v) => set("beverage_preference", v)}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
                 {BEVERAGE.map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}
@@ -637,7 +637,7 @@ function ReservationForm({
           </div>
           <div>
             <Label>Menu Preference</Label>
-            <Select value={f.menu_preference ?? "No Preference"} onValueChange={(v) => set("menu_preference", v)}>
+            <Select value={f.menu_preference ?? "Bez preferencji"} onValueChange={(v) => set("menu_preference", v)}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
                 {MENU_PREF.map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}
@@ -648,7 +648,7 @@ function ReservationForm({
       </Section>
 
       {/* Guest Info */}
-      <Section title="Guest Info">
+      <Section title="Informacje o gościu">
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="flex items-center justify-between rounded-md border border-border px-3 py-2">
             <Label className="!m-0">VIP / Returning Guest</Label>
@@ -670,7 +670,7 @@ function ReservationForm({
           )}
           <div>
             <Label>Language</Label>
-            <Select value={f.language ?? "English"} onValueChange={(v) => set("language", v)}>
+            <Select value={f.language ?? "Polski"} onValueChange={(v) => set("language", v)}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
                 {LANGUAGES.map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}
@@ -702,7 +702,7 @@ function ReservationForm({
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
             <Label>Reservation Source</Label>
-            <Select value={f.reservation_source ?? "Phone"} onValueChange={(v) => set("reservation_source", v)}>
+            <Select value={f.reservation_source ?? "Telefon"} onValueChange={(v) => set("reservation_source", v)}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
                 {SOURCES.map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}
@@ -711,7 +711,7 @@ function ReservationForm({
           </div>
           <div>
             <Label>Status</Label>
-            <Select value={f.status ?? "Pending"} onValueChange={(v) => set("status", v)}>
+            <Select value={f.status ?? "Oczekująca"} onValueChange={(v) => set("status", v)}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
                 {STATUSES.map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}
@@ -836,7 +836,7 @@ export default function Reservations() {
         deposit_amount: v.deposit_paid ? (v.deposit_amount ?? null) : null,
         contact_phone: v.contact_phone?.trim() || null,
         notes: v.notes?.trim() || null,
-        status: v.status || "Pending",
+        status: v.status || "Oczekująca",
       };
       if (editing?.id) {
         const { error } = await (supabase as any).from(TABLE).update(payload).eq("id", editing.id);

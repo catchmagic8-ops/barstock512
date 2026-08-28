@@ -10,7 +10,7 @@ export default function ThemeToggle() {
       variant="ghost"
       size="icon"
       onClick={toggleTheme}
-      title={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      title={isDark ? "Przełącz na tryb jasny" : "Przełącz na tryb ciemny"}
       className="text-muted-foreground hover:text-foreground"
     >
       {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}

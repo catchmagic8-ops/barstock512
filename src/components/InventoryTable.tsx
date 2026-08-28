@@ -74,9 +74,9 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
                   </p>
                   {flagged && (item.qtyLeft != null || item.qtyToOrder != null) && (
                     <p className="mt-0.5 text-[11px] font-medium text-warning">
-                      {item.qtyLeft != null && <>{item.qtyLeft} left</>}
+                      {item.qtyLeft != null && <>zostało: {item.qtyLeft}</>}
                       {item.qtyLeft != null && item.qtyToOrder != null && " · "}
-                      {item.qtyToOrder != null && <>order {item.qtyToOrder}</>}
+                      {item.qtyToOrder != null && <>zamów: {item.qtyToOrder}</>}
                     </p>
                   )}
                   {flagged && item.restockNote && (

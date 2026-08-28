@@ -3,12 +3,12 @@ import { Wine, Beer, GlassWater, Coffee, Recycle, Martini } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const categories: { key: Category; label: string; icon: React.ElementType }[] = [
-  { key: "spirits", label: "Spirits", icon: Martini },
-  { key: "wine", label: "Wine", icon: Wine },
-  { key: "beer", label: "Beer", icon: Beer },
-  { key: "soft-drinks", label: "Soft Drinks", icon: GlassWater },
-  { key: "tea-coffee", label: "Tea & Coffee", icon: Coffee },
-  { key: "reusables", label: "Reusables", icon: Recycle },
+  { key: "spirits", label: "Alkohole mocne", icon: Martini },
+  { key: "wine", label: "Wino", icon: Wine },
+  { key: "beer", label: "Piwo", icon: Beer },
+  { key: "soft-drinks", label: "Napoje bezalkoholowe", icon: GlassWater },
+  { key: "tea-coffee", label: "Herbata i kawa", icon: Coffee },
+  { key: "reusables", label: "Wielorazowe", icon: Recycle },
 ];
 
 interface Props {

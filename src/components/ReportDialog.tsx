@@ -19,15 +19,15 @@ interface Props {
 }
 
 const SCOPE_OPTIONS: { value: ReportScope; label: string }[] = [
-  { value: "full", label: "Full report" },
-  { value: "low", label: "Low stock only" },
+  { value: "full", label: "Pełny raport" },
+  { value: "low", label: "Tylko niski stan" },
 ];
 
 const SORT_OPTIONS: { value: ReportSort; label: string }[] = [
-  { value: "storehouse", label: "Storehouse" },
-  { value: "category", label: "Category" },
-  { value: "name", label: "Name" },
-  { value: "qty-left", label: "Qty left (lowest first)" },
+  { value: "storehouse", label: "Magazyn" },
+  { value: "category", label: "Kategoria" },
+  { value: "name", label: "Nazwa" },
+  { value: "qty-left", label: "Ilość pozostała (od najmniejszej)" },
 ];
 
 export default function ReportDialog({ open, onOpenChange, items, deptLabel }: Props) {
@@ -58,10 +58,10 @@ export default function ReportDialog({ open, onOpenChange, items, deptLabel }: P
       a.click();
       a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 10_000);
-      toast({ title: "Raport downloaded" });
+      toast({ title: "Raport pobrany" });
     } catch (e) {
       console.error("Report download failed", e);
-      toast({ title: "Couldn't generate the PDF", variant: "destructive" });
+      toast({ title: "Nie udało się wygenerować pliku PDF", variant: "destructive" });
     }
   };
 
@@ -73,7 +73,7 @@ export default function ReportDialog({ open, onOpenChange, items, deptLabel }: P
       setPreviewUrl(makeBlobUrl());
     } catch (e) {
       console.error("Report preview failed", e);
-      toast({ title: "Couldn't generate the PDF", variant: "destructive" });
+      toast({ title: "Nie udało się wygenerować pliku PDF", variant: "destructive" });
     }
   };
 
@@ -96,13 +96,13 @@ export default function ReportDialog({ open, onOpenChange, items, deptLabel }: P
         <DialogHeader>
           <DialogTitle>Raport</DialogTitle>
           <DialogDescription>
-            Preview the low stock list, choose how to sort it, then download or print.
+            Przejrzyj listę niskich stanów, wybierz sposób sortowania, a następnie pobierz lub wydrukuj.
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
           <div className="space-y-1.5">
-            <p className="text-xs font-medium text-muted-foreground">Report type</p>
+            <p className="text-xs font-medium text-muted-foreground">Typ raportu</p>
             <div className="flex flex-wrap gap-1.5">
               {SCOPE_OPTIONS.map((o) => (
                 <button
@@ -122,7 +122,7 @@ export default function ReportDialog({ open, onOpenChange, items, deptLabel }: P
           </div>
 
           <div className="space-y-1.5">
-            <p className="text-xs font-medium text-muted-foreground">Sort low stock by</p>
+            <p className="text-xs font-medium text-muted-foreground">Sortuj niskie stany według</p>
             <div className="flex flex-wrap gap-1.5">
               {SORT_OPTIONS.map((o) => (
                 <button
@@ -143,11 +143,11 @@ export default function ReportDialog({ open, onOpenChange, items, deptLabel }: P
 
           <div className="space-y-1.5">
             <p className="text-xs font-medium text-muted-foreground">
-              Preview — low stock ({flagged.length})
+              Podgląd — niski stan ({flagged.length})
             </p>
             {flagged.length === 0 ? (
               <p className="rounded-md border border-border/60 bg-muted/30 px-3 py-4 text-center text-xs text-muted-foreground">
-                No items flagged for restock.
+                Brak pozycji zgłoszonych do uzupełnienia.
               </p>
             ) : (
               <ul className="max-h-56 space-y-1 overflow-y-auto rounded-md border border-border/60 bg-muted/20 p-1.5">
@@ -163,8 +163,8 @@ export default function ReportDialog({ open, onOpenChange, items, deptLabel }: P
                     <span className="shrink-0 text-[10px] text-muted-foreground">
                       {[
                         it.storehouse,
-                        it.qtyLeft != null ? `${it.qtyLeft} left` : null,
-                        it.qtyToOrder != null ? `order ${it.qtyToOrder}` : null,
+                        it.qtyLeft != null ? `zostało: ${it.qtyLeft}` : null,
+                        it.qtyToOrder != null ? `zamów: ${it.qtyToOrder}` : null,
                       ]
                         .filter(Boolean)
                         .join(" · ")}
@@ -178,10 +178,10 @@ export default function ReportDialog({ open, onOpenChange, items, deptLabel }: P
 
         <div className="flex justify-end gap-2 pt-1">
           <Button variant="outline" onClick={handlePreview} className="gap-1.5">
-            <Printer className="h-4 w-4" /> Preview &amp; Print
+            <Printer className="h-4 w-4" /> Podgląd i drukuj
           </Button>
           <Button onClick={handleDownload} className="gap-1.5">
-            <Download className="h-4 w-4" /> Download PDF
+            <Download className="h-4 w-4" /> Pobierz PDF
           </Button>
         </div>
       </DialogContent>
@@ -189,25 +189,25 @@ export default function ReportDialog({ open, onOpenChange, items, deptLabel }: P
       <Dialog open={!!previewUrl} onOpenChange={(o) => { if (!o) closePreview(); }}>
         <DialogContent className="flex h-[85vh] max-w-[calc(100vw-2rem)] flex-col sm:max-w-3xl">
           <DialogHeader>
-            <DialogTitle>Raport preview</DialogTitle>
+            <DialogTitle>Podgląd raportu</DialogTitle>
             <DialogDescription>
-              Review the PDF below, then print it or go back to change the options.
+              Przejrzyj plik PDF poniżej, a następnie wydrukuj go lub wróć, aby zmienić opcje.
             </DialogDescription>
           </DialogHeader>
           {previewUrl && (
             <iframe
               ref={previewFrameRef}
               src={previewUrl}
-              title="Raport PDF preview"
+              title="Podgląd pliku PDF raportu"
               className="min-h-0 w-full flex-1 rounded-md border border-border/60 bg-muted/20"
             />
           )}
           <div className="flex justify-end gap-2 pt-1">
             <Button variant="outline" onClick={closePreview}>
-              Back
+              Wstecz
             </Button>
             <Button onClick={handlePrint} className="gap-1.5">
-              <Printer className="h-4 w-4" /> Print
+              <Printer className="h-4 w-4" /> Drukuj
             </Button>
           </div>
         </DialogContent>
