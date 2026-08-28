@@ -625,6 +625,45 @@ export type Database = {
         }
         Relationships: []
       }
+      quiz_results: {
+        Row: {
+          best_streak: number
+          created_at: string
+          department: string
+          duration_seconds: number | null
+          id: string
+          mode: string
+          score: number
+          total: number
+          updated_at: string
+          username: string
+        }
+        Insert: {
+          best_streak?: number
+          created_at?: string
+          department?: string
+          duration_seconds?: number | null
+          id?: string
+          mode?: string
+          score?: number
+          total?: number
+          updated_at?: string
+          username?: string
+        }
+        Update: {
+          best_streak?: number
+          created_at?: string
+          department?: string
+          duration_seconds?: number | null
+          id?: string
+          mode?: string
+          score?: number
+          total?: number
+          updated_at?: string
+          username?: string
+        }
+        Relationships: []
+      }
       recipes: {
         Row: {
           category: string
