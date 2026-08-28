@@ -11,7 +11,7 @@ import InventoryTable from "@/components/InventoryTable";
 import { Input } from "@/components/ui/input";
 import { generateBlankCountSheet } from "@/lib/generateReport";
 import ReportDialog from "@/components/ReportDialog";
-import type { Category } from "@/lib/inventory";
+import { formatFlaggedAt, type Category } from "@/lib/inventory";
 import { useInventory } from "@/hooks/useInventory";
 import { useDepartment } from "@/contexts/DepartmentContext";
 import { deptHomePath } from "@/lib/department";
