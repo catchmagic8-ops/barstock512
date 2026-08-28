@@ -68,9 +68,9 @@ export default function Upselling() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["upsell-items-bar512"] });
-      toast({ title: "Usunieto" });
+      toast({ title: "Usunięto" });
     },
-    onError: (e: Error) => toast({ title: "Nie udalo sie usunac", description: e.message, variant: "destructive" }),
+    onError: (e: Error) => toast({ title: "Nie udało się usunąć", description: e.message, variant: "destructive" }),
   });
 
   const updateMut = useMutation({
@@ -92,7 +92,7 @@ export default function Upselling() {
         body: { imageBase64: dataUrl },
       });
       if (aiErr) throw aiErr;
-      if (!aiRes?.bottle) throw new Error("Nie udalo sie rozpoznac butelki");
+      if (!aiRes?.bottle) throw new Error("Nie udało się rozpoznać butelki");
       const b = aiRes.bottle as {
         name: string; category: string; price_tier?: string;
         tasting_notes: string; upsell_pitch: string; pairing_suggestions?: string;
@@ -128,8 +128,8 @@ export default function Upselling() {
     } catch (e) {
       console.error(e);
       toast({
-        title: "Skanowanie nie udalo sie",
-        description: e instanceof Error ? e.message : "Nieznany blad",
+        title: "Skanowanie nie udało się",
+        description: e instanceof Error ? e.message : "Nieznany błąd",
         variant: "destructive",
       });
     } finally {
@@ -155,7 +155,7 @@ export default function Upselling() {
       <header className="sticky top-0 z-20 flex items-center justify-between border-b bg-background/70 px-5 py-4 backdrop-blur-xl sm:px-8">
         <div className="flex items-center gap-3">
           <Link to={deptHomePath(department)}>
-            <Button variant="ghost" size="icon" title="Wroc">
+            <Button variant="ghost" size="icon" title="Wróć">
               <ArrowLeft className="h-5 w-5" />
             </Button>
           </Link>
@@ -184,7 +184,7 @@ export default function Upselling() {
             {scanning ? (
               <><Loader2 className="h-4 w-4 animate-spin" /> Skanowanie…</>
             ) : (
-              <><Camera className="h-4 w-4" /> Skanuj butelke</>
+              <><Camera className="h-4 w-4" /> Skanuj butelkę</>
             )}
           </Button>
         </div>
@@ -198,7 +198,7 @@ export default function Upselling() {
             <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Szukaj butelek, nut smakowych, pitchu…"
+              placeholder="Szukaj butelek, nut smakowych, tekstu sprzedaży…"
               className="pl-9"
             />
           </div>
@@ -240,8 +240,8 @@ export default function Upselling() {
             <Wine className="mx-auto mb-3 h-10 w-10 text-muted-foreground/60" />
             <p className="text-sm text-muted-foreground">
               {items.length === 0
-                ? "Brak butelek — kliknij Skanuj butelke, aby dodac pierwsza."
-                : "Zadna butelka nie odpowiada wyszukiwaniu."}
+                ? "Brak butelek — kliknij „Skanuj butelkę”, aby dodać pierwszą."
+                : "Żadna butelka nie odpowiada wyszukiwaniu."}
             </p>
           </div>
         ) : (
@@ -274,10 +274,10 @@ export default function Upselling() {
                       {canEdit && (
                         <button
                           onClick={() => {
-                            if (confirm(`Usunac "${it.name}"?`)) delMut.mutate(it.id);
+                            if (confirm(`Usunąć „${it.name}”?`)) delMut.mutate(it.id);
                           }}
                           className="text-muted-foreground hover:text-destructive"
-                          title="Usun"
+                          title="Usuń"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -301,7 +301,7 @@ export default function Upselling() {
                     {it.upsell_pitch && (
                       <div className="mt-1 rounded-lg border border-primary/30 bg-primary/5 p-3">
                         <div className="mb-1 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-primary">
-                          <Sparkles className="h-3 w-3" /> Pitch sprzedazowy
+                          <Sparkles className="h-3 w-3" /> Tekst sprzedażowy
                         </div>
                         <p className={cn("text-xs leading-relaxed text-foreground/90", !isOpen && "line-clamp-4")}>
                           {it.upsell_pitch}
@@ -316,13 +316,13 @@ export default function Upselling() {
                     )}
                     <div className="mt-auto flex items-center justify-between pt-2">
                       <span className="text-[10px] text-muted-foreground">
-                        {it.created_by ? `Dodal: ${it.created_by}` : ""}
+                        {it.created_by ? `Dodał: ${it.created_by}` : ""}
                       </span>
                       <button
                         onClick={() => setExpanded(isOpen ? null : it.id)}
                         className="text-xs font-medium text-primary hover:underline"
                       >
-                        {isOpen ? "Mniej" : "Wiecej"}
+                        {isOpen ? "Mniej" : "Więcej"}
                       </button>
                     </div>
                   </div>
