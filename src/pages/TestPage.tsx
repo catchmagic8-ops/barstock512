@@ -73,6 +73,10 @@ function pickDistractors(pool: string[], correct: string, count: number) {
 const zl = (n: number) => `${Number(n).toFixed(2).replace(/\.00$/, "")} zł`;
 const fmtTime = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 
+function isBeverage(category: string) {
+  return /napoje|drinki|kawa|herbata|wino|piwo|napój/i.test(category);
+}
+
 function buildQuestions(items: MenuItem[], count: number): Question[] {
   const usable = items.filter((i) => i.name && i.category);
   const categories = Array.from(new Set(usable.map((i) => i.category)));
@@ -136,6 +140,7 @@ function buildQuestions(items: MenuItem[], count: number): Question[] {
         };
       },
       () => {
+        if (isBeverage(item.category)) return null;
         const d = (item.dietary || []).filter(Boolean);
         const isVegan = d.some((x) => /wega|vegan/i.test(x));
         const isVege = d.some((x) => /wegetar|vegetar/i.test(x));
