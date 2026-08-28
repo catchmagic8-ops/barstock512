@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Package, Calendar, BookOpen, Phone, Shield, ArrowLeft, Utensils, LogOut, BookMarked, Sparkles, MoreVertical, Moon, Sun, User, MessageSquare, FlaskConical } from "lucide-react";
+import { Package, Calendar, BookOpen, Phone, Shield, ArrowLeft, Utensils, LogOut, BookMarked, Sparkles, MoreVertical, Moon, Sun, User, MessageSquare, FlaskConical, Palette } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,6 +18,7 @@ import { useDepartment } from "@/contexts/DepartmentContext";
 import { deptSubPath, DEPT_TABLES } from "@/lib/department";
 import { useAuth } from "@/contexts/AuthContext";
 import { AmbientBackgroundForDepartment } from "@/components/AmbientBackground";
+import PersonalAccentDialog from "@/components/PersonalAccentDialog";
 
 
 
@@ -289,6 +291,7 @@ export default function Home() {
   const { department, meta } = useDepartment();
   const { isAdminFor, user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const [accentOpen, setAccentOpen] = useState(false);
   const canAdmin = isAdminFor(department);
 
   const visibleCards: NavCard[] = (() => {
@@ -361,12 +364,17 @@ export default function Home() {
               {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               {theme === "dark" ? "Tryb jasny" : "Tryb ciemny"}
             </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setAccentOpen(true)} className="gap-2">
+              <Palette className="h-4 w-4" />
+              Mój kolor akcentu
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={logout} className="gap-2">
               <LogOut className="h-4 w-4" />
               Wyloguj się
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        <PersonalAccentDialog open={accentOpen} onOpenChange={setAccentOpen} />
       </header>
 
       <main className="flex flex-1 flex-col items-center justify-center px-5 pb-16 sm:px-8">
