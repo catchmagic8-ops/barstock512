@@ -390,7 +390,7 @@ export default function TestPage() {
                 </h2>
                 <p className="mx-auto mt-3 max-w-sm text-sm text-muted-foreground">
                   {QUESTIONS_PER_ROUND} losowych pytań o kategorie, ceny, opisy, alergeny i oznaczenia
-                  dietetyczne z karty Bar 512. Wybierz tempo nauki.
+                  dietetyczne dań z karty Bar 512. Wybierz tempo nauki.
                 </p>
               </div>
 
