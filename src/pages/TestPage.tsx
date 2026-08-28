@@ -144,7 +144,7 @@ function buildQuestions(items: MenuItem[], count: number): Question[] {
         };
       },
       () => {
-        if (isBeverage(item.category)) return null;
+        if (!isFood(item.category)) return null;
         const d = (item.dietary || []).filter(Boolean);
         const isVegan = d.some((x) => /wega|vegan/i.test(x));
         const isVege = d.some((x) => /wegetar|vegetar/i.test(x));
