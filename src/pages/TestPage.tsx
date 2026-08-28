@@ -297,7 +297,7 @@ function buildQuestions(items: MenuItem[], count: number): Question[] {
 
 export default function TestPage() {
   const { user } = useAuth();
-  const { items } = useInventory("bar512");
+  const { items } = useInventory();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -320,14 +320,14 @@ export default function TestPage() {
   }, [user, mode]);
 
   async function loadRecord() {
-    if (!user?.id || !mode) return;
+    if (!user?.username || !mode) return;
     const { data, error } = await supabase
       .from("quiz_results")
-      .select("score, total, mode, time_spent")
-      .eq("user_id", user.id)
+      .select("score, total, mode, duration_seconds")
+      .eq("username", user.username)
       .eq("mode", mode)
       .order("score", { ascending: false })
-      .order("time_spent", { ascending: true })
+      .order("duration_seconds", { ascending: true })
       .limit(1)
       .maybeSingle();
 
@@ -341,20 +341,21 @@ export default function TestPage() {
         score: data.score,
         total: data.total,
         mode: data.mode as Mode,
-        timeSpent: data.time_spent,
+        timeSpent: data.duration_seconds ?? 0,
         record: data.score,
       });
     }
   }
 
   async function saveResult(finalScore: number, total: number, timeSpent: number) {
-    if (!user?.id || !mode) return;
+    if (!user?.username || !mode) return;
     const { error } = await supabase.from("quiz_results").insert({
-      user_id: user.id,
+      username: user.username,
+      department: user.department ?? "bar512",
       mode,
       score: finalScore,
       total,
-      time_spent: timeSpent,
+      duration_seconds: timeSpent,
     });
     if (error) console.error(error);
   }
