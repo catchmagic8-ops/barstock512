@@ -163,9 +163,37 @@ function InfoBadge() {
 }
 
 function TestBadge() {
+  const { user } = useAuth();
+  const username = user?.username || "gość";
+  const { data: best } = useQuery({
+    queryKey: ["quiz-best", username],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from("quiz_results")
+        .select("score,total,duration_seconds,mode")
+        .eq("username", username)
+        .neq("mode", "learn")
+        .order("score", { ascending: false })
+        .order("duration_seconds", { ascending: true, nullsFirst: false })
+        .limit(1);
+      if (error) throw error;
+      return data?.[0] ?? null;
+    },
+  });
+
+  if (best) {
+    return (
+      <span className="rounded-full bg-primary/15 px-2.5 py-0.5 text-xs font-semibold text-primary">
+        Rekord {best.score}/{best.total}
+        {best.duration_seconds != null
+          ? ` · ${Math.floor(best.duration_seconds / 60)}:${String(best.duration_seconds % 60).padStart(2, "0")}`
+          : ""}
+      </span>
+    );
+  }
   return (
     <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs text-muted-foreground">
-      W przygotowaniu
+      Zagraj pierwszą rundę
     </span>
   );
 }
