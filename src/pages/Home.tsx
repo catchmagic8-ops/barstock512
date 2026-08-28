@@ -17,7 +17,7 @@ import { useDepartment } from "@/contexts/DepartmentContext";
 import { deptSubPath, DEPT_TABLES } from "@/lib/department";
 import { useAuth } from "@/contexts/AuthContext";
 import { AmbientBackgroundForDepartment } from "@/components/AmbientBackground";
-import { useHandoverRealtime } from "@/hooks/useHandoverRealtime";
+
 
 
 function LowStockBadge() {
@@ -154,31 +154,10 @@ function ALaCarteBadge() {
 }
 
 function InfoBadge() {
-  const { department } = useDepartment();
-  useHandoverRealtime(department);
-  const { data: count = 0 } = useQuery({
-    queryKey: ["handover-notes-count", department],
-    queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from("handover_notes")
-        .select("id")
-        .eq("department", department)
-        .eq("resolved", false);
-      if (error) throw error;
-      return data?.length ?? 0;
-    },
-  });
 
-  if (count > 0) {
-    return (
-      <span className="rounded-full bg-primary/15 px-2.5 py-0.5 text-xs font-semibold text-primary">
-        {count} wiadomoś{count === 1 ? "ć" : "ci"}
-      </span>
-    );
-  }
   return (
     <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs text-muted-foreground">
-      Brak wiadomości
+      Wiadomości
     </span>
   );
 }
