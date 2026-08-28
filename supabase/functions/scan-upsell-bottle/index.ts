@@ -14,7 +14,7 @@ WAŻNE: WSZYSTKIE treści (nuty smakowe, pitch, propozycje łączenia) piszesz W
 
 Zwróć dane przez narzędzie extract_bottle:
 - name: pełna nazwa produktu (np. "Macallan 12 Double Cask"). Jeśli etykieta nieczytelna, podaj najbardziej prawdopodobną nazwę z dopiskiem "(niepotwierdzone)".
-- category: jedna z: "Whisky", "Wódka", "Gin", "Rum", "Tequila", "Cognac", "Likier", "Wino", "Szampan", "Piwo", "Inne".
+- category: jedna z: "Whisky", "Wódka", "Gin", "Rum", "Tequila", "Koniak", "Likier", "Wino", "Szampan", "Piwo", "Inne".
 - price_tier: jedna z: "Standard", "Premium", "Super-Premium", "Luksus".
 - tasting_notes: 1-2 krótkie zdania po polsku o aromacie, smaku i finiszu, językiem zrozumiałym dla gościa.
 - upsell_pitch: 2-3 zdania po polsku, które barman lub kelner może powiedzieć gościowi przy stoliku. Ciepło, pewnie, bez nachalności. Podkreśl co wyróżnia ten alkohol i zaproponuj sposób podania (czysto, z lodem, w konkretnym koktajlu).
@@ -67,7 +67,7 @@ serve(async (req) => {
                   name: { type: "string" },
                   category: {
                     type: "string",
-                    enum: ["Whisky", "Wódka", "Gin", "Rum", "Tequila", "Cognac", "Likier", "Wino", "Szampan", "Piwo", "Inne"],
+                    enum: ["Whisky", "Wódka", "Gin", "Rum", "Tequila", "Koniak", "Likier", "Wino", "Szampan", "Piwo", "Inne"],
                   },
                   price_tier: { type: "string", enum: ["Standard", "Premium", "Super-Premium", "Luksus"] },
                   tasting_notes: { type: "string" },
