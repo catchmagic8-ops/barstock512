@@ -375,7 +375,6 @@ export default function Info() {
                 >
                   <Archive className="h-4 w-4" />
                   <span className="hidden sm:inline">Dziennik</span>
-                  <span className="rounded-full bg-muted px-1.5 text-[11px]">{closedThreads.length}</span>
                 </Button>
                 <Button
                   variant="ghost"
