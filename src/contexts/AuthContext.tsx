@@ -49,14 +49,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const login = useCallback<AuthContextValue["login"]>(async (username, password) => {
-    if (!username.trim() || !password) return { ok: false, error: "Enter username and password" };
+    if (!username.trim() || !password) return { ok: false, error: "Podaj nazwę użytkownika i hasło" };
     const { data, error } = await (supabase as any).rpc("verify_user_login", {
       _username: username.trim(),
       _password: password,
     });
-    if (error) return { ok: false, error: error.message ?? "Login failed" };
+    if (error) {
+      const msg = /pending approval/i.test(error.message ?? "")
+        ? "Konto oczekuje na zatwierdzenie przez administratora"
+        : error.message ?? "Logowanie nie udało się";
+      return { ok: false, error: msg };
+    }
     const row = Array.isArray(data) ? data[0] : data;
-    if (!row) return { ok: false, error: "Invalid username or password" };
+    if (!row) return { ok: false, error: "Nieprawidłowa nazwa użytkownika lub hasło" };
     const u: AuthUser = {
       id: row.id,
       username: row.username,
@@ -72,7 +77,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const name = username.trim();
     if (name.length < 2) return { ok: false, error: "Nazwa użytkownika jest za krótka" };
     if (password.length < 4) return { ok: false, error: "Hasło musi mieć min. 4 znaki" };
-    const { data, error } = await (supabase as any).rpc("self_register_user", {
+    const { error } = await (supabase as any).rpc("self_register_user", {
       _username: name,
       _password: password,
     });
@@ -82,18 +87,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         : error.message ?? "Rejestracja nie udała się";
       return { ok: false, error: msg };
     }
-    const row = Array.isArray(data) ? data[0] : data;
-    if (!row) return { ok: false, error: "Rejestracja nie udała się" };
-    const u: AuthUser = {
-      id: row.id,
-      username: row.username,
-      role: row.role,
-      department: (row.department as AppDepartment) ?? "all",
-    };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(u));
-    setUser(u);
+    // Account is created as pending — an admin must approve it before sign in.
     return { ok: true };
   }, []);
+
 
 
 

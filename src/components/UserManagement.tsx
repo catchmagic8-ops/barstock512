@@ -10,7 +10,7 @@ import {
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
-import { Loader2, Plus, Trash2, KeyRound, Shield, User as UserIcon } from "lucide-react";
+import { Loader2, Plus, Trash2, KeyRound, Shield, User as UserIcon, Check, Ban, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth, type AppRole, type AppDepartment } from "@/contexts/AuthContext";
 
@@ -26,8 +26,10 @@ interface UserRow {
   username: string;
   role: AppRole;
   department: AppDepartment;
+  approved: boolean;
   created_at: string;
 }
+
 
 const QKEY = ["app-users"];
 
@@ -131,6 +133,24 @@ export default function UserManagement() {
     onError: (err: any) => toast.error(err?.message ?? "Failed to update user"),
   });
 
+  const setApproved = useMutation({
+    mutationFn: async ({ userId, approved }: { userId: string; approved: boolean }) => {
+      if (!me) throw new Error("Not signed in");
+      const { error } = await (supabase as any).rpc("admin_set_approved", {
+        _admin_id: me.id,
+        _user_id: userId,
+        _approved: approved,
+      });
+      if (error) throw error;
+    },
+    onSuccess: (_d, vars) => {
+      qc.invalidateQueries({ queryKey: QKEY });
+      toast.success(vars.approved ? "Access approved" : "Access revoked");
+    },
+    onError: (err: any) => toast.error(err?.message ?? "Failed to update access"),
+  });
+
+
   const deleteUser = useMutation({
     mutationFn: async (userId: string) => {
       if (!me) throw new Error("Not signed in");
@@ -179,6 +199,11 @@ export default function UserManagement() {
                     <p className="text-sm font-medium text-foreground truncate">
                       {u.username}
                       {isMe && <span className="text-xs text-muted-foreground ml-2">(you)</span>}
+                      {!u.approved && (
+                        <span className="ml-2 inline-flex items-center gap-1 rounded-full border border-destructive/50 bg-destructive/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-destructive align-middle">
+                          <Clock className="h-3 w-3" /> Pending
+                        </span>
+                      )}
                     </p>
                     <p className="text-xs text-muted-foreground">
                       <span className="capitalize">{u.role}</span>
@@ -187,6 +212,19 @@ export default function UserManagement() {
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5 flex-shrink-0 flex-wrap justify-end">
+                  {!isMe && (
+                    <Button
+                      size="sm"
+                      variant={u.approved ? "ghost" : "default"}
+                      className="h-8 gap-1.5 text-xs"
+                      title={u.approved ? "Revoke access" : "Approve access"}
+                      onClick={() => setApproved.mutate({ userId: u.id, approved: !u.approved })}
+                    >
+                      {u.approved ? <Ban className="h-3.5 w-3.5" /> : <Check className="h-3.5 w-3.5" />}
+                      {u.approved ? "Revoke" : "Approve"}
+                    </Button>
+                  )}
+
                   <Select
                     value={u.role}
                     onValueChange={(v) => updateRole.mutate({ userId: u.id, role: v as AppRole })}

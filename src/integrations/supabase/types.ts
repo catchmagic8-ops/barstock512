@@ -115,6 +115,7 @@ export type Database = {
       }
       app_users: {
         Row: {
+          approved: boolean
           created_at: string
           department: Database["public"]["Enums"]["app_department"]
           id: string
@@ -124,6 +125,7 @@ export type Database = {
           username: string
         }
         Insert: {
+          approved?: boolean
           created_at?: string
           department?: Database["public"]["Enums"]["app_department"]
           id?: string
@@ -133,6 +135,7 @@ export type Database = {
           username: string
         }
         Update: {
+          approved?: boolean
           created_at?: string
           department?: Database["public"]["Enums"]["app_department"]
           id?: string
@@ -986,12 +989,17 @@ export type Database = {
       admin_list_users: {
         Args: { _admin_id: string }
         Returns: {
+          approved: boolean
           created_at: string
           department: Database["public"]["Enums"]["app_department"]
           id: string
           role: Database["public"]["Enums"]["app_role"]
           username: string
         }[]
+      }
+      admin_set_approved: {
+        Args: { _admin_id: string; _approved: boolean; _user_id: string }
+        Returns: undefined
       }
       admin_update_password: {
         Args: { _admin_id: string; _new_password: string; _user_id: string }
