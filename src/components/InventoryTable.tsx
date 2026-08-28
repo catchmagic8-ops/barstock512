@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { AlertTriangle, BellRing, Check } from "lucide-react";
+import { AlertTriangle, BellRing, Check, Clock, History } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
 } from "@/components/ui/dialog";
-import { formatFlaggedAt, formatRelative, type InventoryItem } from "@/lib/inventory";
+import { formatFlaggedAt, formatRelative, isStockStale, STALE_STOCK_DAYS, type InventoryItem } from "@/lib/inventory";
+import InventoryHistoryDialog from "@/components/InventoryHistoryDialog";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -16,6 +17,7 @@ interface Props {
 
 export default function InventoryTable({ items, onFlag, onClear }: Props) {
   const [flagging, setFlagging] = useState<InventoryItem | null>(null);
+  const [historyItem, setHistoryItem] = useState<InventoryItem | null>(null);
   const [note, setNote] = useState("");
   const [qtyLeft, setQtyLeft] = useState("");
   const [qtyToOrder, setQtyToOrder] = useState("");
