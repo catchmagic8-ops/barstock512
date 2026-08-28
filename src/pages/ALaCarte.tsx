@@ -210,14 +210,14 @@ export default function ALaCarte() {
           </div>
 
           {categories.length > 0 && (
-            <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
+            <div className="flex flex-wrap gap-2 -mx-1 px-1">
               <button
                 onClick={() => setActiveCat(null)}
                 className={cn(
-                  "flex-shrink-0 rounded-full px-3 py-1 text-[0.7rem] uppercase tracking-[0.15em] transition-colors border",
+                  "flex-1 min-w-[5.5rem] max-w-[7rem] rounded-lg px-2 py-2 text-[0.65rem] uppercase tracking-[0.1em] transition-colors border text-center leading-tight",
                   activeCat === null
                     ? "bg-primary text-primary-foreground border-primary"
-                    : "bg-transparent text-muted-foreground border-border/70 hover:text-foreground"
+                    : "bg-card text-muted-foreground border-border/70 hover:text-foreground hover:border-primary/50"
                 )}
               >
                 Wszystko
@@ -227,10 +227,10 @@ export default function ALaCarte() {
                   key={c}
                   onClick={() => setActiveCat(c === activeCat ? null : c)}
                   className={cn(
-                    "flex-shrink-0 rounded-full px-3 py-1 text-[0.7rem] uppercase tracking-[0.15em] transition-colors border whitespace-nowrap",
+                    "flex-1 min-w-[5.5rem] max-w-[7rem] rounded-lg px-2 py-2 text-[0.65rem] uppercase tracking-[0.1em] transition-colors border text-center leading-tight",
                     activeCat === c
                       ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-transparent text-muted-foreground border-border/70 hover:text-foreground"
+                      : "bg-card text-muted-foreground border-border/70 hover:text-foreground hover:border-primary/50"
                   )}
                 >
                   {c === DRINKS_KEY ? "Napoje" : c}
