@@ -37,6 +37,29 @@ const CATEGORY_ORDER = [
   "Kawa i herbata",
 ];
 
+/** Wszystkie kategorie napojów — na liście filtrów łączone w jeden kafelek „Napoje”. */
+const DRINK_CATEGORIES = new Set([
+  "Koktajle firmowe",
+  "Spritzery",
+  "Moktajle",
+  "Szampany i wina musujące",
+  "Wino białe",
+  "Wino czerwone",
+  "Wino różowe",
+  "Piwo",
+  "Wódka",
+  "Whisky i whiskey",
+  "Cognac i brandy",
+  "Gin",
+  "Rum",
+  "Tequila",
+  "Zimne napoje i soki",
+  "Kawa i herbata",
+]);
+
+const DRINKS_KEY = "__napoje__";
+
+
 interface ALaCarteItem {
   id: string;
   category: string;
@@ -95,7 +118,10 @@ export default function ALaCarte() {
         !search ||
         i.name.toLowerCase().includes(search.toLowerCase()) ||
         (i.description ?? "").toLowerCase().includes(search.toLowerCase());
-      const matchCat = !activeCat || i.category === activeCat;
+      const matchCat =
+        !activeCat ||
+        (activeCat === DRINKS_KEY ? DRINK_CATEGORIES.has(i.category) : i.category === activeCat);
+
       const matchAllergens =
         excludedAllergens.length === 0 ||
         !i.allergens.some((a) =>
@@ -118,10 +144,12 @@ export default function ALaCarte() {
 
   const categories = useMemo(() => {
     const set = new Set(items.map((i) => i.category));
-    return CATEGORY_ORDER.filter((c) => set.has(c)).concat(
-      [...set].filter((c) => !CATEGORY_ORDER.includes(c))
-    );
+    const food = CATEGORY_ORDER.filter((c) => set.has(c) && !DRINK_CATEGORIES.has(c));
+    const unknown = [...set].filter((c) => !CATEGORY_ORDER.includes(c));
+    const hasDrinks = [...set].some((c) => DRINK_CATEGORIES.has(c));
+    return [...food, ...unknown, ...(hasDrinks ? [DRINKS_KEY] : [])];
   }, [items]);
+
 
   const allAllergens = useMemo(() => {
     const set = new Set<string>();
@@ -141,18 +169,25 @@ export default function ALaCarte() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-30 border-b border-border bg-card/80 backdrop-blur-md">
-        <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-3 min-w-0">
-            <Link to={deptHomePath(department)}>
-              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-            </Link>
-            <Utensils className="h-5 w-5 text-primary flex-shrink-0" />
-            <h1 className="font-heading text-lg font-bold text-foreground truncate">Menu A La Carte</h1>
-            <span className="text-xs text-muted-foreground hidden sm:inline">· {meta.label}</span>
+      <header className="sticky top-0 z-30 border-b border-border/60 bg-background/85 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-3xl items-center gap-3 px-4 py-3 min-w-0">
+          <Link to={deptHomePath(department)}>
+            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+          </Link>
+          <div className="min-w-0 flex-1 text-center">
+            <p className="text-[0.6rem] uppercase tracking-[0.45em] text-muted-foreground">
+              {meta.label}
+            </p>
+            <h1
+              className="truncate text-lg font-bold tracking-[0.2em] uppercase"
+              style={{ fontFamily: "'Playfair Display', serif", color: "hsl(var(--brand))" }}
+            >
+              Menu
+            </h1>
           </div>
+          <Utensils className="h-5 w-5 flex-shrink-0 text-primary" />
         </div>
 
         <div className="mx-auto max-w-3xl px-4 pb-3 space-y-3">
@@ -162,7 +197,7 @@ export default function ALaCarte() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Szukaj pozycji w menu..."
-              className="pl-9 pr-9 bg-secondary border-border"
+              className="pl-9 pr-9 bg-secondary/60 border-border/70"
             />
             {search && (
               <button
@@ -179,10 +214,10 @@ export default function ALaCarte() {
               <button
                 onClick={() => setActiveCat(null)}
                 className={cn(
-                  "flex-shrink-0 rounded-full px-3 py-1 text-xs font-medium transition-colors border",
+                  "flex-shrink-0 rounded-full px-3 py-1 text-[0.7rem] uppercase tracking-[0.15em] transition-colors border",
                   activeCat === null
                     ? "bg-primary text-primary-foreground border-primary"
-                    : "bg-secondary text-muted-foreground border-border hover:text-foreground"
+                    : "bg-transparent text-muted-foreground border-border/70 hover:text-foreground"
                 )}
               >
                 Wszystko
@@ -192,14 +227,15 @@ export default function ALaCarte() {
                   key={c}
                   onClick={() => setActiveCat(c === activeCat ? null : c)}
                   className={cn(
-                    "flex-shrink-0 rounded-full px-3 py-1 text-xs font-medium transition-colors border whitespace-nowrap",
+                    "flex-shrink-0 rounded-full px-3 py-1 text-[0.7rem] uppercase tracking-[0.15em] transition-colors border whitespace-nowrap",
                     activeCat === c
                       ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-secondary text-muted-foreground border-border hover:text-foreground"
+                      : "bg-transparent text-muted-foreground border-border/70 hover:text-foreground"
                   )}
                 >
-                  {c}
+                  {c === DRINKS_KEY ? "Napoje" : c}
                 </button>
+
               ))}
             </div>
           )}
@@ -245,7 +281,7 @@ export default function ALaCarte() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-3xl px-4 py-6 space-y-8">
+      <main className="mx-auto max-w-3xl px-4 py-8">
         {isLoading ? (
           <div className="flex justify-center py-16">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -259,53 +295,80 @@ export default function ALaCarte() {
         ) : grouped.length === 0 ? (
           <p className="text-center text-sm text-muted-foreground py-12">Brak wyników.</p>
         ) : (
-          grouped.map(([cat, list]) => (
-            <section key={cat} className="space-y-3">
-              <h2
-                className="text-xl font-bold tracking-wide"
+          <div className="rounded-2xl border border-border/60 bg-card/40 px-5 py-8 sm:px-10 shadow-[0_20px_60px_-30px_hsl(var(--primary)/0.35)]">
+            <div className="mb-10 text-center">
+              <div className="mx-auto mb-3 h-px w-24 bg-border" />
+              <p
+                className="text-2xl tracking-[0.35em] uppercase"
                 style={{ fontFamily: "'Playfair Display', serif", color: "hsl(var(--brand))" }}
               >
-                {cat}
-              </h2>
-              <div className="space-y-3">
-                {list.map((it) => (
-                  <article
-                    key={it.id}
-                    className="rounded-xl border border-border bg-card p-4 transition-colors hover:border-primary/40"
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="min-w-0 flex-1">
-                        <h3 className="font-heading font-bold text-foreground">{it.name}</h3>
+                512
+              </p>
+              <p className="mt-1 text-[0.6rem] uppercase tracking-[0.4em] text-muted-foreground">
+                Karta Menu
+              </p>
+              <div className="mx-auto mt-3 h-px w-24 bg-border" />
+            </div>
+
+            <div className="space-y-12">
+              {grouped.map(([cat, list]) => (
+                <section key={cat}>
+                  <div className="mb-5 flex items-center gap-4">
+                    <span className="h-px flex-1 bg-border/70" />
+                    <h2
+                      className="text-center text-base sm:text-lg uppercase tracking-[0.3em]"
+                      style={{ fontFamily: "'Playfair Display', serif", color: "hsl(var(--brand))" }}
+                    >
+                      {cat}
+                    </h2>
+                    <span className="h-px flex-1 bg-border/70" />
+                  </div>
+
+                  <div className="space-y-6">
+                    {list.map((it) => (
+                      <article key={it.id} className="group">
+                        <div className="flex items-baseline gap-2">
+                          <h3
+                            className="font-semibold uppercase tracking-wide text-foreground text-sm sm:text-base"
+                            style={{ fontFamily: "'Playfair Display', serif" }}
+                          >
+                            {it.name}
+                          </h3>
+                          <span className="flex-1 translate-y-[-0.2rem] border-b border-dotted border-border/80" />
+                          <span
+                            className="flex-shrink-0 text-sm sm:text-base font-semibold text-primary"
+                            style={{ fontFamily: "'Playfair Display', serif" }}
+                          >
+                            {Number(it.price_pln).toFixed(0)} PLN
+                          </span>
+                        </div>
+
                         {it.description && (
-                          <p className="mt-1 text-sm text-muted-foreground leading-relaxed">
+                          <p className="mt-1.5 max-w-xl text-sm italic leading-relaxed text-muted-foreground">
                             {it.description}
                           </p>
                         )}
-                      </div>
-                      <div className="flex-shrink-0 text-right">
-                        <span className="font-heading text-base font-bold text-primary">
-                          {Number(it.price_pln).toFixed(0)} PLN
-                        </span>
-                      </div>
-                    </div>
 
-                    {(it.dietary.length > 0 || it.allergens.length > 0) && (
-                      <div className="mt-3 flex flex-wrap gap-1.5">
-                        {it.dietary.map((d) => (
-                          <DietaryBadge key={`d-${d}`} tag={d} />
-                        ))}
-                        {it.allergens.map((a) => (
-                          <AllergenBadge key={`a-${a}`} tag={a} />
-                        ))}
-                      </div>
-                    )}
-                  </article>
-                ))}
-              </div>
-            </section>
-          ))
+                        {(it.dietary.length > 0 || it.allergens.length > 0) && (
+                          <div className="mt-2 flex flex-wrap gap-1.5">
+                            {it.dietary.map((d) => (
+                              <DietaryBadge key={`d-${d}`} tag={d} />
+                            ))}
+                            {it.allergens.map((a) => (
+                              <AllergenBadge key={`a-${a}`} tag={a} />
+                            ))}
+                          </div>
+                        )}
+                      </article>
+                    ))}
+                  </div>
+                </section>
+              ))}
+            </div>
+          </div>
         )}
       </main>
+
     </div>
   );
 }
