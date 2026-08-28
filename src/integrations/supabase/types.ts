@@ -419,11 +419,15 @@ export type Database = {
           category: string
           created_at: string
           department: string
+          edited_at: string | null
+          edited_by: string | null
           id: string
           message: string
           parent_id: string | null
           pinned: boolean
           resolved: boolean
+          resolved_at: string | null
+          resolved_by: string | null
           updated_at: string
         }
         Insert: {
@@ -431,11 +435,15 @@ export type Database = {
           category?: string
           created_at?: string
           department: string
+          edited_at?: string | null
+          edited_by?: string | null
           id?: string
           message: string
           parent_id?: string | null
           pinned?: boolean
           resolved?: boolean
+          resolved_at?: string | null
+          resolved_by?: string | null
           updated_at?: string
         }
         Update: {
@@ -443,11 +451,15 @@ export type Database = {
           category?: string
           created_at?: string
           department?: string
+          edited_at?: string | null
+          edited_by?: string | null
           id?: string
           message?: string
           parent_id?: string | null
           pinned?: boolean
           resolved?: boolean
+          resolved_at?: string | null
+          resolved_by?: string | null
           updated_at?: string
         }
         Relationships: [
