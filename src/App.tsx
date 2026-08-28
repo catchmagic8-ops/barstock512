@@ -39,6 +39,8 @@ function DeptRoutes({ department }: { department: Department }) {
         <Route path="a-la-carte" element={<ALaCarte />} />
         <Route path="reservations" element={<Reservations />} />
         <Route path="upselling" element={<Upselling />} />
+        <Route path="info" element={<Info />} />
+        <Route path="test" element={<TestPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </DepartmentProvider>
