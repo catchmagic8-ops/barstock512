@@ -27,6 +27,8 @@ import { deptHomePath } from "@/lib/department";
 import { AmbientBackgroundForDepartment } from "@/components/AmbientBackground";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { useHandoverRealtime } from "@/hooks/useHandoverRealtime";
+
 
 const CATEGORIES = ["Ogólne", "Zmiana / Handover", "Braki", "Goście / VIP", "Usterki", "Ważne"] as const;
 
