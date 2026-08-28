@@ -188,98 +188,127 @@ export default function ALaCarte() {
               Menu
             </h1>
           </div>
-          <Utensils className="h-5 w-5 flex-shrink-0 text-primary" />
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setHeaderOpen((v) => !v)}
+            className="text-muted-foreground hover:text-foreground flex-shrink-0"
+            aria-label={headerOpen ? "Zwiń filtry" : "Rozwiń filtry"}
+          >
+            {headerOpen ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+          </Button>
         </div>
 
-        <div className="mx-auto max-w-3xl px-4 pb-3 space-y-3">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Szukaj pozycji w menu..."
-              className="pl-9 pr-9 bg-secondary/60 border-border/70"
-            />
-            {search && (
-              <button
-                onClick={() => setSearch("")}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded text-muted-foreground hover:text-foreground"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            )}
-          </div>
-
-          {categories.length > 0 && (
-            <div className="flex flex-wrap gap-2 -mx-1 px-1">
-              <button
-                onClick={() => setActiveCat(null)}
-                className={cn(
-                  "flex-1 min-w-[5.5rem] max-w-[7rem] rounded-lg px-2 py-2 text-[0.65rem] uppercase tracking-[0.1em] transition-colors border text-center leading-tight",
-                  activeCat === null
-                    ? "bg-primary text-primary-foreground border-primary"
-                    : "bg-card text-muted-foreground border-border/70 hover:text-foreground hover:border-primary/50"
-                )}
-              >
-                Wszystko
-              </button>
-              {categories.map((c) => (
+        {headerOpen ? (
+          <div className="mx-auto max-w-3xl px-4 pb-3 space-y-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Szukaj pozycji w menu..."
+                className="pl-9 pr-9 bg-secondary/60 border-border/70"
+              />
+              {search && (
                 <button
-                  key={c}
-                  onClick={() => setActiveCat(c === activeCat ? null : c)}
+                  onClick={() => setSearch("")}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded text-muted-foreground hover:text-foreground"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+
+            {categories.length > 0 && (
+              <div className="flex flex-wrap gap-2 -mx-1 px-1">
+                <button
+                  onClick={() => setActiveCat(null)}
                   className={cn(
                     "flex-1 min-w-[5.5rem] max-w-[7rem] rounded-lg px-2 py-2 text-[0.65rem] uppercase tracking-[0.1em] transition-colors border text-center leading-tight",
-                    activeCat === c
+                    activeCat === null
                       ? "bg-primary text-primary-foreground border-primary"
                       : "bg-card text-muted-foreground border-border/70 hover:text-foreground hover:border-primary/50"
                   )}
                 >
-                  {c === DRINKS_KEY ? "Napoje" : c}
+                  Wszystko
                 </button>
-
-              ))}
-            </div>
-          )}
-
-          {allAllergens.length > 0 && (
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
-                  <span>Ukryj pozycje zawierające:</span>
-                </div>
-                {excludedAllergens.length > 0 && (
+                {categories.map((c) => (
                   <button
-                    onClick={() => setExcludedAllergens([])}
-                    className="text-xs text-muted-foreground hover:text-foreground underline"
+                    key={c}
+                    onClick={() => setActiveCat(c === activeCat ? null : c)}
+                    className={cn(
+                      "flex-1 min-w-[5.5rem] max-w-[7rem] rounded-lg px-2 py-2 text-[0.65rem] uppercase tracking-[0.1em] transition-colors border text-center leading-tight",
+                      activeCat === c
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-card text-muted-foreground border-border/70 hover:text-foreground hover:border-primary/50"
+                    )}
                   >
-                    Wyczyść
+                    {c === DRINKS_KEY ? "Napoje" : c}
                   </button>
-                )}
+
+                ))}
               </div>
-              <div className="flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1">
-                {allAllergens.map((a) => {
-                  const active = excludedAllergens.includes(a);
-                  return (
+            )}
+
+            {allAllergens.length > 0 && (
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
+                    <span>Ukryj pozycje zawierające:</span>
+                  </div>
+                  {excludedAllergens.length > 0 && (
                     <button
-                      key={a}
-                      onClick={() => toggleAllergen(a)}
-                      className={cn(
-                        "flex-shrink-0 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium border whitespace-nowrap transition-colors",
-                        active
-                          ? "bg-amber-500/20 text-amber-400 border-amber-500/50"
-                          : "bg-secondary text-muted-foreground border-border hover:text-foreground"
-                      )}
+                      onClick={() => setExcludedAllergens([])}
+                      className="text-xs text-muted-foreground hover:text-foreground underline"
                     >
-                      {active ? <X className="h-3 w-3" /> : <AlertTriangle className="h-3 w-3" />}
-                      {a}
+                      Wyczyść
                     </button>
-                  );
-                })}
+                  )}
+                </div>
+                <div className="flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1">
+                  {allAllergens.map((a) => {
+                    const active = excludedAllergens.includes(a);
+                    return (
+                      <button
+                        key={a}
+                        onClick={() => toggleAllergen(a)}
+                        className={cn(
+                          "flex-shrink-0 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium border whitespace-nowrap transition-colors",
+                          active
+                            ? "bg-amber-500/20 text-amber-400 border-amber-500/50"
+                            : "bg-secondary text-muted-foreground border-border hover:text-foreground"
+                        )}
+                      >
+                        {active ? <X className="h-3 w-3" /> : <AlertTriangle className="h-3 w-3" />}
+                        {a}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        ) : (
+          <div className="mx-auto max-w-3xl px-4 pb-3">
+            <button
+              onClick={() => setHeaderOpen(true)}
+              className="flex w-full items-center justify-between gap-2 rounded-lg border border-border/70 bg-card/60 px-3 py-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <span className="flex items-center gap-2 min-w-0">
+                <Search className="h-3.5 w-3.5 flex-shrink-0" />
+                <span className="truncate">
+                  {activeCat ? (activeCat === DRINKS_KEY ? "Napoje" : activeCat) : "Wszystkie kategorie"}
+                  {search && ` · „${search}”`}
+                  {excludedAllergens.length > 0 && ` · bez ${excludedAllergens.length} alergenów`}
+                </span>
+              </span>
+              <span className="flex-shrink-0 text-primary font-medium">
+                {grouped.reduce((sum, [, list]) => sum + list.length, 0)} poz.
+              </span>
+            </button>
+          </div>
+        )}
       </header>
 
       <main className="mx-auto max-w-3xl px-4 py-8">
