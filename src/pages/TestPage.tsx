@@ -423,7 +423,7 @@ export default function TestPage() {
     if (index + 1 >= questions.length) {
       const timeSpent = Math.round((Date.now() - startTime) / 1000);
       setFinished(true);
-      if (mode !== "learn") saveResult(score, questions.length, timeSpent);
+      saveResult(score, questions.length, timeSpent).then(() => setLbKey((k) => k + 1));
     } else {
       setIndex((i) => i + 1);
       setPicked(null);
