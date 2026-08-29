@@ -685,6 +685,39 @@ export type Database = {
         }
         Relationships: []
       }
+      push_tokens: {
+        Row: {
+          created_at: string
+          id: string
+          last_seen_at: string
+          platform: string
+          role: string
+          token: string
+          updated_at: string
+          username: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_seen_at?: string
+          platform?: string
+          role?: string
+          token: string
+          updated_at?: string
+          username?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_seen_at?: string
+          platform?: string
+          role?: string
+          token?: string
+          updated_at?: string
+          username?: string | null
+        }
+        Relationships: []
+      }
       quiz_results: {
         Row: {
           best_streak: number
