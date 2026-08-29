@@ -6,6 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import QuizLeaderboard from "@/components/QuizLeaderboard";
 
 const QUESTIONS_PER_ROUND = 10;
 const TIME_LIMIT_SECONDS = 20;
@@ -310,6 +311,7 @@ export default function TestPage() {
   const [showDetails, setShowDetails] = useState(false);
   const [startTime, setStartTime] = useState(0);
   const [record, setRecord] = useState<QuizResult | null>(null);
+  const [lbKey, setLbKey] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -421,7 +423,7 @@ export default function TestPage() {
     if (index + 1 >= questions.length) {
       const timeSpent = Math.round((Date.now() - startTime) / 1000);
       setFinished(true);
-      if (mode !== "learn") saveResult(score, questions.length, timeSpent);
+      saveResult(score, questions.length, timeSpent).then(() => setLbKey((k) => k + 1));
     } else {
       setIndex((i) => i + 1);
       setPicked(null);
@@ -521,6 +523,8 @@ export default function TestPage() {
                 </p>
               </div>
             )}
+
+            <QuizLeaderboard key={`lb-menu-${lbKey}`} currentUsername={user?.username} />
           </div>
         )}
 
@@ -655,6 +659,10 @@ export default function TestPage() {
               <Button variant="outline" onClick={reset} className="w-full">
                 Wybierz inny tryb
               </Button>
+            </div>
+
+            <div className="mt-6 text-left">
+              <QuizLeaderboard key={`lb-end-${lbKey}`} currentUsername={user?.username} />
             </div>
           </div>
         )}
