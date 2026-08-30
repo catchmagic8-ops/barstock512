@@ -885,6 +885,14 @@ export default function Reservations() {
         .update({ status })
         .eq("id", id);
       if (error) throw error;
+      const r = reservations.find((x) => x.id === id);
+      void sendPush("reservation", {
+        title: "Zmiana statusu rezerwacji",
+        body: `${r?.guest_name ?? "Rezerwacja"} · ${r?.reservation_date ?? ""} → ${status}`,
+        path: `/${department}/reservations`,
+        actorUsername: user?.username,
+        department,
+      });
     },
     onSuccess: (_d, vars) => {
       toast.success(`Status ustawiony na ${vars.status}`);
