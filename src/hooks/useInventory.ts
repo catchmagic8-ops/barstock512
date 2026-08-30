@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { rowToItem, type InventoryItem, type Category } from "@/lib/inventory";
 import { useDepartment } from "@/contexts/DepartmentContext";
 import { sendPush } from "@/lib/pushNotifications";
-import { DEPT_LABEL } from "@/lib/department";
+import { DEPT_META } from "@/lib/department";
 
 export function useInventory() {
   const queryClient = useQueryClient();
@@ -70,7 +70,7 @@ export function useInventory() {
         .eq("id", id);
       if (error) throw error;
       void sendPush("inventory_flag", {
-        title: `Niski stan — ${DEPT_LABEL[department as keyof typeof DEPT_LABEL] ?? department}`,
+        title: `Niski stan — ${DEPT_META[department]?.label ?? department}`,
         body: `${before?.name ?? id}${qtyLeft != null ? ` — zostało: ${qtyLeft}` : ""}${qtyToOrder != null ? ` · zamówić: ${qtyToOrder}` : ""}`,
         path: `/${department}/inventory`,
         actorUsername: flaggedBy ?? undefined,
@@ -103,7 +103,7 @@ export function useInventory() {
         .eq("id", id);
       if (error) throw error;
       void sendPush("inventory_flag", {
-        title: `Niski stan — ${DEPT_LABEL[department as keyof typeof DEPT_LABEL] ?? department}`,
+        title: `Niski stan — ${DEPT_META[department]?.label ?? department}`,
         body: `${before?.name ?? id}${qtyLeft != null ? ` — zostało: ${qtyLeft}` : ""}${qtyToOrder != null ? ` · zamówić: ${qtyToOrder}` : ""}`,
         path: `/${department}/inventory`,
         actorUsername: flaggedBy ?? undefined,
