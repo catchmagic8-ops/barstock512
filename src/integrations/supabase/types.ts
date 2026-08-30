@@ -694,6 +694,7 @@ export type Database = {
           platform: string
           role: string
           token: string
+          topics: string[]
           updated_at: string
           username: string | null
         }
@@ -705,6 +706,7 @@ export type Database = {
           platform?: string
           role?: string
           token: string
+          topics?: string[]
           updated_at?: string
           username?: string | null
         }
@@ -716,6 +718,7 @@ export type Database = {
           platform?: string
           role?: string
           token?: string
+          topics?: string[]
           updated_at?: string
           username?: string | null
         }
