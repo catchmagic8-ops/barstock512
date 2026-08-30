@@ -34,7 +34,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { sendPush } from "@/lib/pushNotifications";
 import { useDepartment } from "@/contexts/DepartmentContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { deptHomePath } from "@/lib/department";
+import { deptHomePath , deptSubPath } from "@/lib/department";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -850,7 +850,7 @@ export default function Reservations() {
         void sendPush("reservation", {
           title: "Nowa rezerwacja",
           body: `${payload.guest_name} · ${payload.reservation_date} ${payload.arrival_time ?? ""} · ${payload.number_of_guests} os.`,
-          path: `/${department}/reservations`,
+          path: deptSubPath(department, "reservations"),
           actorUsername: user?.username,
           department,
         });
@@ -889,7 +889,7 @@ export default function Reservations() {
       void sendPush("reservation", {
         title: "Zmiana statusu rezerwacji",
         body: `${r?.guest_name ?? "Rezerwacja"} · ${r?.reservation_date ?? ""} → ${status}`,
-        path: `/${department}/reservations`,
+        path: deptSubPath(department, "reservations"),
         actorUsername: user?.username,
         department,
       });

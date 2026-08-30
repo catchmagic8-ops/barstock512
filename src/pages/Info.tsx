@@ -40,7 +40,7 @@ import {
 } from "@/components/ui/select";
 import { useDepartment } from "@/contexts/DepartmentContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { deptHomePath } from "@/lib/department";
+import { deptHomePath , deptSubPath } from "@/lib/department";
 import { AmbientBackgroundForDepartment } from "@/components/AmbientBackground";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -198,7 +198,7 @@ export default function Info() {
       void sendPush("handover", {
         title: "Nowa wiadomość INFO",
         body: `${user?.username ?? "Ktoś"}: ${message.trim().slice(0, 90)}`,
-        path: `/${department}/info`,
+        path: deptSubPath(department, "info"),
         actorUsername: user?.username,
       });
     },
@@ -223,7 +223,7 @@ export default function Info() {
       void sendPush("handover", {
         title: "Nowa odpowiedź INFO",
         body: `${user?.username ?? "Ktoś"}: ${text.trim().slice(0, 90)}`,
-        path: `/${department}/info`,
+        path: deptSubPath(department, "info"),
         actorUsername: user?.username,
       });
       if (error) throw error;
