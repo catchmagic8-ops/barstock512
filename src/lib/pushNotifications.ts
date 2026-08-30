@@ -26,10 +26,19 @@ export function getStoredPushToken(): string | null {
   }
 }
 
+/** Lists the exact missing Firebase web-push configuration fields (empty = fully configured). */
+export function getMissingPushConfig(): string[] {
+  const missing: string[] = [];
+  if (!firebaseConfig.apiKey) missing.push("Firebase Web API Key (VITE_LOVABLE_CONNECTOR_FIREBASE_MESSAGING_WEB_API_KEY)");
+  if (!firebaseConfig.projectId) missing.push("Firebase Project ID (VITE_LOVABLE_CONNECTOR_FIREBASE_MESSAGING_PROJECT_ID)");
+  if (!appId) missing.push("Firebase App ID (VITE_LOVABLE_CONNECTOR_FIREBASE_MESSAGING_APP_ID)");
+  if (!firebaseConfig.messagingSenderId) missing.push("Messaging Sender ID (drugi segment App ID)");
+  if (!vapidKey) missing.push("Publiczny klucz VAPID (VITE_LOVABLE_CONNECTOR_FIREBASE_MESSAGING_VAPID_KEY)");
+  return missing;
+}
+
 export function isPushConfigured(): boolean {
-  return Boolean(
-    firebaseConfig.apiKey && firebaseConfig.projectId && appId && vapidKey && firebaseConfig.messagingSenderId,
-  );
+  return getMissingPushConfig().length === 0;
 }
 
 export async function enablePush(user: { username: string; role: string; department?: string }): Promise<PushEnableResult> {
