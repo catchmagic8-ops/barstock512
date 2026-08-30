@@ -1,0 +1,1 @@
+ALTER TABLE public.push_tokens ADD COLUMN IF NOT EXISTS department text NOT NULL DEFAULT 'all';

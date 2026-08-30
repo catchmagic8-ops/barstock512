@@ -31,9 +31,10 @@ import {
   UserCircle2,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { sendPush } from "@/lib/pushNotifications";
 import { useDepartment } from "@/contexts/DepartmentContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { deptHomePath } from "@/lib/department";
+import { deptHomePath , deptSubPath } from "@/lib/department";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -846,6 +847,13 @@ export default function Reservations() {
           .from(TABLE)
           .insert({ ...payload, created_by_username: user?.username ?? null });
         if (error) throw error;
+        void sendPush("reservation", {
+          title: "Nowa rezerwacja",
+          body: `${payload.guest_name} · ${payload.reservation_date} ${payload.arrival_time ?? ""} · ${payload.number_of_guests} os.`,
+          path: deptSubPath(department, "reservations"),
+          actorUsername: user?.username,
+          department,
+        });
       }
     },
     onSuccess: () => {
@@ -877,6 +885,14 @@ export default function Reservations() {
         .update({ status })
         .eq("id", id);
       if (error) throw error;
+      const r = reservations.find((x) => x.id === id);
+      void sendPush("reservation", {
+        title: "Zmiana statusu rezerwacji",
+        body: `${r?.guest_name ?? "Rezerwacja"} · ${r?.reservation_date ?? ""} → ${status}`,
+        path: deptSubPath(department, "reservations"),
+        actorUsername: user?.username,
+        department,
+      });
     },
     onSuccess: (_d, vars) => {
       toast.success(`Status ustawiony na ${vars.status}`);

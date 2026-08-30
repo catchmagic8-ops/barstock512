@@ -688,6 +688,7 @@ export type Database = {
       push_tokens: {
         Row: {
           created_at: string
+          department: string
           id: string
           last_seen_at: string
           platform: string
@@ -698,6 +699,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          department?: string
           id?: string
           last_seen_at?: string
           platform?: string
@@ -708,6 +710,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          department?: string
           id?: string
           last_seen_at?: string
           platform?: string

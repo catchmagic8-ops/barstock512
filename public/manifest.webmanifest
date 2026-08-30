@@ -1,0 +1,16 @@
+{
+  "name": "Sheraton F&B",
+  "short_name": "Sheraton F&B",
+  "description": "Aplikacja zespołu F&B — magazyn, handover, rezerwacje, quiz",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#d74c5a",
+  "background_color": "#1a1a1a",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
