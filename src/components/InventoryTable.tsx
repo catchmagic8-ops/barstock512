@@ -7,6 +7,8 @@ import {
 } from "@/components/ui/dialog";
 import { formatFlaggedAt, formatRelative, isStockStale, STALE_STOCK_DAYS, type InventoryItem } from "@/lib/inventory";
 import InventoryHistoryDialog from "@/components/InventoryHistoryDialog";
+import { useAuth } from "@/contexts/AuthContext";
+import { useDepartment } from "@/contexts/DepartmentContext";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -16,6 +18,10 @@ interface Props {
 }
 
 export default function InventoryTable({ items, onFlag, onClear }: Props) {
+  const { isAdminFor } = useAuth();
+  const { department } = useDepartment();
+  // Only managers decide how much to order; staff only report the current stock.
+  const canSetOrderQty = isAdminFor(department);
   const [flagging, setFlagging] = useState<InventoryItem | null>(null);
   const [historyItem, setHistoryItem] = useState<InventoryItem | null>(null);
   const [note, setNote] = useState("");
@@ -294,11 +300,11 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
           <DialogHeader>
             <DialogTitle>Zgłoś kierownikowi: niski stan</DialogTitle>
             <DialogDescription>
-              {flagging?.name} — podaj ile zostało i ile zamówić.
+              {flagging?.name} — {canSetOrderQty ? "podaj ile zostało i ile zamówić." : "podaj aktualny stan."}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-3">
-            <div className="grid grid-cols-2 gap-3">
+            <div className={cn("grid gap-3", canSetOrderQty ? "grid-cols-2" : "grid-cols-1")}>
               <div className="space-y-1">
                 <label className="text-xs font-medium text-muted-foreground">
                   Ile zostało {flagging?.unit ? `(${flagging.unit})` : ""}
@@ -329,6 +335,7 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
                   ))}
                 </div>
               </div>
+              {canSetOrderQty && (
               <div className="space-y-1">
                 <label className="text-xs font-medium text-muted-foreground">
                   Ile zamówić {flagging?.unit ? `(${flagging.unit})` : ""}
@@ -358,6 +365,7 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
                   ))}
                 </div>
               </div>
+              )}
             </div>
             <Input
               placeholder="Opcjonalna notatka…"
