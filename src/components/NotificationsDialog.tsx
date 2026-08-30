@@ -87,11 +87,21 @@ export default function NotificationsDialog({ open, onOpenChange }: { open: bool
         </DialogHeader>
 
         <div className="space-y-3">
-          {!isPushConfigured() && (
-            <p className="rounded-xl border border-border/40 bg-foreground/[0.03] p-3 text-xs text-muted-foreground">
-              Usługa push nie jest jeszcze skonfigurowana w tym projekcie.
-            </p>
-          )}
+          {!isPushConfigured() &&
+            (user?.role === "admin" ? (
+              <div className="rounded-xl border border-destructive/40 bg-destructive/5 p-3 text-xs text-foreground">
+                <p className="font-medium">Konfiguracja push jest niekompletna (widok managera)</p>
+                <ul className="mt-2 list-disc space-y-1 pl-4 text-muted-foreground">
+                  {getMissingPushConfig().map((m) => (
+                    <li key={m}>{m}</li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <p className="rounded-xl border border-border/40 bg-foreground/[0.03] p-3 text-xs text-muted-foreground">
+                Powiadomienia push nie są jeszcze dostępne. Skontaktuj się z managerem.
+              </p>
+            ))}
 
           {!isInstalled && /iphone|ipad|ipod/i.test(navigator.userAgent) && (
             <p className="rounded-xl border border-border/40 bg-foreground/[0.03] p-3 text-xs text-muted-foreground">
