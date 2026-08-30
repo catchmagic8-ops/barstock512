@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { sendPush } from "@/lib/pushNotifications";
 
 export type AppRole = "admin" | "staff";
 export type AppDepartment = "all" | "bar512" | "konferencje" | "polskie_smaki";

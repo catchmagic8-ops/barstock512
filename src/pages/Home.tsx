@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Package, Calendar, BookOpen, Phone, Shield, ArrowLeft, Utensils, LogOut, BookMarked, Sparkles, MoreVertical, Moon, Sun, User, MessageSquare, FlaskConical, Palette } from "lucide-react";
+import { Package, Calendar, BookOpen, Phone, Shield, ArrowLeft, Utensils, LogOut, BookMarked, Sparkles, MoreVertical, Moon, Sun, User, MessageSquare, FlaskConical, Palette , Bell } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,6 +19,7 @@ import { deptSubPath, DEPT_TABLES } from "@/lib/department";
 import { useAuth } from "@/contexts/AuthContext";
 import { AmbientBackgroundForDepartment } from "@/components/AmbientBackground";
 import PersonalAccentDialog from "@/components/PersonalAccentDialog";
+import NotificationsDialog from "@/components/NotificationsDialog";
 
 
 
@@ -292,6 +293,7 @@ export default function Home() {
   const { isAdminFor, user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [accentOpen, setAccentOpen] = useState(false);
+  const [pushOpen, setPushOpen] = useState(false);
   const canAdmin = isAdminFor(department);
 
   const visibleCards: NavCard[] = (() => {
@@ -368,6 +370,10 @@ export default function Home() {
               <Palette className="h-4 w-4" />
               Mój kolor akcentu
             </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setPushOpen(true)} className="gap-2">
+              <Bell className="h-4 w-4" />
+              Powiadomienia
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={logout} className="gap-2">
               <LogOut className="h-4 w-4" />
               Wyloguj się
@@ -375,6 +381,7 @@ export default function Home() {
           </DropdownMenuContent>
         </DropdownMenu>
         <PersonalAccentDialog open={accentOpen} onOpenChange={setAccentOpen} />
+        <NotificationsDialog open={pushOpen} onOpenChange={setPushOpen} />
       </header>
 
       <main className="flex flex-1 flex-col items-center justify-center px-5 pb-16 sm:px-8">
