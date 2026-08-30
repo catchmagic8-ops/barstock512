@@ -18,6 +18,7 @@ import {
   Pencil,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { sendPush } from "@/lib/pushNotifications";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -194,6 +195,12 @@ export default function Info() {
         author_username: user?.username ?? null,
       });
       if (error) throw error;
+      void sendPush("handover", {
+        title: "Nowa wiadomość INFO",
+        body: `${user?.username ?? "Ktoś"}: ${message.trim().slice(0, 90)}`,
+        path: `/${department}/info`,
+        actorUsername: user?.username,
+      });
     },
     onSuccess: () => {
       setMessage("");
@@ -212,6 +219,12 @@ export default function Info() {
         message: text.trim().slice(0, config.maxLength),
         author_username: user?.username ?? null,
         parent_id: parent,
+      });
+      void sendPush("handover", {
+        title: "Nowa odpowiedź INFO",
+        body: `${user?.username ?? "Ktoś"}: ${text.trim().slice(0, 90)}`,
+        path: `/${department}/info`,
+        actorUsername: user?.username,
       });
       if (error) throw error;
     },

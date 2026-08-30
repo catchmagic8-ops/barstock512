@@ -31,6 +31,7 @@ import {
   UserCircle2,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { sendPush } from "@/lib/pushNotifications";
 import { useDepartment } from "@/contexts/DepartmentContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { deptHomePath } from "@/lib/department";
@@ -846,6 +847,13 @@ export default function Reservations() {
           .from(TABLE)
           .insert({ ...payload, created_by_username: user?.username ?? null });
         if (error) throw error;
+        void sendPush("reservation", {
+          title: "Nowa rezerwacja",
+          body: `${payload.guest_name} · ${payload.reservation_date} ${payload.arrival_time ?? ""} · ${payload.number_of_guests} os.`,
+          path: `/${department}/reservations`,
+          actorUsername: user?.username,
+          department,
+        });
       }
     },
     onSuccess: () => {
