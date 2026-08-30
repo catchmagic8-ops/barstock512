@@ -83,7 +83,7 @@ export type PushEventType = "handover" | "inventory_flag" | "reservation" | "use
 
 export async function sendPush(
   type: PushEventType,
-  payload: { title: string; body: string; path?: string; actorUsername?: string },
+  payload: { title: string; body: string; path?: string; actorUsername?: string; department?: string },
 ): Promise<void> {
   try {
     await supabase.functions.invoke("send-push-notification", {
