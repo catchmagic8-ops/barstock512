@@ -41,7 +41,7 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
-    let query = supabase.from("push_tokens").select("token, username, role");
+    let query = supabase.from("push_tokens").select("token, username, role, topics");
     if (type === "user_pending") {
       query = query.eq("role", "admin");
     } else if (type === "reservation") {
@@ -52,6 +52,8 @@ serve(async (req) => {
 
     const tokens = (rows ?? [])
       .filter((r: any) => r.username !== actorUsername)
+      // Respect each device's notification preferences (missing topics = all enabled).
+      .filter((r: any) => !Array.isArray(r.topics) || r.topics.includes(type))
       .map((r: any) => r.token as string);
 
     let sent = 0;

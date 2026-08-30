@@ -1,0 +1,1 @@
+ALTER TABLE public.push_tokens ADD COLUMN IF NOT EXISTS topics text[] NOT NULL DEFAULT ARRAY['handover','inventory_flag','reservation','user_pending'];
