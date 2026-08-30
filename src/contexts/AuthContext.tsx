@@ -89,6 +89,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return { ok: false, error: msg };
     }
     // Account is created as pending — an admin must approve it before sign in.
+    void sendPush("user_pending", {
+      title: "Nowe konto do zatwierdzenia",
+      body: `${name} czeka na akceptację w panelu administratora.`,
+      path: "/bar512/admin",
+    });
     return { ok: true };
   }, []);
 
