@@ -117,12 +117,13 @@ export function buildReport(items: InventoryItem[], opts: ReportOptions): jsPDF 
 
       autoTable(doc, {
         startY: y,
-        head: [["Pozycja", "Podkategoria", "Jednostka", "Magazyn", "Status"]],
+        head: [["Pozycja", "Podkategoria", "Jednostka", "Magazyn", "Aktualny stan", "Status"]],
         body: catItems.map((i) => [
           sanitize(i.name),
           sanitize(i.subcategory || "—"),
           sanitize(i.unit),
           sanitize(i.storehouse || "—"),
+          i.qtyLeft != null ? `${i.qtyLeft} ${sanitize(i.unit)}` : "—",
           i.needsRestock ? "DO UZUPELNIENIA" : "OK",
         ]),
         theme: "grid",
@@ -130,7 +131,7 @@ export function buildReport(items: InventoryItem[], opts: ReportOptions): jsPDF 
         styles: { fontSize: 9 },
         margin: { left: 14 },
         didParseCell: (data: any) => {
-          if (data.section === "body" && data.column.index === 4) {
+          if (data.section === "body" && data.column.index === 5) {
             if (typeof data.cell.raw === "string" && data.cell.raw.includes("UZUPELNIENIA")) {
               data.cell.styles.textColor = [215, 76, 90];
               data.cell.styles.fontStyle = "bold";
