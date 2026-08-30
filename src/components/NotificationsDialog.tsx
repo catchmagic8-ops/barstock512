@@ -9,7 +9,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useAuth } from "@/contexts/AuthContext";
-import { disablePush, enablePush, getStoredPushToken, isPushConfigured } from "@/lib/pushNotifications";
+import {
+  disablePush,
+  enablePush,
+  getMissingPushConfig,
+  getStoredPushToken,
+  isPushConfigured,
+} from "@/lib/pushNotifications";
 
 type State = "idle" | "working" | "on" | "off";
 
