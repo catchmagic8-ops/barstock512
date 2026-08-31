@@ -32,24 +32,30 @@ export interface InventoryItem {
   stockConfirmedAt?: string;
 }
 
-// Sort items into the fixed physical counting order; unassigned items go last
-export function groupByCountingLocation<T extends { countingLocation?: string }>(
+// Sort items into the fixed physical counting order; unassigned items go last.
+// An item also appears in every extra room listed in additionalLocations.
+export function groupByCountingLocation<T extends { countingLocation?: string; additionalLocations?: string[] }>(
   items: T[],
   includeUnassigned = true
 ): { location: string; unassigned: boolean; items: T[] }[] {
   const groups = COUNTING_LOCATIONS.map((location) => ({
     location: location as string,
     unassigned: false,
-    items: items.filter((i) => i.countingLocation === location),
+    items: items.filter(
+      (i) => i.countingLocation === location || (i.additionalLocations ?? []).includes(location)
+    ),
   }));
   if (includeUnassigned) {
     const rest = items.filter(
-      (i) => !i.countingLocation || !COUNTING_LOCATIONS.includes(i.countingLocation as CountingLocation)
+      (i) =>
+        (!i.countingLocation || !COUNTING_LOCATIONS.includes(i.countingLocation as CountingLocation)) &&
+        !(i.additionalLocations ?? []).some((l) => COUNTING_LOCATIONS.includes(l as CountingLocation))
     );
     if (rest.length > 0) groups.push({ location: UNASSIGNED_LOCATION, unassigned: true, items: rest });
   }
   return groups.filter((g) => g.items.length > 0);
 }
+
 
 export const STALE_STOCK_DAYS = 7;
 
