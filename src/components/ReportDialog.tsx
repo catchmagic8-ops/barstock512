@@ -11,6 +11,8 @@ import {
 import {
   CATEGORY_LABELS, groupByCountingLocation, UNASSIGNED_LOCATION, type InventoryItem,
 } from "@/lib/inventory";
+import { useCountingLocations } from "@/lib/countingLocations";
+import { useDepartment } from "@/contexts/DepartmentContext";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -37,6 +39,8 @@ export default function ReportDialog({ open, onOpenChange, items, deptLabel }: P
   const [sortBy, setSortBy] = useState<ReportSort>("storehouse");
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
+  const { department } = useDepartment();
+  const { locations: rooms } = useCountingLocations(department);
   const previewFrameRef = useRef<HTMLIFrameElement>(null);
 
   const flagged = useMemo(
@@ -45,7 +49,7 @@ export default function ReportDialog({ open, onOpenChange, items, deptLabel }: P
   );
 
   // Group low-stock items by physical counting location (walking order)
-  const sections = useMemo(() => groupByCountingLocation(flagged, true), [flagged]);
+  const sections = useMemo(() => groupByCountingLocation(flagged, true, rooms), [flagged, rooms]);
 
   const build = () => buildReport(items, { scope, sortBy, deptLabel });
 

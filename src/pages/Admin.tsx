@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
 import {
-  ArrowLeft, Plus, Trash2, Loader2, Phone, Package, Calendar, BookOpen, ChevronDown, ChevronUp, BellRing, Check, ImagePlus, Repeat, Pencil, Sparkles, Upload, Utensils, Users, Palette, Clock,
+  ArrowLeft, Plus, Trash2, Loader2, Phone, Package, Calendar, BookOpen, ChevronDown, ChevronUp, BellRing, Check, ImagePlus, Repeat, Pencil, Sparkles, Upload, Utensils, Users, Palette, Clock, MapPin,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,7 +26,7 @@ import DeptImageSettings from "@/components/DeptImageSettings";
 import { useInventory } from "@/hooks/useInventory";
 import { isStockStale, STALE_STOCK_DAYS } from "@/lib/inventory";
 import { useDepartment } from "@/contexts/DepartmentContext";
-import { deptHomePath } from "@/lib/department";
+import { deptHomePath, deptSubPath } from "@/lib/department";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 import { AmbientBackgroundForDepartment } from "@/components/AmbientBackground";
@@ -954,6 +954,22 @@ export default function Admin() {
               <DeptImageSettings />
             </div>
           </AdminSection>
+
+          <Link
+            to={deptSubPath(department, "locations")}
+            className="flex items-center justify-between gap-3 rounded-2xl border border-border/40 bg-gradient-to-b from-foreground/[0.03] to-primary/[0.06] px-5 py-4 transition-colors hover:border-primary/40"
+          >
+            <span className="flex items-center gap-3">
+              <MapPin className="h-5 w-5 text-primary" />
+              <span>
+                <span className="block text-sm font-semibold text-foreground">Lokalizacje</span>
+                <span className="block text-xs text-muted-foreground">
+                  Zarządzaj pomieszczeniami i przypisz je do produktów
+                </span>
+              </span>
+            </span>
+            <ArrowLeft className="h-4 w-4 rotate-180 text-muted-foreground" />
+          </Link>
 
           <AdminSection title="Alerty niskiego stanu" icon={BellRing} alertCount={flaggedCount}>
             <LowStockAlerts />

@@ -24,6 +24,13 @@ function sanitize(value: unknown): string {
     .replace(/[^\x00-\xFF]/g, "");
 }
 
+// "Za barem (+ Zaplecze)" — primary counting location plus any extra rooms
+function locationLabel(i: InventoryItem): string {
+  const extra = (i.additionalLocations ?? []).filter(Boolean);
+  const main = i.countingLocation || "—";
+  return extra.length > 0 ? `${main} (+ ${extra.join(", ")})` : main;
+}
+
 export function sortFlagged(flagged: InventoryItem[], sortBy: ReportSort): InventoryItem[] {
   const arr = [...flagged];
   const house = (i: InventoryItem) => (i.storehouse || "zzz").toLowerCase();
@@ -76,10 +83,11 @@ export function buildReport(items: InventoryItem[], opts: ReportOptions): jsPDF 
 
     autoTable(doc, {
       startY: y,
-      head: [["Pozycja", "Kategoria", "Magazyn", "Pozostalo", "Do zamowienia", "Notatka"]],
+      head: [["Pozycja", "Kategoria", "Lokalizacja", "Magazyn", "Pozostalo", "Do zamowienia", "Notatka"]],
       body: flagged.map((i) => [
         sanitize(i.name),
         sanitize(i.category.replace("-", " ")),
+        sanitize(locationLabel(i)),
         sanitize(i.storehouse || "—"),
         i.qtyLeft != null ? String(i.qtyLeft) : "—",
         i.qtyToOrder != null ? String(i.qtyToOrder) : "—",
@@ -117,10 +125,11 @@ export function buildReport(items: InventoryItem[], opts: ReportOptions): jsPDF 
 
       autoTable(doc, {
         startY: y,
-        head: [["Pozycja", "Podkategoria", "Jednostka", "Magazyn", "Aktualny stan", "Status"]],
+        head: [["Pozycja", "Podkategoria", "Lokalizacja", "Jednostka", "Magazyn", "Aktualny stan", "Status"]],
         body: catItems.map((i) => [
           sanitize(i.name),
           sanitize(i.subcategory || "—"),
+          sanitize(locationLabel(i)),
           sanitize(i.unit),
           sanitize(i.storehouse || "—"),
           i.qtyLeft != null ? `${i.qtyLeft} ${sanitize(i.unit)}` : "—",
@@ -131,7 +140,7 @@ export function buildReport(items: InventoryItem[], opts: ReportOptions): jsPDF 
         styles: { fontSize: 9 },
         margin: { left: 14 },
         didParseCell: (data: any) => {
-          if (data.section === "body" && data.column.index === 5) {
+          if (data.section === "body" && data.column.index === 6) {
             if (typeof data.cell.raw === "string" && data.cell.raw.includes("UZUPELNIENIA")) {
               data.cell.styles.textColor = [215, 76, 90];
               data.cell.styles.fontStyle = "bold";

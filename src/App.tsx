@@ -9,6 +9,7 @@ import Events from "./pages/Events.tsx";
 import Recipes from "./pages/Recipes.tsx";
 import Telephone from "./pages/Telephone.tsx";
 import Admin from "./pages/Admin.tsx";
+import Locations from "./pages/Locations";
 import Departments from "./pages/Departments.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import ALaCarte from "./pages/ALaCarte.tsx";
@@ -36,6 +37,7 @@ function DeptRoutes({ department }: { department: Department }) {
         <Route path="recipes" element={<Recipes />} />
         <Route path="telephone" element={<Telephone />} />
         <Route path="admin" element={<RequireAdmin><Admin /></RequireAdmin>} />
+        <Route path="locations" element={<RequireAdmin><Locations /></RequireAdmin>} />
         <Route path="a-la-carte" element={<ALaCarte />} />
         <Route path="reservations" element={<Reservations />} />
         <Route path="upselling" element={<Upselling />} />
@@ -85,6 +87,10 @@ const App = () => (
             <Route
               path="/admin"
               element={<DepartmentProvider department="bar512"><RequireAdmin><Admin /></RequireAdmin></DepartmentProvider>}
+            />
+            <Route
+              path="/locations"
+              element={<DepartmentProvider department="bar512"><RequireAdmin><Locations /></RequireAdmin></DepartmentProvider>}
             />
             <Route
               path="/a-la-carte"
