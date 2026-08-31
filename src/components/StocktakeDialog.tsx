@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import {
-  ArrowLeft, ArrowRight, ChevronDown, ChevronRight, ClipboardCheck, Download, Loader2, MapPin,
+  ArrowLeft, ArrowRight, ChevronDown, ChevronRight, ClipboardCheck, Download, Loader2, MapPin, Minus, Plus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,8 +8,10 @@ import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
 import {
-  CATEGORY_LABELS, groupByCountingLocation, isStockStale, UNASSIGNED_LOCATION, type InventoryItem,
+  CATEGORY_LABELS, COUNTING_LOCATIONS, groupByCountingLocation, isStockStale, UNASSIGNED_LOCATION,
+  type InventoryItem,
 } from "@/lib/inventory";
+import { useInventory } from "@/hooks/useInventory";
 import { useAuth } from "@/contexts/AuthContext";
 import { useDepartment } from "@/contexts/DepartmentContext";
 import { cn } from "@/lib/utils";
@@ -43,6 +45,9 @@ export default function StocktakeDialog({ open, onOpenChange, items, deptLabel, 
   const [finished, setFinished] = useState(false);
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
   const [pendingLocation, setPendingLocation] = useState<string | null>(null);
+  const [editLocations, setEditLocations] = useState(false);
+  const { setLocations } = useInventory();
+  const savingLocations = setLocations.isPending;
 
   // Sections follow the physical walking order through the venue
   const sections = useMemo(() => {
@@ -258,6 +263,80 @@ export default function StocktakeDialog({ open, onOpenChange, items, deptLabel, 
                 Ostatni znany stan: {current.item.qtyLeft != null ? `${current.item.qtyLeft} ${current.item.unit}` : "brak danych"}
               </p>
             </div>
+
+            {canSeeUnassigned && (
+              <div className="rounded-lg border border-border bg-card/40 px-3 py-2">
+                <button
+                  onClick={() => setEditLocations((v) => !v)}
+                  className="flex w-full items-center justify-between gap-2 text-left"
+                >
+                  <span className="text-[11px] font-semibold text-foreground">Lokalizacje tego produktu</span>
+                  <span className="text-[11px] text-primary">{editLocations ? "Zwiń" : "Zmień"}</span>
+                </button>
+                <p className="mt-1 text-[10px] text-muted-foreground">
+                  Główna: {current.item.countingLocation ?? "brak"}
+                  {(current.item.additionalLocations ?? []).length > 0
+                    ? ` · dodatkowe: ${(current.item.additionalLocations ?? []).join(", ")}`
+                    : ""}
+                </p>
+                {editLocations && (
+                  <div className="mt-2 space-y-2">
+                    <div>
+                      <p className="mb-1 text-[10px] uppercase tracking-wide text-muted-foreground">Główna lokalizacja</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {COUNTING_LOCATIONS.map((loc) => (
+                          <button
+                            key={loc}
+                            disabled={savingLocations}
+                            onClick={() => setLocations.mutate({ id: current.item.id, countingLocation: loc })}
+                            className={cn(
+                              "rounded-full border px-2.5 py-1 text-[11px] font-medium transition-colors",
+                              current.item.countingLocation === loc
+                                ? "border-primary/50 bg-primary/15 text-primary"
+                                : "border-border bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                            )}
+                          >
+                            {loc}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <p className="mb-1 text-[10px] uppercase tracking-wide text-muted-foreground">
+                        Dodatkowe pomieszczenia (np. lodówka na barze i zaplecze)
+                      </p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {COUNTING_LOCATIONS.filter((l) => l !== current.item.countingLocation).map((loc) => {
+                          const active = (current.item.additionalLocations ?? []).includes(loc);
+                          return (
+                            <button
+                              key={loc}
+                              disabled={savingLocations}
+                              onClick={() => {
+                                const cur = current.item.additionalLocations ?? [];
+                                setLocations.mutate({
+                                  id: current.item.id,
+                                  additionalLocations: active ? cur.filter((l) => l !== loc) : [...cur, loc],
+                                });
+                              }}
+                              className={cn(
+                                "rounded-full border px-2.5 py-1 text-[11px] font-medium transition-colors",
+                                active
+                                  ? "border-primary/50 bg-primary/15 text-primary"
+                                  : "border-border bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                              )}
+                            >
+                              {active ? "✓ " : "+ "}{loc}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             <Input
               type="number"
               min="0"
@@ -269,12 +348,34 @@ export default function StocktakeDialog({ open, onOpenChange, items, deptLabel, 
               onChange={(e) => setValue(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && saveCurrent()}
             />
-            <div className="flex gap-1.5">
-              {["0", "1", "2", "5", "10"].map((v) => (
-                <Button key={v} type="button" variant="outline" size="sm" className="h-8 flex-1 px-0 text-[11px]" onClick={() => setValue(v)}>
-                  {v}
-                </Button>
-              ))}
+            <div className="flex items-center gap-1.5">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-9 flex-1 px-0"
+                onClick={() => setValue(String(Math.max(0, (Number(value) || 0) - 1)))}
+              >
+                <Minus className="h-4 w-4" />
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-9 w-14 shrink-0 px-0 text-[11px]"
+                onClick={() => setValue("0")}
+              >
+                0
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-9 flex-1 px-0"
+                onClick={() => setValue(String((Number(value) || 0) + 1))}
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
             </div>
             <div className="h-1 w-full overflow-hidden rounded-full bg-secondary">
               <div className="h-full bg-primary transition-all" style={{ width: `${((index + 1) / queue.length) * 100}%` }} />

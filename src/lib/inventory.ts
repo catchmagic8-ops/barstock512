@@ -26,30 +26,37 @@ export interface InventoryItem {
   flaggedBy?: string;
   storehouse?: string;
   countingLocation?: string;
+  additionalLocations?: string[];
   qtyLeft?: number;
   qtyToOrder?: number;
   updatedAt?: string;
   stockConfirmedAt?: string;
 }
 
-// Sort items into the fixed physical counting order; unassigned items go last
-export function groupByCountingLocation<T extends { countingLocation?: string }>(
+// Sort items into the fixed physical counting order; unassigned items go last.
+// An item also appears in every extra room listed in additionalLocations.
+export function groupByCountingLocation<T extends { countingLocation?: string; additionalLocations?: string[] }>(
   items: T[],
   includeUnassigned = true
 ): { location: string; unassigned: boolean; items: T[] }[] {
   const groups = COUNTING_LOCATIONS.map((location) => ({
     location: location as string,
     unassigned: false,
-    items: items.filter((i) => i.countingLocation === location),
+    items: items.filter(
+      (i) => i.countingLocation === location || (i.additionalLocations ?? []).includes(location)
+    ),
   }));
   if (includeUnassigned) {
     const rest = items.filter(
-      (i) => !i.countingLocation || !COUNTING_LOCATIONS.includes(i.countingLocation as CountingLocation)
+      (i) =>
+        (!i.countingLocation || !COUNTING_LOCATIONS.includes(i.countingLocation as CountingLocation)) &&
+        !(i.additionalLocations ?? []).some((l) => COUNTING_LOCATIONS.includes(l as CountingLocation))
     );
     if (rest.length > 0) groups.push({ location: UNASSIGNED_LOCATION, unassigned: true, items: rest });
   }
   return groups.filter((g) => g.items.length > 0);
 }
+
 
 export const STALE_STOCK_DAYS = 7;
 
@@ -76,6 +83,7 @@ export function rowToItem(row: {
   flagged_by?: string | null;
   storehouse?: string | null;
   counting_location?: string | null;
+  additional_locations?: string[] | null;
   qty_left?: number | null;
   qty_to_order?: number | null;
   updated_at?: string | null;
@@ -93,6 +101,7 @@ export function rowToItem(row: {
     flaggedBy: row.flagged_by ?? undefined,
     storehouse: row.storehouse ?? undefined,
     countingLocation: row.counting_location ?? undefined,
+    additionalLocations: row.additional_locations ?? [],
     qtyLeft: row.qty_left ?? undefined,
     qtyToOrder: row.qty_to_order ?? undefined,
     updatedAt: row.updated_at ?? undefined,

@@ -477,6 +477,7 @@ export type Database = {
       }
       inventory_items: {
         Row: {
+          additional_locations: string[]
           category: string
           counting_location: string | null
           created_at: string
@@ -495,6 +496,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          additional_locations?: string[]
           category: string
           counting_location?: string | null
           created_at?: string
@@ -513,6 +515,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          additional_locations?: string[]
           category?: string
           counting_location?: string | null
           created_at?: string
@@ -534,6 +537,7 @@ export type Database = {
       }
       inventory_items_konferencje: {
         Row: {
+          additional_locations: string[]
           category: string
           counting_location: string | null
           created_at: string
@@ -552,6 +556,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          additional_locations?: string[]
           category: string
           counting_location?: string | null
           created_at?: string
@@ -570,6 +575,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          additional_locations?: string[]
           category?: string
           counting_location?: string | null
           created_at?: string
@@ -591,6 +597,7 @@ export type Database = {
       }
       inventory_items_polskie_smaki: {
         Row: {
+          additional_locations: string[]
           category: string
           counting_location: string | null
           created_at: string
@@ -609,6 +616,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          additional_locations?: string[]
           category: string
           counting_location?: string | null
           created_at?: string
@@ -627,6 +635,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          additional_locations?: string[]
           category?: string
           counting_location?: string | null
           created_at?: string
