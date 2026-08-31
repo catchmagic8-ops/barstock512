@@ -20,6 +20,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { AmbientBackgroundForDepartment } from "@/components/AmbientBackground";
 import PersonalAccentDialog from "@/components/PersonalAccentDialog";
 import NotificationsDialog from "@/components/NotificationsDialog";
+import ViewerBadge from "@/components/ViewerBadge";
 
 
 
