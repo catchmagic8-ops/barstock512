@@ -267,7 +267,7 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
                           <span className="inline-flex items-center rounded-full bg-warning/20 px-2 py-0.5 text-[10px] font-semibold text-warning">
                             ZGŁOSZONO
                           </span>
-                          {onClear && (
+                          {onClear && canWrite && (
                             <Button
                               variant="outline"
                               size="icon"
@@ -279,7 +279,7 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
                             </Button>
                           )}
                         </>
-                      ) : (
+                      ) : canWrite ? (
                         <Button
                           variant="outline"
                           size="sm"
@@ -289,7 +289,8 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
                           <BellRing className="h-3.5 w-3.5" />
                           Niski stan
                         </Button>
-                      )}
+                      ) : null}
+
                     </div>
                   </td>
                 </tr>
