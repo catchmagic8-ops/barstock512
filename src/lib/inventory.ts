@@ -75,6 +75,7 @@ export function rowToItem(row: {
   flagged_at?: string | null;
   flagged_by?: string | null;
   storehouse?: string | null;
+  counting_location?: string | null;
   qty_left?: number | null;
   qty_to_order?: number | null;
   updated_at?: string | null;
