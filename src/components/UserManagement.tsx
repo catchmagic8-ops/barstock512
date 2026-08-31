@@ -234,6 +234,7 @@ export default function UserManagement() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="staff">Personel</SelectItem>
+                      <SelectItem value="viewer">Podgląd</SelectItem>
                       <SelectItem value="admin">Administrator</SelectItem>
                     </SelectContent>
                   </Select>
