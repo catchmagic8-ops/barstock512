@@ -26,6 +26,7 @@ export interface InventoryItem {
   flaggedBy?: string;
   storehouse?: string;
   countingLocation?: string;
+  additionalLocations?: string[];
   qtyLeft?: number;
   qtyToOrder?: number;
   updatedAt?: string;
@@ -82,6 +83,7 @@ export function rowToItem(row: {
   flagged_by?: string | null;
   storehouse?: string | null;
   counting_location?: string | null;
+  additional_locations?: string[] | null;
   qty_left?: number | null;
   qty_to_order?: number | null;
   updated_at?: string | null;
@@ -99,6 +101,7 @@ export function rowToItem(row: {
     flaggedBy: row.flagged_by ?? undefined,
     storehouse: row.storehouse ?? undefined,
     countingLocation: row.counting_location ?? undefined,
+    additionalLocations: row.additional_locations ?? [],
     qtyLeft: row.qty_left ?? undefined,
     qtyToOrder: row.qty_to_order ?? undefined,
     updatedAt: row.updated_at ?? undefined,
