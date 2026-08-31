@@ -20,6 +20,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { AmbientBackgroundForDepartment } from "@/components/AmbientBackground";
 import PersonalAccentDialog from "@/components/PersonalAccentDialog";
 import NotificationsDialog from "@/components/NotificationsDialog";
+import ViewerBadge from "@/components/ViewerBadge";
 
 
 
@@ -337,6 +338,7 @@ export default function Home() {
           <h1 className="font-heading text-xl font-bold tracking-wide text-brand sm:text-2xl">
             {meta.label}
           </h1>
+          <ViewerBadge />
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

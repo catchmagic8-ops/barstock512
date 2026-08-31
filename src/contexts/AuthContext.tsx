@@ -1,8 +1,9 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { sendPush } from "@/lib/pushNotifications";
+import { setReadOnly } from "@/lib/readOnly";
 
-export type AppRole = "admin" | "staff";
+export type AppRole = "admin" | "staff" | "viewer";
 export type AppDepartment = "all" | "bar512" | "konferencje" | "polskie_smaki";
 
 export interface AuthUser {
@@ -16,6 +17,7 @@ interface AuthContextValue {
   user: AuthUser | null;
   isAdmin: boolean;
   isGlobalAdmin: boolean;
+  isViewer: boolean;
   isAdminFor: (dept: Exclude<AppDepartment, "all">) => boolean;
   loading: boolean;
   login: (username: string, password: string) => Promise<{ ok: true } | { ok: false; error: string }>;
@@ -108,6 +110,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
   }, []);
 
+  // Viewer = demo/spectator account: full read access, no writes anywhere.
+  const isViewer = user?.role === "viewer";
+  useEffect(() => {
+    setReadOnly(isViewer);
+  }, [isViewer]);
+
   const value = useMemo<AuthContextValue>(() => {
     const isGlobalAdmin = user?.role === "admin" && user?.department === "all";
     const isAdminFor = (dept: Exclude<AppDepartment, "all">) =>
@@ -117,6 +125,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // `isAdmin` here means "global admin" — used for User Management gates.
       isAdmin: isGlobalAdmin,
       isGlobalAdmin,
+      isViewer: user?.role === "viewer",
       isAdminFor,
       loading,
       login,

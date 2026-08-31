@@ -10,9 +10,15 @@ import {
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
-import { Loader2, Plus, Trash2, KeyRound, Shield, User as UserIcon, Check, Ban, Clock } from "lucide-react";
+import { Loader2, Plus, Trash2, KeyRound, Shield, User as UserIcon, Check, Ban, Clock, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth, type AppRole, type AppDepartment } from "@/contexts/AuthContext";
+
+const ROLE_LABELS: Record<AppRole, string> = {
+  admin: "Administrator",
+  staff: "Personel",
+  viewer: "Podgląd (prezentacja)",
+};
 
 const DEPT_LABELS: Record<AppDepartment, string> = {
   all: "Wszystkie działy",
@@ -192,6 +198,8 @@ export default function UserManagement() {
                 <div className="min-w-0 flex-1 flex items-center gap-2">
                   {u.role === "admin" ? (
                     <Shield className="h-4 w-4 text-primary flex-shrink-0" />
+                  ) : u.role === "viewer" ? (
+                    <Eye className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                   ) : (
                     <UserIcon className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                   )}
@@ -206,7 +214,7 @@ export default function UserManagement() {
                       )}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      <span className="capitalize">{u.role}</span>
+                      <span>{ROLE_LABELS[u.role] ?? u.role}</span>
                       <span> · {DEPT_LABELS[u.department ?? "all"]}</span>
                     </p>
                   </div>
@@ -234,6 +242,7 @@ export default function UserManagement() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="staff">Personel</SelectItem>
+                      <SelectItem value="viewer">Podgląd</SelectItem>
                       <SelectItem value="admin">Administrator</SelectItem>
                     </SelectContent>
                   </Select>
@@ -313,7 +322,8 @@ export default function UserManagement() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="staff">Personel (tylko podgląd)</SelectItem>
+                  <SelectItem value="staff">Personel (codzienna praca)</SelectItem>
+                  <SelectItem value="viewer">Podgląd / prezentacja (bez zmian)</SelectItem>
                   <SelectItem value="admin">Administrator (pełny dostęp)</SelectItem>
                 </SelectContent>
               </Select>
