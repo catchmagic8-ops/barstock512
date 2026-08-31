@@ -37,9 +37,11 @@ export interface InventoryItem {
 // An item also appears in every extra room listed in additionalLocations.
 export function groupByCountingLocation<T extends { countingLocation?: string; additionalLocations?: string[] }>(
   items: T[],
-  includeUnassigned = true
+  includeUnassigned = true,
+  locations: readonly string[] = COUNTING_LOCATIONS
 ): { location: string; unassigned: boolean; items: T[] }[] {
-  const groups = COUNTING_LOCATIONS.map((location) => ({
+  const known = (v?: string) => !!v && locations.includes(v);
+  const groups = locations.map((location) => ({
     location: location as string,
     unassigned: false,
     items: items.filter(
@@ -48,9 +50,7 @@ export function groupByCountingLocation<T extends { countingLocation?: string; a
   }));
   if (includeUnassigned) {
     const rest = items.filter(
-      (i) =>
-        (!i.countingLocation || !COUNTING_LOCATIONS.includes(i.countingLocation as CountingLocation)) &&
-        !(i.additionalLocations ?? []).some((l) => COUNTING_LOCATIONS.includes(l as CountingLocation))
+      (i) => !known(i.countingLocation) && !(i.additionalLocations ?? []).some((l) => known(l))
     );
     if (rest.length > 0) groups.push({ location: UNASSIGNED_LOCATION, unassigned: true, items: rest });
   }

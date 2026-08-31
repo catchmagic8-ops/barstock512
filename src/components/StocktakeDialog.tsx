@@ -8,10 +8,11 @@ import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
 import {
-  CATEGORY_LABELS, COUNTING_LOCATIONS, groupByCountingLocation, isStockStale, UNASSIGNED_LOCATION,
+  CATEGORY_LABELS, groupByCountingLocation, isStockStale, UNASSIGNED_LOCATION,
   type InventoryItem,
 } from "@/lib/inventory";
 import { useInventory } from "@/hooks/useInventory";
+import { useCountingLocations } from "@/lib/countingLocations";
 import { useAuth } from "@/contexts/AuthContext";
 import { useDepartment } from "@/contexts/DepartmentContext";
 import { cn } from "@/lib/utils";
@@ -47,6 +48,7 @@ export default function StocktakeDialog({ open, onOpenChange, items, deptLabel, 
   const [pendingLocation, setPendingLocation] = useState<string | null>(null);
   const [editLocations, setEditLocations] = useState(false);
   const { setLocations } = useInventory();
+  const { locations: rooms } = useCountingLocations(department);
   const savingLocations = setLocations.isPending;
 
   // Sections follow the physical walking order through the venue
@@ -56,8 +58,8 @@ export default function StocktakeDialog({ open, onOpenChange, items, deptLabel, 
       scope === "stale" ? base.filter(isStockStale)
         : scope === "flagged" ? base.filter((i) => i.needsRestock)
           : base;
-    return groupByCountingLocation(scoped, canSeeUnassigned);
-  }, [items, scope, canSeeUnassigned]);
+    return groupByCountingLocation(scoped, canSeeUnassigned, rooms);
+  }, [items, scope, canSeeUnassigned, rooms]);
 
   // Flat queue that respects the section order
   const queue = useMemo(
@@ -284,7 +286,7 @@ export default function StocktakeDialog({ open, onOpenChange, items, deptLabel, 
                     <div>
                       <p className="mb-1 text-[10px] uppercase tracking-wide text-muted-foreground">Główna lokalizacja</p>
                       <div className="flex flex-wrap gap-1.5">
-                        {COUNTING_LOCATIONS.map((loc) => (
+                        {rooms.map((loc) => (
                           <button
                             key={loc}
                             disabled={savingLocations}
@@ -306,7 +308,7 @@ export default function StocktakeDialog({ open, onOpenChange, items, deptLabel, 
                         Dodatkowe pomieszczenia (np. lodówka na barze i zaplecze)
                       </p>
                       <div className="flex flex-wrap gap-1.5">
-                        {COUNTING_LOCATIONS.filter((l) => l !== current.item.countingLocation).map((loc) => {
+                        {rooms.filter((l) => l !== current.item.countingLocation).map((loc) => {
                           const active = (current.item.additionalLocations ?? []).includes(loc);
                           return (
                             <button
