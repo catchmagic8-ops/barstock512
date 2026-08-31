@@ -18,10 +18,13 @@ interface Props {
 }
 
 export default function InventoryTable({ items, onFlag, onClear }: Props) {
-  const { isAdminFor } = useAuth();
+  const { isAdminFor, isViewer } = useAuth();
   const { department } = useDepartment();
   // Only managers decide how much to order; staff only report the current stock.
-  const canSetOrderQty = isAdminFor(department);
+  const canSetOrderQty = isAdminFor(department) && !isViewer;
+  // Demo (viewer) accounts browse only — no flagging, no clearing.
+  const canWrite = !isViewer;
+
   const [flagging, setFlagging] = useState<InventoryItem | null>(null);
   const [historyItem, setHistoryItem] = useState<InventoryItem | null>(null);
   const [note, setNote] = useState("");
