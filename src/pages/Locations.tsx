@@ -10,7 +10,7 @@ import { useInventory } from "@/hooks/useInventory";
 import { useCountingLocations } from "@/lib/countingLocations";
 import { CATEGORY_LABELS, groupByCountingLocation } from "@/lib/inventory";
 import { useDepartment } from "@/contexts/DepartmentContext";
-import { deptHomePath, DEPT_META } from "@/lib/department";
+import { deptSubPath, DEPT_META } from "@/lib/department";
 import { AmbientBackgroundForDepartment } from "@/components/AmbientBackground";
 import { cn } from "@/lib/utils";
 
@@ -108,7 +108,7 @@ export default function Locations() {
       <div className="relative mx-auto max-w-4xl space-y-6 px-4 py-6">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" asChild>
-            <Link to={`${deptHomePath(department)}/admin`.replace("//", "/")}>
+            <Link to={deptSubPath(department, "admin")}>
               <ArrowLeft className="h-5 w-5" />
             </Link>
           </Button>
