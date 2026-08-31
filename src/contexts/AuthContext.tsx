@@ -110,6 +110,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
   }, []);
 
+  // Viewer = demo/spectator account: full read access, no writes anywhere.
+  const isViewer = user?.role === "viewer";
+  useEffect(() => {
+    setReadOnly(isViewer);
+  }, [isViewer]);
+
   const value = useMemo<AuthContextValue>(() => {
     const isGlobalAdmin = user?.role === "admin" && user?.department === "all";
     const isAdminFor = (dept: Exclude<AppDepartment, "all">) =>
@@ -119,6 +125,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // `isAdmin` here means "global admin" — used for User Management gates.
       isAdmin: isGlobalAdmin,
       isGlobalAdmin,
+      isViewer: user?.role === "viewer",
       isAdminFor,
       loading,
       login,
