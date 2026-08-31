@@ -92,6 +92,7 @@ export function rowToItem(row: {
     flaggedAt: row.flagged_at ?? undefined,
     flaggedBy: row.flagged_by ?? undefined,
     storehouse: row.storehouse ?? undefined,
+    countingLocation: row.counting_location ?? undefined,
     qtyLeft: row.qty_left ?? undefined,
     qtyToOrder: row.qty_to_order ?? undefined,
     updatedAt: row.updated_at ?? undefined,
