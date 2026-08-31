@@ -17,6 +17,7 @@ interface AuthContextValue {
   user: AuthUser | null;
   isAdmin: boolean;
   isGlobalAdmin: boolean;
+  isViewer: boolean;
   isAdminFor: (dept: Exclude<AppDepartment, "all">) => boolean;
   loading: boolean;
   login: (username: string, password: string) => Promise<{ ok: true } | { ok: false; error: string }>;
