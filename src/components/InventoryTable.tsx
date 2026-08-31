@@ -18,10 +18,13 @@ interface Props {
 }
 
 export default function InventoryTable({ items, onFlag, onClear }: Props) {
-  const { isAdminFor } = useAuth();
+  const { isAdminFor, isViewer } = useAuth();
   const { department } = useDepartment();
   // Only managers decide how much to order; staff only report the current stock.
-  const canSetOrderQty = isAdminFor(department);
+  const canSetOrderQty = isAdminFor(department) && !isViewer;
+  // Demo (viewer) accounts browse only — no flagging, no clearing.
+  const canWrite = !isViewer;
+
   const [flagging, setFlagging] = useState<InventoryItem | null>(null);
   const [historyItem, setHistoryItem] = useState<InventoryItem | null>(null);
   const [note, setNote] = useState("");
@@ -123,7 +126,7 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
                   <History className="h-4 w-4" />
                 </Button>
                 {flagged ? (
-                  onClear ? (
+                  onClear && canWrite ? (
                     <Button
                       variant="outline"
                       size="icon"
@@ -138,7 +141,7 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
                       ZGŁOSZONO
                     </span>
                   )
-                ) : (
+                ) : canWrite ? (
                   <Button
                     variant="outline"
                     size="sm"
@@ -148,7 +151,8 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
                     <BellRing className="h-3.5 w-3.5" />
                     Niski stan
                   </Button>
-                )}
+                ) : null}
+
               </div>
             </li>
           );
@@ -263,7 +267,7 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
                           <span className="inline-flex items-center rounded-full bg-warning/20 px-2 py-0.5 text-[10px] font-semibold text-warning">
                             ZGŁOSZONO
                           </span>
-                          {onClear && (
+                          {onClear && canWrite && (
                             <Button
                               variant="outline"
                               size="icon"
@@ -275,7 +279,7 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
                             </Button>
                           )}
                         </>
-                      ) : (
+                      ) : canWrite ? (
                         <Button
                           variant="outline"
                           size="sm"
@@ -285,7 +289,8 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
                           <BellRing className="h-3.5 w-3.5" />
                           Niski stan
                         </Button>
-                      )}
+                      ) : null}
+
                     </div>
                   </td>
                 </tr>
