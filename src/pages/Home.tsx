@@ -337,6 +337,7 @@ export default function Home() {
           <h1 className="font-heading text-xl font-bold tracking-wide text-brand sm:text-2xl">
             {meta.label}
           </h1>
+          <ViewerBadge />
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
