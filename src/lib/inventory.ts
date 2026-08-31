@@ -1,5 +1,19 @@
 export type Category = "spirits" | "wine" | "beer" | "soft-drinks" | "tea-coffee" | "reusables";
 
+// Physical walking order through the venue used while counting stock
+export const COUNTING_LOCATIONS = ["Kegownia", "Zaplecze", "Za barem", "Chefs Table"] as const;
+export type CountingLocation = (typeof COUNTING_LOCATIONS)[number];
+export const UNASSIGNED_LOCATION = "Bez lokalizacji — wymaga przypisania";
+
+export const CATEGORY_LABELS: Record<Category, string> = {
+  spirits: "Alkohole mocne",
+  wine: "Wino",
+  beer: "Piwo",
+  "soft-drinks": "Napoje bezalkoholowe",
+  "tea-coffee": "Herbata i kawa",
+  reusables: "Wielorazowe",
+};
+
 export interface InventoryItem {
   id: string;
   name: string;
@@ -11,13 +25,34 @@ export interface InventoryItem {
   flaggedAt?: string;
   flaggedBy?: string;
   storehouse?: string;
+  countingLocation?: string;
   qtyLeft?: number;
   qtyToOrder?: number;
   updatedAt?: string;
   stockConfirmedAt?: string;
 }
 
+// Sort items into the fixed physical counting order; unassigned items go last
+export function groupByCountingLocation<T extends { countingLocation?: string }>(
+  items: T[],
+  includeUnassigned = true
+): { location: string; unassigned: boolean; items: T[] }[] {
+  const groups = COUNTING_LOCATIONS.map((location) => ({
+    location: location as string,
+    unassigned: false,
+    items: items.filter((i) => i.countingLocation === location),
+  }));
+  if (includeUnassigned) {
+    const rest = items.filter(
+      (i) => !i.countingLocation || !COUNTING_LOCATIONS.includes(i.countingLocation as CountingLocation)
+    );
+    if (rest.length > 0) groups.push({ location: UNASSIGNED_LOCATION, unassigned: true, items: rest });
+  }
+  return groups.filter((g) => g.items.length > 0);
+}
+
 export const STALE_STOCK_DAYS = 7;
+
 
 // True when the item's stock was not confirmed within the last STALE_STOCK_DAYS days
 export function isStockStale(item: InventoryItem): boolean {
@@ -40,6 +75,7 @@ export function rowToItem(row: {
   flagged_at?: string | null;
   flagged_by?: string | null;
   storehouse?: string | null;
+  counting_location?: string | null;
   qty_left?: number | null;
   qty_to_order?: number | null;
   updated_at?: string | null;
@@ -56,6 +92,7 @@ export function rowToItem(row: {
     flaggedAt: row.flagged_at ?? undefined,
     flaggedBy: row.flagged_by ?? undefined,
     storehouse: row.storehouse ?? undefined,
+    countingLocation: row.counting_location ?? undefined,
     qtyLeft: row.qty_left ?? undefined,
     qtyToOrder: row.qty_to_order ?? undefined,
     updatedAt: row.updated_at ?? undefined,

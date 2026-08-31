@@ -141,9 +141,10 @@ export function useInventory() {
   });
 
   const addItem = useMutation({
-    mutationFn: async (item: { id: string; name: string; category: Category; subcategory?: string | null; unit: string; storehouse?: string | null }) => {
+    mutationFn: async (item: { id: string; name: string; category: Category; subcategory?: string | null; unit: string; storehouse?: string | null; countingLocation?: string | null }) => {
       const { error } = await (supabase as any).from(tables.inventory).insert({
         id: item.id, name: item.name, category: item.category, subcategory: item.subcategory ?? null, unit: item.unit, storehouse: item.storehouse ?? null,
+        counting_location: item.countingLocation ?? null,
       });
       if (error) throw error;
     },
@@ -151,15 +152,16 @@ export function useInventory() {
   });
 
   const editItem = useMutation({
-    mutationFn: async (item: { id: string; name: string; category: Category; subcategory?: string | null; unit: string; storehouse?: string | null }) => {
+    mutationFn: async (item: { id: string; name: string; category: Category; subcategory?: string | null; unit: string; storehouse?: string | null; countingLocation?: string | null }) => {
       const { error } = await (supabase as any)
         .from(tables.inventory)
-        .update({ name: item.name, category: item.category, subcategory: item.subcategory ?? null, unit: item.unit, storehouse: item.storehouse ?? null })
+        .update({ name: item.name, category: item.category, subcategory: item.subcategory ?? null, unit: item.unit, storehouse: item.storehouse ?? null, counting_location: item.countingLocation ?? null })
         .eq("id", item.id);
       if (error) throw error;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
   });
+
 
   const deleteItem = useMutation({
     mutationFn: async (id: string) => {

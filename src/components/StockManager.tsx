@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useInventory } from "@/hooks/useInventory";
 import { useSubcategories } from "@/components/SubcategoryManager";
-import type { Category, InventoryItem } from "@/lib/inventory";
+import { COUNTING_LOCATIONS, type Category, type InventoryItem } from "@/lib/inventory";
 import { toast } from "sonner";
 
 const CATEGORIES: { value: Category; label: string }[] = [
@@ -23,9 +23,23 @@ interface ItemForm {
   subcategory: string;
   unit: string;
   storehouse: string;
+  countingLocation: string;
 }
 
-const emptyForm: ItemForm = { name: "", category: "spirits", subcategory: "", unit: "bottles", storehouse: "" };
+const emptyForm: ItemForm = { name: "", category: "spirits", subcategory: "", unit: "bottles", storehouse: "", countingLocation: "" };
+
+// Reusable picker for the physical counting location (walking order through the venue)
+function CountingLocationSelect({ value, onChange, className }: { value: string; onChange: (v: string) => void; className?: string }) {
+  return (
+    <Select value={value || "_none"} onValueChange={(v) => onChange(v === "_none" ? "" : v)}>
+      <SelectTrigger className={className}><SelectValue placeholder="Lokalizacja liczenia" /></SelectTrigger>
+      <SelectContent>
+        <SelectItem value="_none">Bez lokalizacji liczenia</SelectItem>
+        {COUNTING_LOCATIONS.map((l) => <SelectItem key={l} value={l}>{l}</SelectItem>)}
+      </SelectContent>
+    </Select>
+  );
+}
 
 export default function StockManager() {
   const { items, addItem, editItem, deleteItem } = useInventory();
@@ -57,7 +71,7 @@ export default function StockManager() {
     if (!form.name.trim()) { toast.error("Nazwa jest wymagana"); return; }
     const id = form.name.toLowerCase().replace(/\s+/g, "-") + "-" + Date.now();
     addItem.mutate(
-      { id, name: form.name.trim(), category: form.category, subcategory: form.subcategory || null, unit: form.unit.trim() || "units", storehouse: form.storehouse.trim() || null },
+      { id, name: form.name.trim(), category: form.category, subcategory: form.subcategory || null, unit: form.unit.trim() || "units", storehouse: form.storehouse.trim() || null, countingLocation: form.countingLocation || null },
       {
         onSuccess: () => { setForm(emptyForm); setShowAdd(false); toast.success("Pozycja dodana"); },
         onError: () => toast.error("Nie udało się dodać pozycji"),
@@ -67,13 +81,13 @@ export default function StockManager() {
 
   const startEdit = (item: InventoryItem) => {
     setEditingId(item.id);
-    setEditForm({ name: item.name, category: item.category, subcategory: item.subcategory || "", unit: item.unit, storehouse: item.storehouse || "" });
+    setEditForm({ name: item.name, category: item.category, subcategory: item.subcategory || "", unit: item.unit, storehouse: item.storehouse || "", countingLocation: item.countingLocation || "" });
   };
 
   const handleEdit = () => {
     if (!editingId || !editForm.name.trim()) return;
     editItem.mutate(
-      { id: editingId, name: editForm.name.trim(), category: editForm.category, subcategory: editForm.subcategory || null, unit: editForm.unit.trim(), storehouse: editForm.storehouse.trim() || null },
+      { id: editingId, name: editForm.name.trim(), category: editForm.category, subcategory: editForm.subcategory || null, unit: editForm.unit.trim(), storehouse: editForm.storehouse.trim() || null, countingLocation: editForm.countingLocation || null },
       {
         onSuccess: () => { setEditingId(null); toast.success("Pozycja zaktualizowana"); },
         onError: () => toast.error("Nie udało się zaktualizować"),
@@ -130,6 +144,11 @@ export default function StockManager() {
               list="storehouse-options"
               value={form.storehouse}
               onChange={(e) => setForm({ ...form, storehouse: e.target.value })}
+              className="bg-card"
+            />
+            <CountingLocationSelect
+              value={form.countingLocation}
+              onChange={(v) => setForm({ ...form, countingLocation: v })}
               className="bg-card"
             />
           </div>
@@ -195,6 +214,11 @@ export default function StockManager() {
                     onChange={(e) => setEditForm({ ...editForm, storehouse: e.target.value })}
                     className="bg-muted"
                   />
+                  <CountingLocationSelect
+                    value={editForm.countingLocation}
+                    onChange={(v) => setEditForm({ ...editForm, countingLocation: v })}
+                    className="bg-muted"
+                  />
                 </div>
                 <div className="flex gap-2">
                   <Button size="sm" onClick={handleEdit} disabled={editItem.isPending} className="gap-1"><Save className="h-3.5 w-3.5" />Zapisz</Button>
@@ -210,6 +234,15 @@ export default function StockManager() {
                   {item.storehouse && (
                     <span className="ml-2 rounded-full bg-secondary px-2 py-0.5 text-[10px] font-medium text-secondary-foreground">
                       {item.storehouse}
+                    </span>
+                  )}
+                  {item.countingLocation ? (
+                    <span className="ml-2 rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-medium text-primary">
+                      {item.countingLocation}
+                    </span>
+                  ) : (
+                    <span className="ml-2 rounded-full bg-destructive/15 px-2 py-0.5 text-[10px] font-medium text-destructive">
+                      brak lokalizacji
                     </span>
                   )}
                   {item.needsRestock && (
