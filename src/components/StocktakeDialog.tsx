@@ -8,8 +8,10 @@ import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
 import {
-  CATEGORY_LABELS, groupByCountingLocation, isStockStale, UNASSIGNED_LOCATION, type InventoryItem,
+  CATEGORY_LABELS, COUNTING_LOCATIONS, groupByCountingLocation, isStockStale, UNASSIGNED_LOCATION,
+  type InventoryItem,
 } from "@/lib/inventory";
+import { useInventory } from "@/hooks/useInventory";
 import { useAuth } from "@/contexts/AuthContext";
 import { useDepartment } from "@/contexts/DepartmentContext";
 import { cn } from "@/lib/utils";
@@ -43,6 +45,9 @@ export default function StocktakeDialog({ open, onOpenChange, items, deptLabel, 
   const [finished, setFinished] = useState(false);
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
   const [pendingLocation, setPendingLocation] = useState<string | null>(null);
+  const [editLocations, setEditLocations] = useState(false);
+  const { setLocations } = useInventory();
+  const savingLocations = setLocations.isPending;
 
   // Sections follow the physical walking order through the venue
   const sections = useMemo(() => {
