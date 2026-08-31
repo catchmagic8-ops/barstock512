@@ -143,37 +143,89 @@ export default function ReportDialog({ open, onOpenChange, items, deptLabel }: P
 
           <div className="space-y-1.5">
             <p className="text-xs font-medium text-muted-foreground">
-              Podgląd — niski stan ({flagged.length})
+              Podgląd — niski stan ({flagged.length}) · w kolejności obchodu lokalu
             </p>
             {flagged.length === 0 ? (
               <p className="rounded-md border border-border/60 bg-muted/30 px-3 py-4 text-center text-xs text-muted-foreground">
                 Brak pozycji zgłoszonych do uzupełnienia.
               </p>
             ) : (
-              <ul className="max-h-56 space-y-1 overflow-y-auto rounded-md border border-border/60 bg-muted/20 p-1.5">
-                {flagged.map((it) => (
-                  <li
-                    key={it.id}
-                    className="flex items-center justify-between gap-2 rounded bg-background/40 px-2 py-1.5 text-xs"
-                  >
-                    <div className="flex min-w-0 items-center gap-1.5">
-                      <AlertTriangle className="h-3 w-3 flex-shrink-0 text-warning" />
-                      <span className="truncate font-medium text-foreground">{it.name}</span>
+              <div className="max-h-64 space-y-2 overflow-y-auto pr-1">
+                {sections.map((s, si) => {
+                  const isOpen = !collapsed[s.location];
+                  const checked = s.items.filter((i) => i.qtyLeft != null).length;
+                  const done = checked === s.items.length;
+                  const next = sections[si + 1];
+                  return (
+                    <div
+                      key={s.location}
+                      className={cn(
+                        "rounded-lg border bg-muted/20",
+                        s.unassigned ? "border-destructive/40" : "border-border/60"
+                      )}
+                    >
+                      <button
+                        onClick={() => setCollapsed((c) => ({ ...c, [s.location]: isOpen }))}
+                        className="flex w-full items-center justify-between gap-2 px-2.5 py-2 text-left"
+                      >
+                        <span className="flex min-w-0 items-center gap-1.5">
+                          {isOpen ? <ChevronDown className="h-3.5 w-3.5 shrink-0 text-muted-foreground" /> : <ChevronRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />}
+                          <MapPin className={cn("h-3.5 w-3.5 shrink-0", s.unassigned ? "text-destructive" : "text-primary")} />
+                          <span className={cn("truncate text-xs font-semibold", s.unassigned ? "text-destructive" : "text-foreground")}>
+                            {s.unassigned ? UNASSIGNED_LOCATION : s.location}
+                          </span>
+                        </span>
+                        <span className="shrink-0 text-[10px] font-medium text-muted-foreground">
+                          Sprawdzono {checked} z {s.items.length}
+                        </span>
+                      </button>
+                      {isOpen && (
+                        <ul className="space-y-1 border-t border-border/50 p-1.5">
+                          {s.items.map((it) => (
+                            <li
+                              key={it.id}
+                              className="flex items-center justify-between gap-2 rounded bg-background/40 px-2 py-1.5 text-xs"
+                            >
+                              <div className="flex min-w-0 items-center gap-1.5">
+                                <AlertTriangle className="h-3 w-3 flex-shrink-0 text-warning" />
+                                <div className="min-w-0">
+                                  <span className="block truncate font-medium text-foreground">{it.name}</span>
+                                  <span className="block text-[10px] uppercase tracking-wide text-muted-foreground">
+                                    {CATEGORY_LABELS[it.category] ?? it.category}
+                                  </span>
+                                </div>
+                              </div>
+                              <span className="shrink-0 text-[10px] text-muted-foreground">
+                                {[
+                                  it.storehouse,
+                                  it.qtyLeft != null ? `zostało: ${it.qtyLeft}` : null,
+                                  it.qtyToOrder != null ? `zamów: ${it.qtyToOrder}` : null,
+                                ]
+                                  .filter(Boolean)
+                                  .join(" · ")}
+                              </span>
+                            </li>
+                          ))}
+                          {done && next && (
+                            <button
+                              onClick={() => {
+                                setCollapsed((c) => ({ ...c, [s.location]: true, [next.location]: false }));
+                              }}
+                              className="flex w-full items-center justify-center gap-1.5 rounded border border-primary/40 bg-primary/10 px-2 py-1.5 text-[11px] font-semibold text-primary"
+                            >
+                              Przejdź do następnej lokalizacji: {next.unassigned ? UNASSIGNED_LOCATION : next.location}
+                              <ArrowRight className="h-3.5 w-3.5" />
+                            </button>
+                          )}
+                        </ul>
+                      )}
                     </div>
-                    <span className="shrink-0 text-[10px] text-muted-foreground">
-                      {[
-                        it.storehouse,
-                        it.qtyLeft != null ? `zostało: ${it.qtyLeft}` : null,
-                        it.qtyToOrder != null ? `zamów: ${it.qtyToOrder}` : null,
-                      ]
-                        .filter(Boolean)
-                        .join(" · ")}
-                    </span>
-                  </li>
-                ))}
-              </ul>
+                  );
+                })}
+              </div>
             )}
           </div>
+
         </div>
 
         <div className="flex justify-end gap-2 pt-1">
