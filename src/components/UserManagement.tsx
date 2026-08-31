@@ -198,6 +198,8 @@ export default function UserManagement() {
                 <div className="min-w-0 flex-1 flex items-center gap-2">
                   {u.role === "admin" ? (
                     <Shield className="h-4 w-4 text-primary flex-shrink-0" />
+                  ) : u.role === "viewer" ? (
+                    <Eye className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                   ) : (
                     <UserIcon className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                   )}
