@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import {
-  ArrowLeft, ArrowRight, ChevronDown, ChevronRight, ClipboardCheck, Download, Loader2, MapPin,
+  ArrowLeft, ArrowRight, ChevronDown, ChevronRight, ClipboardCheck, Download, Loader2, MapPin, Minus, Plus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -269,12 +269,34 @@ export default function StocktakeDialog({ open, onOpenChange, items, deptLabel, 
               onChange={(e) => setValue(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && saveCurrent()}
             />
-            <div className="flex gap-1.5">
-              {["0", "1", "2", "5", "10"].map((v) => (
-                <Button key={v} type="button" variant="outline" size="sm" className="h-8 flex-1 px-0 text-[11px]" onClick={() => setValue(v)}>
-                  {v}
-                </Button>
-              ))}
+            <div className="flex items-center gap-1.5">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-9 flex-1 px-0"
+                onClick={() => setValue(String(Math.max(0, (Number(value) || 0) - 1)))}
+              >
+                <Minus className="h-4 w-4" />
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-9 w-14 shrink-0 px-0 text-[11px]"
+                onClick={() => setValue("0")}
+              >
+                0
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-9 flex-1 px-0"
+                onClick={() => setValue(String((Number(value) || 0) + 1))}
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
             </div>
             <div className="h-1 w-full overflow-hidden rounded-full bg-secondary">
               <div className="h-full bg-primary transition-all" style={{ width: `${((index + 1) / queue.length) * 100}%` }} />

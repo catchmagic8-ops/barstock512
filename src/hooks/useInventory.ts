@@ -114,6 +114,22 @@ export function useInventory() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
   });
 
+  // Change the primary counting location and/or the extra rooms an item is stored in
+  const setLocations = useMutation({
+    mutationFn: async ({
+      id,
+      countingLocation,
+      additionalLocations,
+    }: { id: string; countingLocation?: string | null; additionalLocations?: string[] }) => {
+      const payload: Record<string, unknown> = {};
+      if (countingLocation !== undefined) payload.counting_location = countingLocation || null;
+      if (additionalLocations !== undefined) payload.additional_locations = additionalLocations;
+      const { error } = await (supabase as any).from(tables.inventory).update(payload).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
+  });
+
   const clearFlag = useMutation({
     mutationFn: async (input: string | { id: string; username?: string | null }) => {
       const id = typeof input === "string" ? input : input.id;
@@ -171,7 +187,7 @@ export function useInventory() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
   });
 
-  return { items, isLoading, flagItem, clearFlag, clearAllFlags, addItem, editItem, deleteItem, confirmStock };
+  return { items, isLoading, flagItem, clearFlag, clearAllFlags, addItem, editItem, deleteItem, confirmStock, setLocations };
 }
 
 export type { InventoryItem };
