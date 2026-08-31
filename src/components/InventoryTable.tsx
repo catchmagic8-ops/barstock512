@@ -126,7 +126,7 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
                   <History className="h-4 w-4" />
                 </Button>
                 {flagged ? (
-                  onClear ? (
+                  onClear && canWrite ? (
                     <Button
                       variant="outline"
                       size="icon"
@@ -141,7 +141,7 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
                       ZGŁOSZONO
                     </span>
                   )
-                ) : (
+                ) : canWrite ? (
                   <Button
                     variant="outline"
                     size="sm"
@@ -151,7 +151,8 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
                     <BellRing className="h-3.5 w-3.5" />
                     Niski stan
                   </Button>
-                )}
+                ) : null}
+
               </div>
             </li>
           );
