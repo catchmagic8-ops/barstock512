@@ -14,6 +14,12 @@ import { Loader2, Plus, Trash2, KeyRound, Shield, User as UserIcon, Check, Ban, 
 import { toast } from "sonner";
 import { useAuth, type AppRole, type AppDepartment } from "@/contexts/AuthContext";
 
+const ROLE_LABELS: Record<AppRole, string> = {
+  admin: "Administrator",
+  staff: "Personel",
+  viewer: "Podgląd (prezentacja)",
+};
+
 const DEPT_LABELS: Record<AppDepartment, string> = {
   all: "Wszystkie działy",
   bar512: "Bar 512",
