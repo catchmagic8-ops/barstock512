@@ -478,6 +478,7 @@ export type Database = {
       inventory_items: {
         Row: {
           category: string
+          counting_location: string | null
           created_at: string
           flagged_at: string | null
           flagged_by: string | null
@@ -495,6 +496,7 @@ export type Database = {
         }
         Insert: {
           category: string
+          counting_location?: string | null
           created_at?: string
           flagged_at?: string | null
           flagged_by?: string | null
@@ -512,6 +514,7 @@ export type Database = {
         }
         Update: {
           category?: string
+          counting_location?: string | null
           created_at?: string
           flagged_at?: string | null
           flagged_by?: string | null
@@ -532,6 +535,7 @@ export type Database = {
       inventory_items_konferencje: {
         Row: {
           category: string
+          counting_location: string | null
           created_at: string
           flagged_at: string | null
           flagged_by: string | null
@@ -549,6 +553,7 @@ export type Database = {
         }
         Insert: {
           category: string
+          counting_location?: string | null
           created_at?: string
           flagged_at?: string | null
           flagged_by?: string | null
@@ -566,6 +571,7 @@ export type Database = {
         }
         Update: {
           category?: string
+          counting_location?: string | null
           created_at?: string
           flagged_at?: string | null
           flagged_by?: string | null
@@ -586,6 +592,7 @@ export type Database = {
       inventory_items_polskie_smaki: {
         Row: {
           category: string
+          counting_location: string | null
           created_at: string
           flagged_at: string | null
           flagged_by: string | null
@@ -603,6 +610,7 @@ export type Database = {
         }
         Insert: {
           category: string
+          counting_location?: string | null
           created_at?: string
           flagged_at?: string | null
           flagged_by?: string | null
@@ -620,6 +628,7 @@ export type Database = {
         }
         Update: {
           category?: string
+          counting_location?: string | null
           created_at?: string
           flagged_at?: string | null
           flagged_by?: string | null
