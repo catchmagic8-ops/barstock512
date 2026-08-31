@@ -314,7 +314,8 @@ export default function UserManagement() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="staff">Personel (tylko podgląd)</SelectItem>
+                  <SelectItem value="staff">Personel (codzienna praca)</SelectItem>
+                  <SelectItem value="viewer">Podgląd / prezentacja (bez zmian)</SelectItem>
                   <SelectItem value="admin">Administrator (pełny dostęp)</SelectItem>
                 </SelectContent>
               </Select>
