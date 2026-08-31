@@ -258,6 +258,80 @@ export default function StocktakeDialog({ open, onOpenChange, items, deptLabel, 
                 Ostatni znany stan: {current.item.qtyLeft != null ? `${current.item.qtyLeft} ${current.item.unit}` : "brak danych"}
               </p>
             </div>
+
+            {canSeeUnassigned && (
+              <div className="rounded-lg border border-border bg-card/40 px-3 py-2">
+                <button
+                  onClick={() => setEditLocations((v) => !v)}
+                  className="flex w-full items-center justify-between gap-2 text-left"
+                >
+                  <span className="text-[11px] font-semibold text-foreground">Lokalizacje tego produktu</span>
+                  <span className="text-[11px] text-primary">{editLocations ? "Zwiń" : "Zmień"}</span>
+                </button>
+                <p className="mt-1 text-[10px] text-muted-foreground">
+                  Główna: {current.item.countingLocation ?? "brak"}
+                  {(current.item.additionalLocations ?? []).length > 0
+                    ? ` · dodatkowe: ${(current.item.additionalLocations ?? []).join(", ")}`
+                    : ""}
+                </p>
+                {editLocations && (
+                  <div className="mt-2 space-y-2">
+                    <div>
+                      <p className="mb-1 text-[10px] uppercase tracking-wide text-muted-foreground">Główna lokalizacja</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {COUNTING_LOCATIONS.map((loc) => (
+                          <button
+                            key={loc}
+                            disabled={savingLocations}
+                            onClick={() => setLocations.mutate({ id: current.item.id, countingLocation: loc })}
+                            className={cn(
+                              "rounded-full border px-2.5 py-1 text-[11px] font-medium transition-colors",
+                              current.item.countingLocation === loc
+                                ? "border-primary/50 bg-primary/15 text-primary"
+                                : "border-border bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                            )}
+                          >
+                            {loc}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <p className="mb-1 text-[10px] uppercase tracking-wide text-muted-foreground">
+                        Dodatkowe pomieszczenia (np. lodówka na barze i zaplecze)
+                      </p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {COUNTING_LOCATIONS.filter((l) => l !== current.item.countingLocation).map((loc) => {
+                          const active = (current.item.additionalLocations ?? []).includes(loc);
+                          return (
+                            <button
+                              key={loc}
+                              disabled={savingLocations}
+                              onClick={() => {
+                                const cur = current.item.additionalLocations ?? [];
+                                setLocations.mutate({
+                                  id: current.item.id,
+                                  additionalLocations: active ? cur.filter((l) => l !== loc) : [...cur, loc],
+                                });
+                              }}
+                              className={cn(
+                                "rounded-full border px-2.5 py-1 text-[11px] font-medium transition-colors",
+                                active
+                                  ? "border-primary/50 bg-primary/15 text-primary"
+                                  : "border-border bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                              )}
+                            >
+                              {active ? "✓ " : "+ "}{loc}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             <Input
               type="number"
               min="0"
