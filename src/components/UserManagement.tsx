@@ -206,7 +206,7 @@ export default function UserManagement() {
                       )}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      <span className="capitalize">{u.role}</span>
+                      <span>{ROLE_LABELS[u.role] ?? u.role}</span>
                       <span> · {DEPT_LABELS[u.department ?? "all"]}</span>
                     </p>
                   </div>
