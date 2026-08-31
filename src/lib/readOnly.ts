@@ -32,6 +32,8 @@ function deny(): never {
 
 const TABLE_WRITES = ["insert", "update", "upsert", "delete"] as const;
 const STORAGE_WRITES = ["upload", "update", "remove", "move", "copy", "createSignedUploadUrl"] as const;
+/** Edge functions that only read/analyse and never persist anything. */
+const SAFE_FUNCTIONS = ["scan-upsell-bottle", "scan-event-sheet"];
 
 function installGuard() {
   if (patched) return;
@@ -59,6 +61,16 @@ function installGuard() {
     return origRpc(fn, params as any, opts as any);
   };
 
+  // Edge functions can write on the server side with elevated rights.
+  const functions = client.functions;
+  if (functions?.invoke) {
+    const origInvoke = functions.invoke.bind(functions);
+    functions.invoke = (name: string, opts?: unknown) => {
+      if (readOnly && !SAFE_FUNCTIONS.includes(name)) return deny();
+      return origInvoke(name, opts as any);
+    };
+  }
+
   const storage = client.storage;
   const origStorageFrom = storage.from.bind(storage);
   storage.from = (bucket: string) => {
@@ -77,3 +89,20 @@ export function setReadOnly(value: boolean) {
   readOnly = value;
   if (value) installGuard();
 }
+
+/**
+ * Enable the guard synchronously at startup (before React mounts) so a viewer
+ * session restored from storage can never slip a write through during the
+ * first render pass.
+ */
+(function initFromStoredSession() {
+  try {
+    const raw = localStorage.getItem("sheraton-auth-user");
+    if (!raw) return;
+    const parsed = JSON.parse(raw) as { role?: string };
+    if (parsed?.role === "viewer") setReadOnly(true);
+  } catch {
+    /* ignore */
+  }
+})();
+
