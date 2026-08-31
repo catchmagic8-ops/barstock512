@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from "react";
-import { AlertTriangle, Download, Printer } from "lucide-react";
+import { AlertTriangle, ArrowRight, ChevronDown, ChevronRight, Download, MapPin, Printer } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,7 +8,9 @@ import {
 import {
   buildReport, sortFlagged, type ReportScope, type ReportSort,
 } from "@/lib/generateReport";
-import type { InventoryItem } from "@/lib/inventory";
+import {
+  CATEGORY_LABELS, groupByCountingLocation, UNASSIGNED_LOCATION, type InventoryItem,
+} from "@/lib/inventory";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -34,12 +36,16 @@ export default function ReportDialog({ open, onOpenChange, items, deptLabel }: P
   const [scope, setScope] = useState<ReportScope>("full");
   const [sortBy, setSortBy] = useState<ReportSort>("storehouse");
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
   const previewFrameRef = useRef<HTMLIFrameElement>(null);
 
   const flagged = useMemo(
     () => sortFlagged(items.filter((i) => i.needsRestock), sortBy),
     [items, sortBy]
   );
+
+  // Group low-stock items by physical counting location (walking order)
+  const sections = useMemo(() => groupByCountingLocation(flagged, true), [flagged]);
 
   const build = () => buildReport(items, { scope, sortBy, deptLabel });
 
