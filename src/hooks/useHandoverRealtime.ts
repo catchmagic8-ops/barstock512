@@ -22,7 +22,15 @@ export function useHandoverRealtime(department: string) {
           qc.invalidateQueries({ queryKey: ["handover-notes-count", department] });
         }
       )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "handover_reactions" },
+        () => {
+          qc.invalidateQueries({ queryKey: ["handover-reactions", department] });
+        }
+      )
       .subscribe();
+
 
     return () => {
       supabase.removeChannel(channel);
