@@ -975,6 +975,13 @@ export default function Admin() {
             <LowStockAlerts />
           </AdminSection>
 
+          {department === "bar512" && (
+            <AdminSection title="Obowiązki" icon={ClipboardList}>
+              <WeeklyTasksManager />
+            </AdminSection>
+          )}
+
+
           <AdminSection title="Zarządzanie zapasami" icon={Package}>
             <div className="space-y-4">
               <SubcategoryManager />
