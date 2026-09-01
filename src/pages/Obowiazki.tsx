@@ -225,8 +225,9 @@ export default function Obowiazki() {
                       : "border-border/40 bg-gradient-to-b from-foreground/[0.03] to-primary/[0.05]",
                 )}
               >
-                <div className="flex flex-wrap items-start justify-between gap-3">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div className="min-w-0 flex-1">
+
                     <p
                       className={cn(
                         "font-medium text-foreground",
