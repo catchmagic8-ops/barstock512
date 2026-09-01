@@ -642,7 +642,19 @@ export default function Info() {
                               {r.edited_by ? ` przez ${r.edited_by}` : ""}
                             </p>
                           )}
+                          <div className="mt-1.5">
+                            <HandoverReactions
+                              size="xs"
+                              reactions={reactionsByNote.get(r.id) ?? []}
+                              username={user?.username}
+                              disabled={isViewer}
+                              onToggle={(emoji) =>
+                                toggleReaction.mutate({ noteId: r.id, emoji })
+                              }
+                            />
+                          </div>
                         </div>
+
                       ))}
                     </div>
                   )}
