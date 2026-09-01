@@ -475,6 +475,38 @@ export type Database = {
           },
         ]
       }
+      handover_reactions: {
+        Row: {
+          created_at: string
+          emoji: string
+          id: string
+          note_id: string
+          username: string
+        }
+        Insert: {
+          created_at?: string
+          emoji: string
+          id?: string
+          note_id: string
+          username: string
+        }
+        Update: {
+          created_at?: string
+          emoji?: string
+          id?: string
+          note_id?: string
+          username?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "handover_reactions_note_id_fkey"
+            columns: ["note_id"]
+            isOneToOne: false
+            referencedRelation: "handover_notes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       inventory_items: {
         Row: {
           additional_locations: string[]
