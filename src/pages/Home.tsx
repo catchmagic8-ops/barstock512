@@ -332,7 +332,30 @@ export default function Home() {
   const { theme, toggleTheme } = useTheme();
   const [accentOpen, setAccentOpen] = useState(false);
   const [pushOpen, setPushOpen] = useState(false);
+  const [orderOpen, setOrderOpen] = useState(false);
   const canAdmin = isAdminFor(department);
+  const orderStorageKey = `tile_order_${department}_${user?.username ?? "guest"}`;
+  const [tileOrder, setTileOrder] = useState<string[]>([]);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(orderStorageKey);
+      setTileOrder(raw ? (JSON.parse(raw) as string[]) : []);
+    } catch {
+      setTileOrder([]);
+    }
+  }, [orderStorageKey]);
+
+  const saveTileOrder = (order: string[]) => {
+    setTileOrder(order);
+    try {
+      if (order.length) localStorage.setItem(orderStorageKey, JSON.stringify(order));
+      else localStorage.removeItem(orderStorageKey);
+    } catch {
+      /* ignore */
+    }
+  };
+
 
   const visibleCards: NavCard[] = (() => {
     let base = [...cards];
