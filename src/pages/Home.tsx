@@ -21,6 +21,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { AmbientBackgroundForDepartment } from "@/components/AmbientBackground";
 import PersonalAccentDialog from "@/components/PersonalAccentDialog";
 import NotificationsDialog from "@/components/NotificationsDialog";
+import TileOrderDialog from "@/components/TileOrderDialog";
 import ViewerBadge from "@/components/ViewerBadge";
 import { useWeeklyTasksProgress } from "@/hooks/useWeeklyTasks";
 
