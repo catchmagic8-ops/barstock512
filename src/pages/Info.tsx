@@ -595,6 +595,17 @@ export default function Info() {
                     </p>
                   )}
 
+                  <div className="mt-2.5">
+                    <HandoverReactions
+                      reactions={reactionsByNote.get(n.id) ?? []}
+                      username={user?.username}
+                      disabled={isViewer}
+                      onToggle={(emoji) => toggleReaction.mutate({ noteId: n.id, emoji })}
+                    />
+                  </div>
+
+
+
                   {replies.length > 0 && (
                     <div className="mt-3 space-y-2 border-l-2 border-primary/30 pl-3">
                       {replies.map((r) => (
