@@ -277,19 +277,25 @@ export default function Obowiazki() {
                   </div>
 
                   {!isViewer && (
-                    <div className="flex shrink-0 gap-2">
+                    <div className="flex w-full shrink-0 flex-wrap gap-2 sm:w-auto">
                       {task.status === "pending" ? (
                         <>
-                          <Button size="sm" onClick={() => setDoneTask(task)} className="gap-1">
-                            <Check className="h-4 w-4" /> Wykonane
+                          <Button
+                            size="sm"
+                            onClick={() => setDoneTask(task)}
+                            className="min-w-0 flex-1 gap-1 sm:flex-none"
+                          >
+                            <Check className="h-4 w-4 shrink-0" />
+                            <span className="truncate">Wykonane</span>
                           </Button>
                           <Button
                             size="sm"
                             variant="outline"
                             onClick={() => setSkipTask(task)}
-                            className="gap-1"
+                            className="min-w-0 flex-1 gap-1 sm:flex-none"
                           >
-                            <SkipForward className="h-4 w-4" /> Nie wykonano
+                            <SkipForward className="h-4 w-4 shrink-0" />
+                            <span className="truncate">Nie wykonano</span>
                           </Button>
                         </>
                       ) : (
@@ -297,13 +303,14 @@ export default function Obowiazki() {
                           size="sm"
                           variant="ghost"
                           onClick={() => reopen.mutate({ task })}
-                          className="gap-1 text-muted-foreground"
+                          className="min-w-0 flex-1 gap-1 text-muted-foreground sm:flex-none"
                         >
-                          <RotateCcw className="h-4 w-4" /> Cofnij
+                          <RotateCcw className="h-4 w-4 shrink-0" /> Cofnij
                         </Button>
                       )}
                     </div>
                   )}
+
                 </div>
               </li>
             ))}
