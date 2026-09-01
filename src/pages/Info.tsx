@@ -305,6 +305,63 @@ export default function Info() {
           },
     });
 
+  // ——— Reakcje emoji ———
+  const noteIds = useMemo(() => notes.map((n) => n.id), [notes]);
+
+  const { data: reactions = [] } = useQuery({
+    queryKey: ["handover-reactions", department, noteIds.length],
+    enabled: noteIds.length > 0,
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from("handover_reactions")
+        .select("id, note_id, emoji, username")
+        .in("note_id", noteIds);
+      if (error) throw error;
+      return (data ?? []) as Reaction[];
+    },
+  });
+
+  const reactionsByNote = useMemo(() => {
+    const map = new Map<string, Reaction[]>();
+    reactions.forEach((r) => {
+      const arr = map.get(r.note_id) ?? [];
+      arr.push(r);
+      map.set(r.note_id, arr);
+    });
+    return map;
+  }, [reactions]);
+
+  const toggleReaction = useMutation({
+    mutationFn: async ({ noteId, emoji }: { noteId: string; emoji: string }) => {
+      const me = user?.username;
+      if (!me) throw new Error("Brak zalogowanego użytkownika");
+      const mine = (reactionsByNote.get(noteId) ?? []).find(
+        (r) => r.emoji === emoji && r.username.toLowerCase() === me.toLowerCase()
+      );
+      if (mine) {
+        const { error } = await (supabase as any)
+          .from("handover_reactions")
+          .delete()
+          .eq("id", mine.id);
+        if (error) throw error;
+      } else {
+        const { error } = await (supabase as any)
+          .from("handover_reactions")
+          .insert({ note_id: noteId, emoji, username: me });
+        if (error) throw error;
+      }
+    },
+    onSuccess: () =>
+      qc.invalidateQueries({ queryKey: ["handover-reactions", department, noteIds.length] }),
+    onError: (e: any) =>
+      toast({
+        title: "Nie udało się dodać reakcji",
+        description: e?.message,
+        variant: "destructive",
+      }),
+  });
+
+
   const repliesByParent = useMemo(() => {
     const map = new Map<string, Note[]>();
     notes
