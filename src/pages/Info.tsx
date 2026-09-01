@@ -46,6 +46,8 @@ import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { useHandoverRealtime } from "@/hooks/useHandoverRealtime";
 import { getSettings, setSetting } from "@/lib/appSettings";
+import HandoverReactions, { type Reaction } from "@/components/HandoverReactions";
+
 
 const DEFAULT_CATEGORIES = [
   "Ogólne",
