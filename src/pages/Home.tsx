@@ -444,6 +444,10 @@ export default function Home() {
               <Bell className="h-4 w-4" />
               Powiadomienia
             </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setOrderOpen(true)} className="gap-2">
+              <LayoutGrid className="h-4 w-4" />
+              Ułóż kafelki
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={logout} className="gap-2">
               <LogOut className="h-4 w-4" />
               Wyloguj się
@@ -452,6 +456,13 @@ export default function Home() {
         </DropdownMenu>
         <PersonalAccentDialog open={accentOpen} onOpenChange={setAccentOpen} />
         <NotificationsDialog open={pushOpen} onOpenChange={setPushOpen} />
+        <TileOrderDialog
+          open={orderOpen}
+          onOpenChange={setOrderOpen}
+          items={visibleCards.map((c) => ({ sub: c.sub, title: c.title }))}
+          onSave={saveTileOrder}
+        />
+
       </header>
 
       <main className="flex flex-1 flex-col items-center justify-center px-5 pb-16 sm:px-8">
