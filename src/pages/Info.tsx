@@ -113,7 +113,7 @@ function formatDate(iso: string) {
 export default function Info() {
   const navigate = useNavigate();
   const { department, meta } = useDepartment();
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, isViewer } = useAuth();
   const { toast } = useToast();
   const qc = useQueryClient();
 
