@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Package, Calendar, BookOpen, Phone, Shield, ArrowLeft, Utensils, LogOut, BookMarked, Sparkles, MoreVertical, Moon, Sun, User, MessageSquare, FlaskConical, Palette , Bell, ClipboardList } from "lucide-react";
+import { Package, Calendar, BookOpen, Phone, Shield, ArrowLeft, Utensils, LogOut, BookMarked, Sparkles, MoreVertical, Moon, Sun, User, MessageSquare, FlaskConical, Palette , Bell, ClipboardList, LayoutGrid } from "lucide-react";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,6 +21,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { AmbientBackgroundForDepartment } from "@/components/AmbientBackground";
 import PersonalAccentDialog from "@/components/PersonalAccentDialog";
 import NotificationsDialog from "@/components/NotificationsDialog";
+import TileOrderDialog from "@/components/TileOrderDialog";
 import ViewerBadge from "@/components/ViewerBadge";
 import { useWeeklyTasksProgress } from "@/hooks/useWeeklyTasks";
 
@@ -330,7 +332,30 @@ export default function Home() {
   const { theme, toggleTheme } = useTheme();
   const [accentOpen, setAccentOpen] = useState(false);
   const [pushOpen, setPushOpen] = useState(false);
+  const [orderOpen, setOrderOpen] = useState(false);
   const canAdmin = isAdminFor(department);
+  const orderStorageKey = `tile_order_${department}_${user?.username ?? "guest"}`;
+  const [tileOrder, setTileOrder] = useState<string[]>([]);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(orderStorageKey);
+      setTileOrder(raw ? (JSON.parse(raw) as string[]) : []);
+    } catch {
+      setTileOrder([]);
+    }
+  }, [orderStorageKey]);
+
+  const saveTileOrder = (order: string[]) => {
+    setTileOrder(order);
+    try {
+      if (order.length) localStorage.setItem(orderStorageKey, JSON.stringify(order));
+      else localStorage.removeItem(orderStorageKey);
+    } catch {
+      /* ignore */
+    }
+  };
+
 
   const visibleCards: NavCard[] = (() => {
     let base = [...cards];
@@ -353,8 +378,16 @@ export default function Home() {
       result.splice(insertAt, 0, upsellingCard, obowiazkiCard);
     }
     if (!canAdmin) result = result.filter((c) => c.sub !== "admin" && c.sub !== "events");
+    if (tileOrder.length) {
+      result = [...result].sort((a, b) => {
+        const ia = tileOrder.indexOf(a.sub);
+        const ib = tileOrder.indexOf(b.sub);
+        return (ia === -1 ? Number.MAX_SAFE_INTEGER : ia) - (ib === -1 ? Number.MAX_SAFE_INTEGER : ib);
+      });
+    }
     return result;
   })();
+
 
   return (
     <div className="relative flex min-h-screen flex-col">
@@ -411,6 +444,10 @@ export default function Home() {
               <Bell className="h-4 w-4" />
               Powiadomienia
             </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setOrderOpen(true)} className="gap-2">
+              <LayoutGrid className="h-4 w-4" />
+              Ułóż kafelki
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={logout} className="gap-2">
               <LogOut className="h-4 w-4" />
               Wyloguj się
@@ -419,6 +456,13 @@ export default function Home() {
         </DropdownMenu>
         <PersonalAccentDialog open={accentOpen} onOpenChange={setAccentOpen} />
         <NotificationsDialog open={pushOpen} onOpenChange={setPushOpen} />
+        <TileOrderDialog
+          open={orderOpen}
+          onOpenChange={setOrderOpen}
+          items={visibleCards.map((c) => ({ sub: c.sub, title: c.title }))}
+          onSave={saveTileOrder}
+        />
+
       </header>
 
       <main className="flex flex-1 flex-col items-center justify-center px-5 pb-16 sm:px-8">
