@@ -1113,6 +1113,202 @@ export type Database = {
         }
         Relationships: []
       }
+      weekly_task_activity_log: {
+        Row: {
+          action: string
+          created_at: string
+          department_id: string
+          id: string
+          instance_id: string | null
+          note: string | null
+          reason: string | null
+          template_id: string | null
+          username: string | null
+          week_start: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          department_id?: string
+          id?: string
+          instance_id?: string | null
+          note?: string | null
+          reason?: string | null
+          template_id?: string | null
+          username?: string | null
+          week_start?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          department_id?: string
+          id?: string
+          instance_id?: string | null
+          note?: string | null
+          reason?: string | null
+          template_id?: string | null
+          username?: string | null
+          week_start?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "weekly_task_activity_log_instance_id_fkey"
+            columns: ["instance_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_task_instances"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      weekly_task_instances: {
+        Row: {
+          admin_notes: string | null
+          area: string | null
+          category: string | null
+          completed_at: string | null
+          completed_by: string | null
+          created_at: string
+          department_id: string
+          description: string | null
+          due_date: string | null
+          estimated_minutes: number | null
+          id: string
+          note: string | null
+          priority: string
+          reopened_at: string | null
+          reopened_by: string | null
+          skipped_at: string | null
+          skipped_by: string | null
+          skipped_reason: string | null
+          sort_order: number
+          status: string
+          template_id: string | null
+          title: string
+          updated_at: string
+          week_start: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          area?: string | null
+          category?: string | null
+          completed_at?: string | null
+          completed_by?: string | null
+          created_at?: string
+          department_id?: string
+          description?: string | null
+          due_date?: string | null
+          estimated_minutes?: number | null
+          id?: string
+          note?: string | null
+          priority?: string
+          reopened_at?: string | null
+          reopened_by?: string | null
+          skipped_at?: string | null
+          skipped_by?: string | null
+          skipped_reason?: string | null
+          sort_order?: number
+          status?: string
+          template_id?: string | null
+          title: string
+          updated_at?: string
+          week_start: string
+        }
+        Update: {
+          admin_notes?: string | null
+          area?: string | null
+          category?: string | null
+          completed_at?: string | null
+          completed_by?: string | null
+          created_at?: string
+          department_id?: string
+          description?: string | null
+          due_date?: string | null
+          estimated_minutes?: number | null
+          id?: string
+          note?: string | null
+          priority?: string
+          reopened_at?: string | null
+          reopened_by?: string | null
+          skipped_at?: string | null
+          skipped_by?: string | null
+          skipped_reason?: string | null
+          sort_order?: number
+          status?: string
+          template_id?: string | null
+          title?: string
+          updated_at?: string
+          week_start?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "weekly_task_instances_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_task_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      weekly_task_templates: {
+        Row: {
+          active: boolean
+          archived: boolean
+          area: string | null
+          assigned_usernames: string[]
+          category: string | null
+          created_at: string
+          created_by: string | null
+          department_id: string
+          description: string | null
+          estimated_minutes: number | null
+          id: string
+          priority: string
+          recurrence: string
+          sort_order: number
+          title: string
+          updated_at: string
+          visible_to_all: boolean
+        }
+        Insert: {
+          active?: boolean
+          archived?: boolean
+          area?: string | null
+          assigned_usernames?: string[]
+          category?: string | null
+          created_at?: string
+          created_by?: string | null
+          department_id?: string
+          description?: string | null
+          estimated_minutes?: number | null
+          id?: string
+          priority?: string
+          recurrence?: string
+          sort_order?: number
+          title: string
+          updated_at?: string
+          visible_to_all?: boolean
+        }
+        Update: {
+          active?: boolean
+          archived?: boolean
+          area?: string | null
+          assigned_usernames?: string[]
+          category?: string | null
+          created_at?: string
+          created_by?: string | null
+          department_id?: string
+          description?: string | null
+          estimated_minutes?: number | null
+          id?: string
+          priority?: string
+          recurrence?: string
+          sort_order?: number
+          title?: string
+          updated_at?: string
+          visible_to_all?: boolean
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
