@@ -378,8 +378,16 @@ export default function Home() {
       result.splice(insertAt, 0, upsellingCard, obowiazkiCard);
     }
     if (!canAdmin) result = result.filter((c) => c.sub !== "admin" && c.sub !== "events");
+    if (tileOrder.length) {
+      result = [...result].sort((a, b) => {
+        const ia = tileOrder.indexOf(a.sub);
+        const ib = tileOrder.indexOf(b.sub);
+        return (ia === -1 ? Number.MAX_SAFE_INTEGER : ia) - (ib === -1 ? Number.MAX_SAFE_INTEGER : ib);
+      });
+    }
     return result;
   })();
+
 
   return (
     <div className="relative flex min-h-screen flex-col">
