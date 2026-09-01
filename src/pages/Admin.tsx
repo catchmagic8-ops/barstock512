@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
 import {
-  ArrowLeft, Plus, Trash2, Loader2, Phone, Package, Calendar, BookOpen, ChevronDown, ChevronUp, BellRing, Check, ImagePlus, Repeat, Pencil, Sparkles, Upload, Utensils, Users, Palette, Clock, MapPin,
+  ArrowLeft, Plus, Trash2, Loader2, Phone, Package, Calendar, BookOpen, ChevronDown, ChevronUp, BellRing, Check, ImagePlus, Repeat, Pencil, Sparkles, Upload, Utensils, Users, Palette, Clock, MapPin, ClipboardList,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,6 +23,7 @@ import ALaCarteManager from "@/components/ALaCarteManager";
 import UserManagement from "@/components/UserManagement";
 import AccentPicker from "@/components/AccentPicker";
 import DeptImageSettings from "@/components/DeptImageSettings";
+import WeeklyTasksManager from "@/components/WeeklyTasksManager";
 import { useInventory } from "@/hooks/useInventory";
 import { isStockStale, STALE_STOCK_DAYS } from "@/lib/inventory";
 import { useDepartment } from "@/contexts/DepartmentContext";
@@ -974,6 +975,13 @@ export default function Admin() {
           <AdminSection title="Alerty niskiego stanu" icon={BellRing} alertCount={flaggedCount}>
             <LowStockAlerts />
           </AdminSection>
+
+          {department === "bar512" && (
+            <AdminSection title="Obowiązki" icon={ClipboardList}>
+              <WeeklyTasksManager />
+            </AdminSection>
+          )}
+
 
           <AdminSection title="Zarządzanie zapasami" icon={Package}>
             <div className="space-y-4">

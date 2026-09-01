@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Package, Calendar, BookOpen, Phone, Shield, ArrowLeft, Utensils, LogOut, BookMarked, Sparkles, MoreVertical, Moon, Sun, User, MessageSquare, FlaskConical, Palette , Bell } from "lucide-react";
+import { Package, Calendar, BookOpen, Phone, Shield, ArrowLeft, Utensils, LogOut, BookMarked, Sparkles, MoreVertical, Moon, Sun, User, MessageSquare, FlaskConical, Palette , Bell, ClipboardList } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,6 +21,7 @@ import { AmbientBackgroundForDepartment } from "@/components/AmbientBackground";
 import PersonalAccentDialog from "@/components/PersonalAccentDialog";
 import NotificationsDialog from "@/components/NotificationsDialog";
 import ViewerBadge from "@/components/ViewerBadge";
+import { useWeeklyTasksProgress } from "@/hooks/useWeeklyTasks";
 
 
 
@@ -206,7 +207,7 @@ interface NavCard {
   title: string;
   icon: React.ElementType;
   subtitle: string;
-  sub: "inventory" | "events" | "recipes" | "telephone" | "admin" | "a-la-carte" | "reservations" | "upselling" | "info" | "test";
+  sub: "inventory" | "events" | "recipes" | "telephone" | "admin" | "a-la-carte" | "reservations" | "upselling" | "info" | "test" | "obowiazki";
   badge: () => React.ReactNode;
   size: "large" | "small";
 }
@@ -288,7 +289,41 @@ const upsellingCard: NavCard = {
   size: "large",
 };
 
+function ObowiazkiBadge() {
+  const { data } = useWeeklyTasksProgress();
+  const total = data?.total ?? 0;
+  const done = data?.done ?? 0;
+  if (!total) {
+    return (
+      <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs text-muted-foreground">
+        Brak zadań w tym tygodniu
+      </span>
+    );
+  }
+  const allDone = done === total;
+  return (
+    <span
+      className={cn(
+        "rounded-full px-2.5 py-0.5 text-xs font-semibold",
+        allDone ? "bg-emerald-500/15 text-emerald-400" : "bg-primary/15 text-primary",
+      )}
+    >
+      {done}/{total} wykonane
+    </span>
+  );
+}
+
+const obowiazkiCard: NavCard = {
+  title: "OBOWIĄZKI",
+  icon: ClipboardList,
+  subtitle: "Tygodniowe zadania zespołu i postęp",
+  sub: "obowiazki",
+  badge: ObowiazkiBadge,
+  size: "large",
+};
+
 export default function Home() {
+
   const navigate = useNavigate();
   const { department, meta } = useDepartment();
   const { isAdminFor, user, logout } = useAuth();
@@ -315,7 +350,7 @@ export default function Home() {
     if (department === "bar512") {
       const adminIdx = result.findIndex((c) => c.sub === "admin");
       const insertAt = adminIdx === -1 ? result.length : adminIdx;
-      result.splice(insertAt, 0, upsellingCard);
+      result.splice(insertAt, 0, upsellingCard, obowiazkiCard);
     }
     if (!canAdmin) result = result.filter((c) => c.sub !== "admin" && c.sub !== "events");
     return result;
