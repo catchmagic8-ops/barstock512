@@ -204,8 +204,11 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
 
               </div>
             </li>
+              )}
+            </LongPressMenu>
           );
         })}
+
       </ul>
 
       {/* DESKTOP / TABLET (sm+): full table layout */}
