@@ -512,30 +512,53 @@ export default function Home() {
 
       </header>
 
-      <main className="flex flex-1 flex-col items-center justify-center px-5 pb-16 sm:px-8">
-        <div className="grid w-full max-w-5xl grid-cols-1 gap-5 auto-rows-[minmax(160px,1fr)] sm:grid-cols-3 sm:gap-6">
-          {visibleCards.map(({ title, icon: Icon, subtitle, sub, badge: Badge, size }) => (
-            <button
-              key={title}
-              onClick={() => navigate(deptSubPath(department, sub))}
-              className={cn(
-                "group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl border border-border/40 bg-gradient-to-b from-foreground/[0.03] to-primary/[0.06] p-6 text-left transition-all duration-300",
-                "hover:scale-[1.02] hover:border-primary/40 hover:shadow-[0_0_30px_hsl(var(--primary)/0.15)]",
-                size === "large" && "sm:col-span-2"
-              )}
-            >
-              <Icon className={cn("text-primary", size === "large" ? "h-9 w-9" : "h-7 w-7")} />
-              <div>
-                <h3 className="font-heading text-lg font-bold tracking-wider text-foreground">
-                  {title}
-                </h3>
-                <p className="mt-1 text-xs text-muted-foreground">{subtitle}</p>
-                <div className="mt-3">
-                  <Badge />
+      <main className="flex flex-1 flex-col items-center justify-center px-4 py-8 pb-16 sm:px-8">
+        <div className="grid w-full max-w-5xl grid-cols-1 gap-4 auto-rows-[minmax(150px,1fr)] sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 lg:gap-6">
+          {visibleCards.map(({ title, icon: Icon, subtitle, sub, badge: Badge, size, tier }) => {
+            const isPrimary = tier === "primary";
+            return (
+              <button
+                key={title}
+                onClick={() => navigate(deptSubPath(department, sub))}
+                className={cn(
+                  "group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl border p-5 text-left sm:p-6",
+                  "transition-[transform,background-color,border-color,box-shadow] duration-150 ease-out motion-reduce:transition-none",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                  "active:scale-[0.985]",
+                  isPrimary
+                    ? "border-border/60 bg-card/70 shadow-md shadow-black/20 supports-[backdrop-filter]:bg-card/55 supports-[backdrop-filter]:backdrop-blur-md hover:border-primary/50 hover:bg-card/80"
+                    : "border-border/40 bg-card/40 shadow-sm shadow-black/10 supports-[backdrop-filter]:bg-card/30 supports-[backdrop-filter]:backdrop-blur-sm hover:border-primary/35 hover:bg-card/60",
+                  size === "large" && "sm:col-span-2",
+                )}
+              >
+                {isPrimary && (
+                  <span
+                    aria-hidden
+                    className="absolute inset-x-0 top-0 h-[2px] bg-primary/60"
+                  />
+                )}
+                <Icon
+                  className={cn(
+                    isPrimary ? "h-8 w-8 text-primary" : "h-7 w-7 text-primary/80",
+                  )}
+                />
+                <div>
+                  <h3
+                    className={cn(
+                      "font-heading font-bold tracking-wide text-foreground",
+                      isPrimary ? "text-lg sm:text-xl" : "text-base sm:text-lg",
+                    )}
+                  >
+                    {title}
+                  </h3>
+                  <p className="mt-1 text-xs leading-snug text-muted-foreground">{subtitle}</p>
+                  <div className="mt-3">
+                    <Badge />
+                  </div>
                 </div>
-              </div>
-            </button>
-          ))}
+              </button>
+            );
+          })}
         </div>
       </main>
     </div>
