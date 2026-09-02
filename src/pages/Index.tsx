@@ -130,7 +130,7 @@ export default function Index() {
     <div className="flex min-h-screen flex-col bg-background overflow-hidden">
       <header className="app-header sticky top-0 z-30 bg-card/80 backdrop-blur-md">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-3 py-2 sm:px-4 sm:py-3">
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="hidden items-center gap-2 sm:flex sm:gap-3">
             {department === "bar512" && (
               <img src={logo} alt="Logo" className="h-7 w-7 sm:h-8 sm:w-8" width={32} height={32} />
             )}
@@ -143,6 +143,7 @@ export default function Index() {
               </p>
             </div>
           </div>
+
 
           <div className="flex items-center gap-0.5 sm:gap-1.5">
             <Link to={deptHomePath(department)}>
