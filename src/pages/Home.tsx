@@ -161,10 +161,30 @@ function ALaCarteBadge() {
 }
 
 function InfoBadge() {
-
+  const { department } = useDepartment();
+  const { data: count = 0 } = useQuery({
+    queryKey: ["handover-notes-count", department],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from("handover_notes")
+        .select("id, resolved, parent_id")
+        .eq("department", department)
+        .eq("resolved", false)
+        .is("parent_id", null);
+      if (error) throw error;
+      return data?.length ?? 0;
+    },
+  });
+  if (count > 0) {
+    return (
+      <span className="rounded-full bg-primary/15 px-2.5 py-0.5 text-xs font-semibold text-primary">
+        {count} otwart{count === 1 ? "a" : "e"} wiadomoś{count === 1 ? "ć" : "ci"}
+      </span>
+    );
+  }
   return (
     <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs text-muted-foreground">
-      Wiadomości
+      Brak nowych wiadomości
     </span>
   );
 }
@@ -212,16 +232,17 @@ interface NavCard {
   sub: "inventory" | "events" | "recipes" | "telephone" | "admin" | "a-la-carte" | "reservations" | "upselling" | "info" | "test" | "obowiazki";
   badge: () => React.ReactNode;
   size: "large" | "small";
+  tier?: "primary" | "secondary";
 }
 
 const cards: NavCard[] = [
-  { title: "INVENTORY", icon: Package, subtitle: "Śledź stany magazynowe i alerty o niskim stanie", sub: "inventory", badge: LowStockBadge, size: "large" },
-  { title: "EVENTS", icon: Calendar, subtitle: "Nadchodzące wydarzenia i promocje", sub: "events", badge: EventsBadge, size: "small" },
-  { title: "COCKTAIL RECIPES", icon: BookOpen, subtitle: "Biblioteka przepisów na koktajle i instrukcje", sub: "recipes", badge: RecipesBadge, size: "small" },
-  { title: "TELEPHONE", icon: Phone, subtitle: "Przydatne kontakty i numery", sub: "telephone", badge: ContactsBadge, size: "small" },
-  { title: "INFO", icon: MessageSquare, subtitle: "Wiadomości i handover dla zespołu", sub: "info", badge: InfoBadge, size: "large" },
-  { title: "MENU QUIZ", icon: FlaskConical, subtitle: "Szkolenie z karty menu: tryby na czas, bez limitu i nauka", sub: "test", badge: TestBadge, size: "small" },
-  { title: "ADMIN", icon: Shield, subtitle: "Zarządzaj całą zawartością dla tego działu", sub: "admin", badge: AdminBadge, size: "large" },
+  { title: "MAGAZYN", icon: Package, subtitle: "Stany magazynowe i alerty o niskim stanie", sub: "inventory", badge: LowStockBadge, size: "large", tier: "primary" },
+  { title: "WYDARZENIA", icon: Calendar, subtitle: "Nadchodzące wydarzenia i promocje", sub: "events", badge: EventsBadge, size: "small", tier: "secondary" },
+  { title: "PRZEPISY", icon: BookOpen, subtitle: "Biblioteka przepisów na koktajle", sub: "recipes", badge: RecipesBadge, size: "small", tier: "secondary" },
+  { title: "TELEFON", icon: Phone, subtitle: "Przydatne kontakty i numery", sub: "telephone", badge: ContactsBadge, size: "small", tier: "secondary" },
+  { title: "INFO", icon: MessageSquare, subtitle: "Wiadomości i handover dla zespołu", sub: "info", badge: InfoBadge, size: "large", tier: "primary" },
+  { title: "QUIZ MENU", icon: FlaskConical, subtitle: "Szkolenie z karty menu: na czas, bez limitu i nauka", sub: "test", badge: TestBadge, size: "small", tier: "secondary" },
+  { title: "ADMIN", icon: Shield, subtitle: "Zarządzaj całą zawartością tego działu", sub: "admin", badge: AdminBadge, size: "large", tier: "secondary" },
 ];
 
 const aLaCarteCard: NavCard = {
@@ -231,6 +252,7 @@ const aLaCarteCard: NavCard = {
   sub: "a-la-carte",
   badge: ALaCarteBadge,
   size: "large",
+  tier: "secondary",
 };
 
 function ReservationsBadge() {
@@ -262,6 +284,7 @@ const reservationsCard: NavCard = {
   sub: "reservations",
   badge: ReservationsBadge,
   size: "large",
+  tier: "primary",
 };
 
 function UpsellingBadge() {
@@ -289,6 +312,7 @@ const upsellingCard: NavCard = {
   sub: "upselling",
   badge: UpsellingBadge,
   size: "large",
+  tier: "secondary",
 };
 
 function ObowiazkiBadge() {
@@ -322,6 +346,7 @@ const obowiazkiCard: NavCard = {
   sub: "obowiazki",
   badge: ObowiazkiBadge,
   size: "large",
+  tier: "primary",
 };
 
 export default function Home() {
@@ -391,69 +416,91 @@ export default function Home() {
 
   return (
     <div className="relative flex min-h-screen flex-col">
-      <AmbientBackgroundForDepartment intensity={0.4} blur={3} />
-      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-border/40 bg-background/40 px-5 py-4 backdrop-blur-xl backdrop-saturate-150 sm:px-8">
-        <div className="flex items-center gap-3">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate("/")}
-            title="Powrót do działów"
-            className="text-muted-foreground hover:text-foreground"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <h1 className="font-heading text-xl font-bold tracking-wide text-brand sm:text-2xl">
-            {meta.label}
-          </h1>
-          <ViewerBadge />
-        </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+      <AmbientBackgroundForDepartment intensity={0.4} blur={3} scrim={0.78} />
+      <header className="sticky top-0 z-20 border-b border-border/50 bg-background/80 px-4 py-3 supports-[backdrop-filter]:bg-background/60 supports-[backdrop-filter]:backdrop-blur-xl supports-[backdrop-filter]:backdrop-saturate-150 sm:px-8 sm:py-4">
+        <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-3">
+          <div className="flex min-w-0 items-center gap-2 sm:gap-3">
             <Button
               variant="ghost"
               size="icon"
-              title="Menu"
-              className="text-muted-foreground hover:text-foreground"
+              onClick={() => navigate("/")}
+              title="Powrót do działów"
+              aria-label="Powrót do działów"
+              className="h-11 w-11 shrink-0 rounded-xl border border-border/50 bg-card/40 text-muted-foreground transition-colors hover:bg-card/70 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
             >
-              <MoreVertical className="h-5 w-5" />
+              <ArrowLeft className="h-5 w-5" />
             </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            align="end"
-            className="w-56 bg-popover/90 backdrop-blur-xl backdrop-saturate-150"
-          >
-            {user && (
-              <>
-                <DropdownMenuLabel className="flex items-center gap-2 text-xs font-normal text-muted-foreground">
-                  <User className="h-3.5 w-3.5" />
-                  {user.username} · <span className="capitalize">{user.role}</span>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-              </>
-            )}
-            <DropdownMenuItem onClick={toggleTheme} className="gap-2">
-              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-              {theme === "dark" ? "Tryb jasny" : "Tryb ciemny"}
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setAccentOpen(true)} className="gap-2">
-              <Palette className="h-4 w-4" />
-              Mój kolor akcentu
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setPushOpen(true)} className="gap-2">
-              <Bell className="h-4 w-4" />
-              Powiadomienia
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setOrderOpen(true)} className="gap-2">
-              <LayoutGrid className="h-4 w-4" />
-              Ułóż kafelki
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={logout} className="gap-2">
-              <LogOut className="h-4 w-4" />
-              Wyloguj się
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+            <div className="min-w-0">
+              <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+                Sheraton F&amp;B
+              </p>
+              <h1 className="truncate font-heading text-lg font-bold leading-tight tracking-wide text-brand sm:text-2xl">
+                {meta.label}
+              </h1>
+            </div>
+            <ViewerBadge />
+          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                title="Menu"
+                aria-label="Menu użytkownika"
+                className="h-11 w-11 shrink-0 rounded-xl border border-border/50 bg-card/40 text-muted-foreground transition-colors hover:bg-card/70 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <MoreVertical className="h-5 w-5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="end"
+              sideOffset={8}
+              className="w-60 border-border/60 bg-popover/95 shadow-xl supports-[backdrop-filter]:bg-popover/90 supports-[backdrop-filter]:backdrop-blur-xl motion-reduce:transition-none motion-reduce:animate-none"
+            >
+              {user && (
+                <>
+                  <DropdownMenuLabel className="flex items-center gap-2 px-2 py-2 text-xs font-normal text-muted-foreground">
+                    <User className="h-3.5 w-3.5 shrink-0" />
+                    <span className="truncate text-foreground">{user.username}</span>
+                    <span className="capitalize">· {user.role}</span>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                </>
+              )}
+              <DropdownMenuLabel className="px-2 pb-1 pt-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/70">
+                Wygląd
+              </DropdownMenuLabel>
+              <DropdownMenuItem onClick={toggleTheme} className="min-h-11 gap-2.5 px-2">
+                {theme === "dark" ? <Sun className="h-4 w-4 shrink-0" /> : <Moon className="h-4 w-4 shrink-0" />}
+                {theme === "dark" ? "Tryb jasny" : "Tryb ciemny"}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setAccentOpen(true)} className="min-h-11 gap-2.5 px-2">
+                <Palette className="h-4 w-4 shrink-0" />
+                Mój kolor akcentu
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuLabel className="px-2 pb-1 pt-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/70">
+                Operacje
+              </DropdownMenuLabel>
+              <DropdownMenuItem onClick={() => setPushOpen(true)} className="min-h-11 gap-2.5 px-2">
+                <Bell className="h-4 w-4 shrink-0" />
+                Powiadomienia
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setOrderOpen(true)} className="min-h-11 gap-2.5 px-2">
+                <LayoutGrid className="h-4 w-4 shrink-0" />
+                Ułóż kafelki
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={logout}
+                className="min-h-11 gap-2.5 px-2 focus:bg-destructive/10 focus:text-destructive data-[highlighted]:bg-destructive/10 data-[highlighted]:text-destructive"
+              >
+                <LogOut className="h-4 w-4 shrink-0" />
+                Wyloguj się
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
         <PersonalAccentDialog open={accentOpen} onOpenChange={setAccentOpen} />
         <NotificationsDialog open={pushOpen} onOpenChange={setPushOpen} />
         <TileOrderDialog
@@ -465,30 +512,53 @@ export default function Home() {
 
       </header>
 
-      <main className="flex flex-1 flex-col items-center justify-center px-5 pb-16 sm:px-8">
-        <div className="grid w-full max-w-5xl grid-cols-1 gap-5 auto-rows-[minmax(160px,1fr)] sm:grid-cols-3 sm:gap-6">
-          {visibleCards.map(({ title, icon: Icon, subtitle, sub, badge: Badge, size }) => (
-            <button
-              key={title}
-              onClick={() => navigate(deptSubPath(department, sub))}
-              className={cn(
-                "group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl border border-border/40 bg-gradient-to-b from-foreground/[0.03] to-primary/[0.06] p-6 text-left transition-all duration-300",
-                "hover:scale-[1.02] hover:border-primary/40 hover:shadow-[0_0_30px_hsl(var(--primary)/0.15)]",
-                size === "large" && "sm:col-span-2"
-              )}
-            >
-              <Icon className={cn("text-primary", size === "large" ? "h-9 w-9" : "h-7 w-7")} />
-              <div>
-                <h3 className="font-heading text-lg font-bold tracking-wider text-foreground">
-                  {title}
-                </h3>
-                <p className="mt-1 text-xs text-muted-foreground">{subtitle}</p>
-                <div className="mt-3">
-                  <Badge />
+      <main className="flex flex-1 flex-col items-center justify-center px-4 py-8 pb-16 sm:px-8">
+        <div className="grid w-full max-w-5xl grid-cols-1 gap-4 auto-rows-[minmax(150px,1fr)] sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 lg:gap-6">
+          {visibleCards.map(({ title, icon: Icon, subtitle, sub, badge: Badge, size, tier }) => {
+            const isPrimary = tier === "primary";
+            return (
+              <button
+                key={title}
+                onClick={() => navigate(deptSubPath(department, sub))}
+                className={cn(
+                  "group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl border p-5 text-left sm:p-6",
+                  "transition-[transform,background-color,border-color,box-shadow] duration-150 ease-out motion-reduce:transition-none",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                  "active:scale-[0.985]",
+                  isPrimary
+                    ? "border-border/60 bg-card/70 shadow-md shadow-black/20 supports-[backdrop-filter]:bg-card/55 supports-[backdrop-filter]:backdrop-blur-md hover:border-primary/50 hover:bg-card/80"
+                    : "border-border/40 bg-card/40 shadow-sm shadow-black/10 supports-[backdrop-filter]:bg-card/30 supports-[backdrop-filter]:backdrop-blur-sm hover:border-primary/35 hover:bg-card/60",
+                  size === "large" && "sm:col-span-2",
+                )}
+              >
+                {isPrimary && (
+                  <span
+                    aria-hidden
+                    className="absolute inset-x-0 top-0 h-[2px] bg-primary/60"
+                  />
+                )}
+                <Icon
+                  className={cn(
+                    isPrimary ? "h-8 w-8 text-primary" : "h-7 w-7 text-primary/80",
+                  )}
+                />
+                <div>
+                  <h3
+                    className={cn(
+                      "font-heading font-bold tracking-wide text-foreground",
+                      isPrimary ? "text-lg sm:text-xl" : "text-base sm:text-lg",
+                    )}
+                  >
+                    {title}
+                  </h3>
+                  <p className="mt-1 text-xs leading-snug text-muted-foreground">{subtitle}</p>
+                  <div className="mt-3">
+                    <Badge />
+                  </div>
                 </div>
-              </div>
-            </button>
-          ))}
+              </button>
+            );
+          })}
         </div>
       </main>
     </div>
