@@ -137,28 +137,30 @@ export default function Index() {
     <div className="flex min-h-screen flex-col bg-background overflow-hidden">
       <header className="app-header sticky top-0 z-30 bg-card/80 backdrop-blur-md">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-3 py-2 sm:px-4 sm:py-3">
-          <div className="hidden items-center gap-2 sm:flex sm:gap-3">
-            {department === "bar512" && (
-              <img src={logo} alt="Logo" className="h-7 w-7 sm:h-8 sm:w-8" width={32} height={32} />
-            )}
-            <div>
-              <h1 className="font-heading text-base font-bold leading-tight text-foreground sm:text-lg">
-                {meta.label.toUpperCase()} MAGAZYN
-              </h1>
-              <p className="text-[10px] text-muted-foreground sm:text-xs">
-                {items.length} pozycji śledzonych
-              </p>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Link to={deptHomePath(department)}>
+              <Button variant="ghost" size="icon" title="Powrót do strony głównej" className="h-8 w-8 text-muted-foreground hover:text-foreground sm:h-9 sm:w-auto sm:px-3 sm:gap-1.5">
+                <ArrowLeft className="h-4 w-4" />
+                <span className="hidden sm:inline text-sm">Powrót</span>
+              </Button>
+            </Link>
+            <div className="hidden items-center gap-2 sm:flex sm:gap-3">
+              {department === "bar512" && (
+                <img src={logo} alt="Logo" className="h-7 w-7 sm:h-8 sm:w-8" width={32} height={32} />
+              )}
+              <div>
+                <h1 className="font-heading text-base font-bold leading-tight text-foreground sm:text-lg">
+                  {meta.label.toUpperCase()} MAGAZYN
+                </h1>
+                <p className="text-[10px] text-muted-foreground sm:text-xs">
+                  {items.length} pozycji śledzonych
+                </p>
+              </div>
             </div>
           </div>
 
 
           <div className="flex items-center gap-0.5 sm:gap-1.5">
-            <Link to={deptHomePath(department)}>
-              <Button variant="ghost" size="icon" title="Powrót do strony głównej" className="h-8 w-8 text-muted-foreground hover:text-foreground sm:h-9 sm:w-auto sm:px-3 sm:gap-1.5">
-                <Home className="h-4 w-4" />
-                <span className="hidden sm:inline text-sm">Home</span>
-              </Button>
-            </Link>
             {flaggedCount > 0 && (
               <HoverCard openDelay={100} closeDelay={150}>
                 <HoverCardTrigger asChild>
