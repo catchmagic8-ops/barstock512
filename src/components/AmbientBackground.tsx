@@ -18,6 +18,8 @@ interface Props {
   blur?: number;
   /** Direct image src (used when not inside a DepartmentProvider). */
   src?: string;
+  /** Extra dimming scrim (0-1) for text-heavy screens. */
+  scrim?: number;
 }
 
 function AmbientShell({
