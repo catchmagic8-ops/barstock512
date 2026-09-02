@@ -1,5 +1,12 @@
 import { useState, useCallback, useMemo } from "react";
-import { AlertTriangle, FileText, Loader2, Home, Search, BellRing, ClipboardList, ClipboardCheck, Clock } from "lucide-react";
+import { AlertTriangle, FileText, Loader2, Home, Search, BellRing, ClipboardList, ClipboardCheck, Clock, Settings } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
