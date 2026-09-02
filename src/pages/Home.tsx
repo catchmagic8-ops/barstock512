@@ -161,10 +161,30 @@ function ALaCarteBadge() {
 }
 
 function InfoBadge() {
-
+  const { department } = useDepartment();
+  const { data: count = 0 } = useQuery({
+    queryKey: ["handover-notes-count", department],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from("handover_notes")
+        .select("id, resolved, parent_id")
+        .eq("department", department)
+        .eq("resolved", false)
+        .is("parent_id", null);
+      if (error) throw error;
+      return data?.length ?? 0;
+    },
+  });
+  if (count > 0) {
+    return (
+      <span className="rounded-full bg-primary/15 px-2.5 py-0.5 text-xs font-semibold text-primary">
+        {count} otwart{count === 1 ? "a" : "e"} wiadomoś{count === 1 ? "ć" : "ci"}
+      </span>
+    );
+  }
   return (
     <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs text-muted-foreground">
-      Wiadomości
+      Brak nowych wiadomości
     </span>
   );
 }
