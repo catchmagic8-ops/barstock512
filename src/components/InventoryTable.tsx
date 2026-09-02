@@ -241,13 +241,22 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
             {items.map((item) => {
               const flagged = item.needsRestock;
               return (
-                <tr
+                <LongPressMenu
                   key={item.id}
+                  title={item.name}
+                  description="Przytrzymaj lub kliknij prawym, aby otworzyć opcje"
+                  actions={actionsFor(item)}
+                >
+                  {(bind, menuOpen) => (
+                <tr
+                  {...bind}
                   className={cn(
                     "border-b border-border/50 transition-colors",
-                    flagged && "bg-warning/5"
+                    flagged && "bg-warning/5",
+                    menuOpen && "bg-primary/10"
                   )}
                 >
+
                   <td className="py-3 pr-4">
                     <div className="flex items-center gap-2">
                       {flagged && (
