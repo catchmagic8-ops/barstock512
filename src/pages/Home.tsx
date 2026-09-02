@@ -252,6 +252,7 @@ const aLaCarteCard: NavCard = {
   sub: "a-la-carte",
   badge: ALaCarteBadge,
   size: "large",
+  tier: "secondary",
 };
 
 function ReservationsBadge() {
