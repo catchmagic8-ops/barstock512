@@ -72,7 +72,7 @@ function AmbientShell({
 }
 
 /** Pulls the ambient image from the active DepartmentProvider (custom image wins). */
-export function AmbientBackgroundForDepartment({ intensity, blur }: Omit<Props, "src">) {
+export function AmbientBackgroundForDepartment({ intensity, blur, scrim }: Omit<Props, "src">) {
   const { department } = useDepartment();
   const key = ambientImageKey(department);
   const { data: settings = {} } = useQuery({
@@ -81,11 +81,11 @@ export function AmbientBackgroundForDepartment({ intensity, blur }: Omit<Props, 
   });
   const src = settings[key] || DEPT_AMBIENT[department];
   if (!src) return null;
-  return <AmbientShell src={src} intensity={intensity} blur={blur} />;
+  return <AmbientShell src={src} intensity={intensity} blur={blur} scrim={scrim} />;
 }
 
 /** Standalone variant — pass an explicit src. */
-export default function AmbientBackground({ src, intensity, blur }: Props) {
+export default function AmbientBackground({ src, intensity, blur, scrim }: Props) {
   if (!src) return null;
-  return <AmbientShell src={src} intensity={intensity} blur={blur} />;
+  return <AmbientShell src={src} intensity={intensity} blur={blur} scrim={scrim} />;
 }
