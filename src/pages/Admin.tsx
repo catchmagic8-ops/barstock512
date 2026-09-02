@@ -23,6 +23,7 @@ import ALaCarteManager from "@/components/ALaCarteManager";
 import UserManagement from "@/components/UserManagement";
 import AccentPicker from "@/components/AccentPicker";
 import DeptImageSettings from "@/components/DeptImageSettings";
+import AppearanceSettings from "@/components/AppearanceSettings";
 import WeeklyTasksManager from "@/components/WeeklyTasksManager";
 import { useInventory } from "@/hooks/useInventory";
 import { isStockStale, STALE_STOCK_DAYS } from "@/lib/inventory";
@@ -950,7 +951,13 @@ export default function Admin() {
             <AccentPicker />
             <div className="mt-6">
               <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Zdjęcia i tła departamentów
+                Elementy interfejsu
+              </p>
+              <AppearanceSettings />
+            </div>
+            <div className="mt-6">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Zdjęcia i tła
               </p>
               <DeptImageSettings />
             </div>
