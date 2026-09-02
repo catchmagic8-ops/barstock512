@@ -416,69 +416,91 @@ export default function Home() {
 
   return (
     <div className="relative flex min-h-screen flex-col">
-      <AmbientBackgroundForDepartment intensity={0.4} blur={3} />
-      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-border/40 bg-background/40 px-5 py-4 backdrop-blur-xl backdrop-saturate-150 sm:px-8">
-        <div className="flex items-center gap-3">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate("/")}
-            title="Powrót do działów"
-            className="text-muted-foreground hover:text-foreground"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <h1 className="font-heading text-xl font-bold tracking-wide text-brand sm:text-2xl">
-            {meta.label}
-          </h1>
-          <ViewerBadge />
-        </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+      <AmbientBackgroundForDepartment intensity={0.4} blur={3} scrim={0.78} />
+      <header className="sticky top-0 z-20 border-b border-border/50 bg-background/80 px-4 py-3 supports-[backdrop-filter]:bg-background/60 supports-[backdrop-filter]:backdrop-blur-xl supports-[backdrop-filter]:backdrop-saturate-150 sm:px-8 sm:py-4">
+        <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-3">
+          <div className="flex min-w-0 items-center gap-2 sm:gap-3">
             <Button
               variant="ghost"
               size="icon"
-              title="Menu"
-              className="text-muted-foreground hover:text-foreground"
+              onClick={() => navigate("/")}
+              title="Powrót do działów"
+              aria-label="Powrót do działów"
+              className="h-11 w-11 shrink-0 rounded-xl border border-border/50 bg-card/40 text-muted-foreground transition-colors hover:bg-card/70 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
             >
-              <MoreVertical className="h-5 w-5" />
+              <ArrowLeft className="h-5 w-5" />
             </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            align="end"
-            className="w-56 bg-popover/90 backdrop-blur-xl backdrop-saturate-150"
-          >
-            {user && (
-              <>
-                <DropdownMenuLabel className="flex items-center gap-2 text-xs font-normal text-muted-foreground">
-                  <User className="h-3.5 w-3.5" />
-                  {user.username} · <span className="capitalize">{user.role}</span>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-              </>
-            )}
-            <DropdownMenuItem onClick={toggleTheme} className="gap-2">
-              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-              {theme === "dark" ? "Tryb jasny" : "Tryb ciemny"}
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setAccentOpen(true)} className="gap-2">
-              <Palette className="h-4 w-4" />
-              Mój kolor akcentu
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setPushOpen(true)} className="gap-2">
-              <Bell className="h-4 w-4" />
-              Powiadomienia
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setOrderOpen(true)} className="gap-2">
-              <LayoutGrid className="h-4 w-4" />
-              Ułóż kafelki
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={logout} className="gap-2">
-              <LogOut className="h-4 w-4" />
-              Wyloguj się
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+            <div className="min-w-0">
+              <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+                Sheraton F&amp;B
+              </p>
+              <h1 className="truncate font-heading text-lg font-bold leading-tight tracking-wide text-brand sm:text-2xl">
+                {meta.label}
+              </h1>
+            </div>
+            <ViewerBadge />
+          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                title="Menu"
+                aria-label="Menu użytkownika"
+                className="h-11 w-11 shrink-0 rounded-xl border border-border/50 bg-card/40 text-muted-foreground transition-colors hover:bg-card/70 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <MoreVertical className="h-5 w-5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="end"
+              sideOffset={8}
+              className="w-60 border-border/60 bg-popover/95 shadow-xl supports-[backdrop-filter]:bg-popover/90 supports-[backdrop-filter]:backdrop-blur-xl motion-reduce:transition-none motion-reduce:animate-none"
+            >
+              {user && (
+                <>
+                  <DropdownMenuLabel className="flex items-center gap-2 px-2 py-2 text-xs font-normal text-muted-foreground">
+                    <User className="h-3.5 w-3.5 shrink-0" />
+                    <span className="truncate text-foreground">{user.username}</span>
+                    <span className="capitalize">· {user.role}</span>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                </>
+              )}
+              <DropdownMenuLabel className="px-2 pb-1 pt-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/70">
+                Wygląd
+              </DropdownMenuLabel>
+              <DropdownMenuItem onClick={toggleTheme} className="min-h-11 gap-2.5 px-2">
+                {theme === "dark" ? <Sun className="h-4 w-4 shrink-0" /> : <Moon className="h-4 w-4 shrink-0" />}
+                {theme === "dark" ? "Tryb jasny" : "Tryb ciemny"}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setAccentOpen(true)} className="min-h-11 gap-2.5 px-2">
+                <Palette className="h-4 w-4 shrink-0" />
+                Mój kolor akcentu
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuLabel className="px-2 pb-1 pt-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/70">
+                Operacje
+              </DropdownMenuLabel>
+              <DropdownMenuItem onClick={() => setPushOpen(true)} className="min-h-11 gap-2.5 px-2">
+                <Bell className="h-4 w-4 shrink-0" />
+                Powiadomienia
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setOrderOpen(true)} className="min-h-11 gap-2.5 px-2">
+                <LayoutGrid className="h-4 w-4 shrink-0" />
+                Ułóż kafelki
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={logout}
+                className="min-h-11 gap-2.5 px-2 focus:bg-destructive/10 focus:text-destructive data-[highlighted]:bg-destructive/10 data-[highlighted]:text-destructive"
+              >
+                <LogOut className="h-4 w-4 shrink-0" />
+                Wyloguj się
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
         <PersonalAccentDialog open={accentOpen} onOpenChange={setAccentOpen} />
         <NotificationsDialog open={pushOpen} onOpenChange={setPushOpen} />
         <TileOrderDialog
