@@ -142,3 +142,19 @@
   background: hsl(var(--border));
   border-radius: 3px;
 }
+
+/* Soft fade instead of a hard header/main edge */
+.app-header {
+  border-bottom: none;
+  position: relative;
+}
+.app-header::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -28px;
+  height: 28px;
+  pointer-events: none;
+  background: linear-gradient(to bottom, hsl(var(--background) / 0.55) 0%, hsl(var(--background) / 0.22) 45%, hsl(var(--background) / 0) 100%);
+}
