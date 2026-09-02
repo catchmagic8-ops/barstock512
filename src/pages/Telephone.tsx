@@ -81,7 +81,7 @@ export default function Telephone() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="app-header sticky top-0 z-30 order bg-card/80 backdrop-blur-md">
+      <header className="app-header sticky top-0 z-30 bg-card/80 backdrop-blur-md">
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-2 px-4 py-3">
           <div className="flex items-center gap-3 min-w-0">
             <Link to={deptHomePath(department)}>

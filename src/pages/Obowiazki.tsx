@@ -133,7 +133,7 @@ export default function Obowiazki() {
     <div className="relative flex min-h-screen flex-col">
       <AmbientBackgroundForDepartment intensity={0.4} blur={3} />
 
-      <header className="app-header sticky top-0 z-20 flex items-center justify-between gap-3 order/40 bg-background/40 px-5 py-4 backdrop-blur-xl backdrop-saturate-150 sm:px-8">
+      <header className="app-header sticky top-0 z-20 flex items-center justify-between gap-3 bg-background/40 px-5 py-4 backdrop-blur-xl backdrop-saturate-150 sm:px-8">
         <div className="flex min-w-0 items-center gap-3">
           <Button
             variant="ghost"
