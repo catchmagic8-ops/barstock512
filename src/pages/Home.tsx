@@ -232,16 +232,17 @@ interface NavCard {
   sub: "inventory" | "events" | "recipes" | "telephone" | "admin" | "a-la-carte" | "reservations" | "upselling" | "info" | "test" | "obowiazki";
   badge: () => React.ReactNode;
   size: "large" | "small";
+  tier?: "primary" | "secondary";
 }
 
 const cards: NavCard[] = [
-  { title: "INVENTORY", icon: Package, subtitle: "Śledź stany magazynowe i alerty o niskim stanie", sub: "inventory", badge: LowStockBadge, size: "large" },
-  { title: "EVENTS", icon: Calendar, subtitle: "Nadchodzące wydarzenia i promocje", sub: "events", badge: EventsBadge, size: "small" },
-  { title: "COCKTAIL RECIPES", icon: BookOpen, subtitle: "Biblioteka przepisów na koktajle i instrukcje", sub: "recipes", badge: RecipesBadge, size: "small" },
-  { title: "TELEPHONE", icon: Phone, subtitle: "Przydatne kontakty i numery", sub: "telephone", badge: ContactsBadge, size: "small" },
-  { title: "INFO", icon: MessageSquare, subtitle: "Wiadomości i handover dla zespołu", sub: "info", badge: InfoBadge, size: "large" },
-  { title: "MENU QUIZ", icon: FlaskConical, subtitle: "Szkolenie z karty menu: tryby na czas, bez limitu i nauka", sub: "test", badge: TestBadge, size: "small" },
-  { title: "ADMIN", icon: Shield, subtitle: "Zarządzaj całą zawartością dla tego działu", sub: "admin", badge: AdminBadge, size: "large" },
+  { title: "MAGAZYN", icon: Package, subtitle: "Stany magazynowe i alerty o niskim stanie", sub: "inventory", badge: LowStockBadge, size: "large", tier: "primary" },
+  { title: "WYDARZENIA", icon: Calendar, subtitle: "Nadchodzące wydarzenia i promocje", sub: "events", badge: EventsBadge, size: "small", tier: "secondary" },
+  { title: "PRZEPISY", icon: BookOpen, subtitle: "Biblioteka przepisów na koktajle", sub: "recipes", badge: RecipesBadge, size: "small", tier: "secondary" },
+  { title: "TELEFON", icon: Phone, subtitle: "Przydatne kontakty i numery", sub: "telephone", badge: ContactsBadge, size: "small", tier: "secondary" },
+  { title: "INFO", icon: MessageSquare, subtitle: "Wiadomości i handover dla zespołu", sub: "info", badge: InfoBadge, size: "large", tier: "primary" },
+  { title: "QUIZ MENU", icon: FlaskConical, subtitle: "Szkolenie z karty menu: na czas, bez limitu i nauka", sub: "test", badge: TestBadge, size: "small", tier: "secondary" },
+  { title: "ADMIN", icon: Shield, subtitle: "Zarządzaj całą zawartością tego działu", sub: "admin", badge: AdminBadge, size: "large", tier: "secondary" },
 ];
 
 const aLaCarteCard: NavCard = {
