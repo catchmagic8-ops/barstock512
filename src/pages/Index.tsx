@@ -208,7 +208,7 @@ export default function Index() {
                 </HoverCardContent>
               </HoverCard>
             )}
-            <Button variant="ghost" size="icon" onClick={() => setReportOpen(true)} title="Generuj raport" className="h-8 w-8 text-muted-foreground hover:text-foreground sm:h-9 sm:w-auto sm:px-3 sm:gap-1.5">
+            <Button variant="ghost" size="icon" onClick={() => setReportOpen(true)} title="Generuj raport" className="hidden text-muted-foreground hover:text-foreground sm:inline-flex sm:h-9 sm:w-auto sm:px-3 sm:gap-1.5">
               <FileText className="h-4 w-4" />
               <span className="hidden sm:inline text-sm">Raport</span>
             </Button>
@@ -217,7 +217,7 @@ export default function Index() {
               size="icon"
               onClick={() => generateBlankCountSheet(items, meta.label)}
               title="Pusty arkusz do ręcznego liczenia zapasów"
-              className="h-8 w-8 text-muted-foreground hover:text-foreground sm:h-9 sm:w-auto sm:px-3 sm:gap-1.5"
+              className="hidden text-muted-foreground hover:text-foreground sm:inline-flex sm:h-9 sm:w-auto sm:px-3 sm:gap-1.5"
             >
               <ClipboardList className="h-4 w-4" />
               <span className="hidden sm:inline text-sm">Arkusz</span>
@@ -227,11 +227,43 @@ export default function Index() {
               size="icon"
               onClick={() => setStocktakeOpen(true)}
               title="Tryb inwentaryzacji krok po kroku"
-              className="h-8 w-8 text-muted-foreground hover:text-foreground sm:h-9 sm:w-auto sm:px-3 sm:gap-1.5"
+              className="hidden text-muted-foreground hover:text-foreground sm:inline-flex sm:h-9 sm:w-auto sm:px-3 sm:gap-1.5"
             >
               <ClipboardCheck className="h-4 w-4" />
               <span className="hidden sm:inline text-sm">Inwentaryzacja</span>
             </Button>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild className="sm:hidden">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  title="Narzędzia magazynu"
+                  aria-label="Narzędzia magazynu"
+                  className="h-9 w-9 text-muted-foreground hover:text-foreground"
+                >
+                  <Settings className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" sideOffset={8} className="w-56">
+                <DropdownMenuItem onClick={() => setReportOpen(true)} className="min-h-11 gap-2.5">
+                  <FileText className="h-4 w-4 shrink-0" />
+                  Raport
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => generateBlankCountSheet(items, meta.label)}
+                  className="min-h-11 gap-2.5"
+                >
+                  <ClipboardList className="h-4 w-4 shrink-0" />
+                  Arkusz
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setStocktakeOpen(true)} className="min-h-11 gap-2.5">
+                  <ClipboardCheck className="h-4 w-4 shrink-0" />
+                  Inwentaryzacja
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
           </div>
         </div>
       </header>
