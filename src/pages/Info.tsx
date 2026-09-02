@@ -413,7 +413,7 @@ export default function Info() {
     <div className="relative flex min-h-screen flex-col">
       <AmbientBackgroundForDepartment intensity={0.4} blur={3} />
 
-      <header className="sticky top-0 z-20 border-b border-border/40 bg-background/50 px-5 py-4 backdrop-blur-xl backdrop-saturate-150 sm:px-8">
+      <header className="app-header sticky top-0 z-20 order/40 bg-background/50 px-5 py-4 backdrop-blur-xl backdrop-saturate-150 sm:px-8">
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <Button

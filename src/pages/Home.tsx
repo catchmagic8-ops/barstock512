@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Package, Calendar, BookOpen, Phone, Shield, ArrowLeft, Utensils, LogOut, BookMarked, Sparkles, MoreVertical, Moon, Sun, User, MessageSquare, FlaskConical, Palette , Bell, ClipboardList, LayoutGrid } from "lucide-react";
+import { Package, Calendar, BookOpen, Phone, Shield, ArrowLeft, Utensils, LogOut, BookMarked, Sparkles, Settings, Moon, Sun, User, MessageSquare, FlaskConical, Palette , Bell, ClipboardList, LayoutGrid } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -417,7 +417,7 @@ export default function Home() {
   return (
     <div className="relative flex min-h-screen flex-col">
       <AmbientBackgroundForDepartment intensity={0.4} blur={3} scrim={0.78} />
-      <header className="sticky top-0 z-20 border-b border-border/50 bg-background/80 px-4 py-3 supports-[backdrop-filter]:bg-background/60 supports-[backdrop-filter]:backdrop-blur-xl supports-[backdrop-filter]:backdrop-saturate-150 sm:px-8 sm:py-4">
+      <header className="app-header sticky top-0 z-20 order/50 bg-background/80 px-4 py-3 supports-[backdrop-filter]:bg-background/60 supports-[backdrop-filter]:backdrop-blur-xl supports-[backdrop-filter]:backdrop-saturate-150 sm:px-8 sm:py-4">
         <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-2 sm:gap-3">
             <Button
@@ -449,7 +449,7 @@ export default function Home() {
                 aria-label="Menu użytkownika"
                 className="h-11 w-11 shrink-0 rounded-xl border border-border/50 bg-card/40 text-muted-foreground transition-colors hover:bg-card/70 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
               >
-                <MoreVertical className="h-5 w-5" />
+                <Settings className="h-5 w-5" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
