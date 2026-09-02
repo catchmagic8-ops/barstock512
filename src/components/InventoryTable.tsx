@@ -116,13 +116,22 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
         {items.map((item) => {
           const flagged = item.needsRestock;
           return (
-            <li
+            <LongPressMenu
               key={item.id}
+              title={item.name}
+              description="Przytrzymaj, aby otworzyć opcje"
+              actions={actionsFor(item)}
+            >
+              {(bind, menuOpen) => (
+            <li
+              {...bind}
               className={cn(
                 "flex items-center justify-between gap-2 py-2.5 px-1 transition-colors",
-                flagged && "bg-warning/5"
+                flagged && "bg-warning/5",
+                menuOpen && "bg-primary/10"
               )}
             >
+
               <div className="flex min-w-0 flex-1 items-center gap-2">
                 {flagged && (
                   <AlertTriangle className="h-3.5 w-3.5 flex-shrink-0 text-warning animate-pulse-warning" />
