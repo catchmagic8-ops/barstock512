@@ -24,10 +24,13 @@ function AmbientShell({
   src,
   intensity = 0.55,
   blur = 2,
+  /** Extra dimming layer strength (0-1) for screens with lots of text. */
+  scrim,
 }: {
   src: string;
   intensity?: number;
   blur?: number;
+  scrim?: number;
 }) {
   return (
     <div
@@ -53,6 +56,17 @@ function AmbientShell({
             "radial-gradient(ellipse at center, hsl(var(--background) / 0.35) 0%, hsl(var(--background) / 0.78) 70%, hsl(var(--background) / 0.95) 100%)",
         }}
       />
+      {scrim ? (
+        <div
+          className="absolute inset-0 supports-[backdrop-filter]:backdrop-blur-[2px]"
+          style={{
+            background: `linear-gradient(180deg, hsl(var(--background) / ${scrim}) 0%, hsl(var(--background) / ${Math.min(
+              1,
+              scrim + 0.06,
+            )}) 55%, hsl(var(--background) / ${Math.min(1, scrim + 0.1)}) 100%)`,
+          }}
+        />
+      ) : null}
     </div>
   );
 }
