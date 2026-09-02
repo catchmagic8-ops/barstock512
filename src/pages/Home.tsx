@@ -312,6 +312,7 @@ const upsellingCard: NavCard = {
   sub: "upselling",
   badge: UpsellingBadge,
   size: "large",
+  tier: "secondary",
 };
 
 function ObowiazkiBadge() {
