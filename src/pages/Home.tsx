@@ -346,6 +346,7 @@ const obowiazkiCard: NavCard = {
   sub: "obowiazki",
   badge: ObowiazkiBadge,
   size: "large",
+  tier: "primary",
 };
 
 export default function Home() {
