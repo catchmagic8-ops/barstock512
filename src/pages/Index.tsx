@@ -1,5 +1,12 @@
 import { useState, useCallback, useMemo } from "react";
-import { AlertTriangle, FileText, Loader2, Home, Search, BellRing, ClipboardList, ClipboardCheck, Clock } from "lucide-react";
+import { AlertTriangle, FileText, Loader2, Home, Search, BellRing, ClipboardList, ClipboardCheck, Clock, Settings } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -130,7 +137,7 @@ export default function Index() {
     <div className="flex min-h-screen flex-col bg-background overflow-hidden">
       <header className="app-header sticky top-0 z-30 bg-card/80 backdrop-blur-md">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-3 py-2 sm:px-4 sm:py-3">
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="hidden items-center gap-2 sm:flex sm:gap-3">
             {department === "bar512" && (
               <img src={logo} alt="Logo" className="h-7 w-7 sm:h-8 sm:w-8" width={32} height={32} />
             )}
@@ -143,6 +150,7 @@ export default function Index() {
               </p>
             </div>
           </div>
+
 
           <div className="flex items-center gap-0.5 sm:gap-1.5">
             <Link to={deptHomePath(department)}>
@@ -207,7 +215,7 @@ export default function Index() {
                 </HoverCardContent>
               </HoverCard>
             )}
-            <Button variant="ghost" size="icon" onClick={() => setReportOpen(true)} title="Generuj raport" className="h-8 w-8 text-muted-foreground hover:text-foreground sm:h-9 sm:w-auto sm:px-3 sm:gap-1.5">
+            <Button variant="ghost" size="icon" onClick={() => setReportOpen(true)} title="Generuj raport" className="hidden text-muted-foreground hover:text-foreground sm:inline-flex sm:h-9 sm:w-auto sm:px-3 sm:gap-1.5">
               <FileText className="h-4 w-4" />
               <span className="hidden sm:inline text-sm">Raport</span>
             </Button>
@@ -216,7 +224,7 @@ export default function Index() {
               size="icon"
               onClick={() => generateBlankCountSheet(items, meta.label)}
               title="Pusty arkusz do ręcznego liczenia zapasów"
-              className="h-8 w-8 text-muted-foreground hover:text-foreground sm:h-9 sm:w-auto sm:px-3 sm:gap-1.5"
+              className="hidden text-muted-foreground hover:text-foreground sm:inline-flex sm:h-9 sm:w-auto sm:px-3 sm:gap-1.5"
             >
               <ClipboardList className="h-4 w-4" />
               <span className="hidden sm:inline text-sm">Arkusz</span>
@@ -226,11 +234,43 @@ export default function Index() {
               size="icon"
               onClick={() => setStocktakeOpen(true)}
               title="Tryb inwentaryzacji krok po kroku"
-              className="h-8 w-8 text-muted-foreground hover:text-foreground sm:h-9 sm:w-auto sm:px-3 sm:gap-1.5"
+              className="hidden text-muted-foreground hover:text-foreground sm:inline-flex sm:h-9 sm:w-auto sm:px-3 sm:gap-1.5"
             >
               <ClipboardCheck className="h-4 w-4" />
               <span className="hidden sm:inline text-sm">Inwentaryzacja</span>
             </Button>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild className="sm:hidden">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  title="Narzędzia magazynu"
+                  aria-label="Narzędzia magazynu"
+                  className="h-9 w-9 text-muted-foreground hover:text-foreground"
+                >
+                  <Settings className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" sideOffset={8} className="w-56">
+                <DropdownMenuItem onClick={() => setReportOpen(true)} className="min-h-11 gap-2.5">
+                  <FileText className="h-4 w-4 shrink-0" />
+                  Raport
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => generateBlankCountSheet(items, meta.label)}
+                  className="min-h-11 gap-2.5"
+                >
+                  <ClipboardList className="h-4 w-4 shrink-0" />
+                  Arkusz
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setStocktakeOpen(true)} className="min-h-11 gap-2.5">
+                  <ClipboardCheck className="h-4 w-4 shrink-0" />
+                  Inwentaryzacja
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
           </div>
         </div>
       </header>
