@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { AlertTriangle, BellRing, Check, Clock, History } from "lucide-react";
+import { AlertTriangle, BellRing, Check, Clock, History, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -7,9 +7,13 @@ import {
 } from "@/components/ui/dialog";
 import { formatFlaggedAt, formatRelative, isStockStale, STALE_STOCK_DAYS, type InventoryItem } from "@/lib/inventory";
 import InventoryHistoryDialog from "@/components/InventoryHistoryDialog";
+import InventoryItemEditDialog from "@/components/InventoryItemEditDialog";
+import LongPressMenu, { type LongPressAction } from "@/components/LongPressMenu";
+import { useInventory } from "@/hooks/useInventory";
 import { useAuth } from "@/contexts/AuthContext";
 import { useDepartment } from "@/contexts/DepartmentContext";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface Props {
   items: InventoryItem[];
@@ -20,13 +24,16 @@ interface Props {
 export default function InventoryTable({ items, onFlag, onClear }: Props) {
   const { isAdminFor, isViewer } = useAuth();
   const { department } = useDepartment();
+  const { deleteItem } = useInventory();
   // Only managers decide how much to order; staff only report the current stock.
-  const canSetOrderQty = isAdminFor(department) && !isViewer;
+  const isManager = isAdminFor(department) && !isViewer;
+  const canSetOrderQty = isManager;
   // Demo (viewer) accounts browse only — no flagging, no clearing.
   const canWrite = !isViewer;
 
   const [flagging, setFlagging] = useState<InventoryItem | null>(null);
   const [historyItem, setHistoryItem] = useState<InventoryItem | null>(null);
+  const [editingItem, setEditingItem] = useState<InventoryItem | null>(null);
   const [note, setNote] = useState("");
   const [qtyLeft, setQtyLeft] = useState("");
   const [qtyToOrder, setQtyToOrder] = useState("");
@@ -37,6 +44,48 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
     setQtyLeft("");
     setQtyToOrder("");
   };
+
+  // Press-and-hold shortcuts: managers get the full edit flow, staff the quick ones.
+  const actionsFor = (item: InventoryItem): LongPressAction[] => [
+    {
+      label: "Edytuj pozycję",
+      icon: Pencil,
+      hint: "Nazwa, kategoria, jednostka, magazyn, lokalizacja",
+      onSelect: () => setEditingItem(item),
+      hidden: !isManager,
+    },
+    {
+      label: "Zgłoś niski stan",
+      icon: BellRing,
+      onSelect: () => openFlag(item),
+      hidden: !canWrite || item.needsRestock,
+    },
+    {
+      label: "Oznacz jako uzupełnione",
+      icon: Check,
+      onSelect: () => onClear?.(item.id),
+      hidden: !canWrite || !item.needsRestock || !onClear,
+    },
+    {
+      label: "Historia zmian stanu",
+      icon: History,
+      onSelect: () => setHistoryItem(item),
+    },
+    {
+      label: "Usuń pozycję",
+      icon: Trash2,
+      destructive: true,
+      onSelect: () => {
+        if (!window.confirm(`Usunąć "${item.name}"?`)) return;
+        deleteItem.mutate(item.id, {
+          onSuccess: () => toast.success("Usunięto"),
+          onError: () => toast.error("Nie udało się usunąć"),
+        });
+      },
+      hidden: !isManager,
+    },
+  ];
+
 
   if (items.length === 0) {
     return (
@@ -67,13 +116,22 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
         {items.map((item) => {
           const flagged = item.needsRestock;
           return (
-            <li
+            <LongPressMenu
               key={item.id}
+              title={item.name}
+              description="Przytrzymaj, aby otworzyć opcje"
+              actions={actionsFor(item)}
+            >
+              {(bind, menuOpen) => (
+            <li
+              {...bind}
               className={cn(
                 "flex items-center justify-between gap-2 py-2.5 px-1 transition-colors",
-                flagged && "bg-warning/5"
+                flagged && "bg-warning/5",
+                menuOpen && "bg-primary/10"
               )}
             >
+
               <div className="flex min-w-0 flex-1 items-center gap-2">
                 {flagged && (
                   <AlertTriangle className="h-3.5 w-3.5 flex-shrink-0 text-warning animate-pulse-warning" />
@@ -155,8 +213,11 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
 
               </div>
             </li>
+              )}
+            </LongPressMenu>
           );
         })}
+
       </ul>
 
       {/* DESKTOP / TABLET (sm+): full table layout */}
@@ -180,13 +241,22 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
             {items.map((item) => {
               const flagged = item.needsRestock;
               return (
-                <tr
+                <LongPressMenu
                   key={item.id}
+                  title={item.name}
+                  description="Przytrzymaj lub kliknij prawym, aby otworzyć opcje"
+                  actions={actionsFor(item)}
+                >
+                  {(bind, menuOpen) => (
+                <tr
+                  {...bind}
                   className={cn(
                     "border-b border-border/50 transition-colors",
-                    flagged && "bg-warning/5"
+                    flagged && "bg-warning/5",
+                    menuOpen && "bg-primary/10"
                   )}
                 >
+
                   <td className="py-3 pr-4">
                     <div className="flex items-center gap-2">
                       {flagged && (
