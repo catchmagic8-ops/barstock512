@@ -128,7 +128,7 @@ export default function Index() {
 
   return (
     <div className="flex min-h-screen flex-col bg-background overflow-hidden">
-      <header className="app-header sticky top-0 z-30 order bg-card/80 backdrop-blur-md">
+      <header className="app-header sticky top-0 z-30 bg-card/80 backdrop-blur-md">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-3 py-2 sm:px-4 sm:py-3">
           <div className="flex items-center gap-2 sm:gap-3">
             {department === "bar512" && (

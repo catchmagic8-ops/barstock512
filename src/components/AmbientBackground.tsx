@@ -4,6 +4,7 @@ import bar512Img from "@/assets/ambient-bar512.jpg";
 import konferencjeImg from "@/assets/ambient-konferencje.jpg";
 import polskieSmakiImg from "@/assets/ambient-polskie-smaki.jpg";
 import { ambientImageKey, getSettings } from "@/lib/appSettings";
+import { useAppearance } from "@/lib/appearance";
 
 export const DEPT_AMBIENT: Record<string, string> = {
   bar512: bar512Img,
@@ -81,13 +82,29 @@ export function AmbientBackgroundForDepartment({ intensity, blur, scrim }: Omit<
     queryKey: ["app-settings", "ambient", department],
     queryFn: () => getSettings([key]),
   });
+  const appearance = useAppearance();
   const src = settings[key] || DEPT_AMBIENT[department];
   if (!src) return null;
-  return <AmbientShell src={src} intensity={intensity} blur={blur} scrim={scrim} />;
+  return (
+    <AmbientShell
+      src={src}
+      intensity={appearance.bgOpacity}
+      blur={appearance.bgBlur}
+      scrim={scrim}
+    />
+  );
 }
 
 /** Standalone variant — pass an explicit src. */
 export default function AmbientBackground({ src, intensity, blur, scrim }: Props) {
+  const appearance = useAppearance();
   if (!src) return null;
-  return <AmbientShell src={src} intensity={intensity} blur={blur} scrim={scrim} />;
+  return (
+    <AmbientShell
+      src={src}
+      intensity={intensity ?? appearance.bgOpacity}
+      blur={blur ?? appearance.bgBlur}
+      scrim={scrim}
+    />
+  );
 }

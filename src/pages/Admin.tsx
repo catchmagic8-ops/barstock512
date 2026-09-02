@@ -23,6 +23,7 @@ import ALaCarteManager from "@/components/ALaCarteManager";
 import UserManagement from "@/components/UserManagement";
 import AccentPicker from "@/components/AccentPicker";
 import DeptImageSettings from "@/components/DeptImageSettings";
+import AppearanceSettings from "@/components/AppearanceSettings";
 import WeeklyTasksManager from "@/components/WeeklyTasksManager";
 import { useInventory } from "@/hooks/useInventory";
 import { isStockStale, STALE_STOCK_DAYS } from "@/lib/inventory";
@@ -925,7 +926,7 @@ export default function Admin() {
   return (
     <div className="relative min-h-screen">
         <AmbientBackgroundForDepartment intensity={0.4} blur={3} />
-        <header className="app-header sticky top-0 z-30 order/40 bg-background/40 backdrop-blur-xl backdrop-saturate-150">
+        <header className="app-header sticky top-0 z-30 bg-background/40 backdrop-blur-xl backdrop-saturate-150">
           <div className="mx-auto flex max-w-4xl items-center justify-between px-5 py-4 sm:px-8">
             <div className="flex items-center gap-3">
               <Link to={deptHomePath(department)}>
@@ -950,7 +951,13 @@ export default function Admin() {
             <AccentPicker />
             <div className="mt-6">
               <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Zdjęcia i tła departamentów
+                Elementy interfejsu
+              </p>
+              <AppearanceSettings />
+            </div>
+            <div className="mt-6">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Zdjęcia i tła
               </p>
               <DeptImageSettings />
             </div>

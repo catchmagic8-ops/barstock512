@@ -4,11 +4,7 @@ import { Loader2, RotateCcw, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import bar512Tile from "@/assets/dept-bar512.jpg";
-import konferencjeTile from "@/assets/dept-konferencje.jpg";
-import polskieSmakiTile from "@/assets/dept-polskie-smaki.jpg";
 import bar512Ambient from "@/assets/ambient-bar512.jpg";
-import konferencjeAmbient from "@/assets/ambient-konferencje.jpg";
-import polskieSmakiAmbient from "@/assets/ambient-polskie-smaki.jpg";
 import {
   ambientImageKey,
   getSettings,
@@ -23,18 +19,6 @@ const DEPTS = [
     label: "Bar 512",
     tile: bar512Tile,
     ambient: bar512Ambient,
-  },
-  {
-    id: "konferencje",
-    label: "Konferencje",
-    tile: konferencjeTile,
-    ambient: konferencjeAmbient,
-  },
-  {
-    id: "polskie_smaki",
-    label: "Polskie Smaki",
-    tile: polskieSmakiTile,
-    ambient: polskieSmakiAmbient,
   },
 ];
 

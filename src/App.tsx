@@ -18,6 +18,7 @@ import Reservations from "./pages/Reservations.tsx";
 import Upselling from "./pages/Upselling.tsx";
 import Info from "./pages/Info.tsx";
 import TestPage from "./pages/TestPage.tsx";
+import AppearanceSync from "./components/AppearanceSync";
 import AuthGate from "./components/AuthGate";
 import RequireAdmin from "./components/RequireAdmin";
 import PageTransition from "./components/PageTransition";
@@ -55,6 +56,7 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider>
     <TooltipProvider>
+      <AppearanceSync />
       <Toaster />
       <Sonner />
       <AuthProvider>
