@@ -152,7 +152,7 @@ export default function Upselling() {
 
   return (
     <div className="relative min-h-screen bg-background pb-20">
-      <header className="sticky top-0 z-20 flex items-center justify-between border-b bg-background/70 px-5 py-4 backdrop-blur-xl sm:px-8">
+      <header className="app-header sticky top-0 z-20 flex items-center justify-between bg-background/70 px-5 py-4 backdrop-blur-xl sm:px-8">
         <div className="flex items-center gap-3">
           <Link to={deptHomePath(department)}>
             <Button variant="ghost" size="icon" title="Wróć">

@@ -176,7 +176,7 @@ export default function ALaCarte() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-30 border-b border-border/60 bg-background/90 backdrop-blur-xl">
+      <header className="app-header sticky top-0 z-30 order/60 bg-background/90 backdrop-blur-xl">
         <div className="mx-auto flex max-w-3xl items-center gap-2 px-3 py-2.5 min-w-0 sm:px-4">
           <Link to={deptHomePath(department)} className="flex-shrink-0">
             <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">

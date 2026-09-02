@@ -37,7 +37,7 @@ export default function Departments() {
   return (
     <div className="relative flex min-h-screen flex-col">
       <AmbientBackground src={settings[DEPT_AMBIENT_IMAGE_KEY] || DEPT_AMBIENT.bar512} intensity={0.35} blur={4} />
-      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-border/40 bg-background/40 px-5 py-4 backdrop-blur-xl backdrop-saturate-150 sm:px-8">
+      <header className="app-header sticky top-0 z-20 flex items-center justify-between order/40 bg-background/40 px-5 py-4 backdrop-blur-xl backdrop-saturate-150 sm:px-8">
         <h1 className="font-heading text-xl font-bold tracking-wide text-brand sm:text-2xl">
           Działy
         </h1>

@@ -925,7 +925,7 @@ export default function Admin() {
   return (
     <div className="relative min-h-screen">
         <AmbientBackgroundForDepartment intensity={0.4} blur={3} />
-        <header className="sticky top-0 z-30 border-b border-border/40 bg-background/40 backdrop-blur-xl backdrop-saturate-150">
+        <header className="app-header sticky top-0 z-30 order/40 bg-background/40 backdrop-blur-xl backdrop-saturate-150">
           <div className="mx-auto flex max-w-4xl items-center justify-between px-5 py-4 sm:px-8">
             <div className="flex items-center gap-3">
               <Link to={deptHomePath(department)}>

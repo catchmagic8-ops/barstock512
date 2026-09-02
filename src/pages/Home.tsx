@@ -417,7 +417,7 @@ export default function Home() {
   return (
     <div className="relative flex min-h-screen flex-col">
       <AmbientBackgroundForDepartment intensity={0.4} blur={3} scrim={0.78} />
-      <header className="sticky top-0 z-20 border-b border-border/50 bg-background/80 px-4 py-3 supports-[backdrop-filter]:bg-background/60 supports-[backdrop-filter]:backdrop-blur-xl supports-[backdrop-filter]:backdrop-saturate-150 sm:px-8 sm:py-4">
+      <header className="app-header sticky top-0 z-20 order/50 bg-background/80 px-4 py-3 supports-[backdrop-filter]:bg-background/60 supports-[backdrop-filter]:backdrop-blur-xl supports-[backdrop-filter]:backdrop-saturate-150 sm:px-8 sm:py-4">
         <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-2 sm:gap-3">
             <Button
