@@ -284,6 +284,7 @@ const reservationsCard: NavCard = {
   sub: "reservations",
   badge: ReservationsBadge,
   size: "large",
+  tier: "primary",
 };
 
 function UpsellingBadge() {
