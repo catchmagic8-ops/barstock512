@@ -36,6 +36,7 @@ import { useDepartment } from "@/contexts/DepartmentContext";
 import { deptHomePath } from "@/lib/department";
 import { AmbientBackgroundForDepartment } from "@/components/AmbientBackground";
 import ViewerBadge from "@/components/ViewerBadge";
+import LongPressMenu from "@/components/LongPressMenu";
 import { useWeeklyTasks } from "@/hooks/useWeeklyTasks";
 import {
   PRIORITIES,
