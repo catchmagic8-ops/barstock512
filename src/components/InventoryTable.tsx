@@ -364,8 +364,11 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
                     </div>
                   </td>
                 </tr>
+                  )}
+                </LongPressMenu>
               );
             })}
+
           </tbody>
         </table>
       </div>
