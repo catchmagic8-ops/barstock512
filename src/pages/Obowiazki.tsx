@@ -342,7 +342,10 @@ export default function Obowiazki() {
 
                 </div>
               </li>
+                )}
+              </LongPressMenu>
             ))}
+
           </ul>
         )}
       </main>
