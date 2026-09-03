@@ -7,6 +7,7 @@ export interface LongPressBind {
   onPointerCancel: () => void;
   onPointerLeave: () => void;
   onContextMenu: (e: React.MouseEvent) => void;
+  onClickCapture: (e: React.MouseEvent) => void;
   style?: React.CSSProperties;
 }
 
@@ -30,6 +31,7 @@ export function useLongPress(onLongPress: () => void, options: Options = {}): Lo
   const timer = useRef<number | null>(null);
   const origin = useRef<{ x: number; y: number } | null>(null);
   const fired = useRef(false);
+  const firedAt = useRef(0);
 
   const clear = useCallback(() => {
     if (timer.current !== null) {
@@ -49,6 +51,7 @@ export function useLongPress(onLongPress: () => void, options: Options = {}): Lo
       origin.current = { x: e.clientX, y: e.clientY };
       timer.current = window.setTimeout(() => {
         fired.current = true;
+        firedAt.current = Date.now();
         timer.current = null;
         if (navigator.vibrate) {
           try { navigator.vibrate(12); } catch { /* ignore */ }
@@ -88,6 +91,13 @@ export function useLongPress(onLongPress: () => void, options: Options = {}): Lo
     onPointerUp: end,
     onPointerCancel: clear,
     onPointerLeave: clear,
+    onClickCapture: (e) => {
+      // swallow the click that a long press would otherwise trigger
+      if (Date.now() - firedAt.current < 700) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    },
     onContextMenu: (e) => {
       if (disabled) return;
       e.preventDefault();
