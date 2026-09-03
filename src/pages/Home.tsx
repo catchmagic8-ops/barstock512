@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Package, Calendar, BookOpen, Phone, Shield, ArrowLeft, Utensils, LogOut, BookMarked, Sparkles, Settings, Moon, Sun, User, MessageSquare, FlaskConical, Palette , Bell, ClipboardList, LayoutGrid } from "lucide-react";
+import { Package, Calendar, BookOpen, Phone, Shield, ArrowLeft, Utensils, LogOut, BookMarked, Sparkles, Settings, Moon, Sun, User, MessageSquare, FlaskConical, Palette , Bell, ClipboardList, LayoutGrid, ArrowRight } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -23,6 +23,7 @@ import PersonalAccentDialog from "@/components/PersonalAccentDialog";
 import NotificationsDialog from "@/components/NotificationsDialog";
 import TileOrderDialog from "@/components/TileOrderDialog";
 import ViewerBadge from "@/components/ViewerBadge";
+import LongPressMenu from "@/components/LongPressMenu";
 import { useWeeklyTasksProgress } from "@/hooks/useWeeklyTasks";
 
 
@@ -538,7 +539,7 @@ export default function Home() {
                     label: "Panel administratora",
                     icon: Settings,
                     onSelect: () => navigate(deptSubPath(department, "admin")),
-                    hidden: !isAdmin,
+                    hidden: !canAdmin,
                   },
                 ]}
               >
