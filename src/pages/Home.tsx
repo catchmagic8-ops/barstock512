@@ -517,8 +517,34 @@ export default function Home() {
           {visibleCards.map(({ title, icon: Icon, subtitle, sub, badge: Badge, size, tier }) => {
             const isPrimary = tier === "primary";
             return (
-              <button
+              <LongPressMenu
                 key={title}
+                title={title}
+                description="Przytrzymaj, aby otworzyć skróty"
+                allowInteractive
+                actions={[
+                  {
+                    label: `Otwórz ${title}`,
+                    icon: ArrowRight,
+                    onSelect: () => navigate(deptSubPath(department, sub)),
+                  },
+                  {
+                    label: "Ułóż kafelki",
+                    icon: LayoutGrid,
+                    hint: "Zmień kolejność kafelków",
+                    onSelect: () => setOrderOpen(true),
+                  },
+                  {
+                    label: "Panel administratora",
+                    icon: Settings,
+                    onSelect: () => navigate(deptSubPath(department, "admin")),
+                    hidden: !isAdmin,
+                  },
+                ]}
+              >
+                {(bind, menuOpen) => (
+              <button
+                {...bind}
                 onClick={() => navigate(deptSubPath(department, sub))}
                 className={cn(
                   "group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl border p-5 text-left sm:p-6",
@@ -557,6 +583,8 @@ export default function Home() {
                   </div>
                 </div>
               </button>
+                )}
+              </LongPressMenu>
             );
           })}
         </div>
