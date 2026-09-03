@@ -18,6 +18,8 @@ interface Props {
   description?: string;
   actions: LongPressAction[];
   disabled?: boolean;
+  /** allow long-press directly on interactive elements (e.g. tile buttons) */
+  allowInteractive?: boolean;
   /** render-prop so this works on <tr>, <li>, <div>, … without extra wrappers */
   children: (bind: LongPressBind, open: boolean) => ReactNode;
 }
@@ -26,11 +28,11 @@ interface Props {
  * Press-and-hold (or right-click) any row/card to reveal its quick actions
  * in a bottom sheet — the manager shortcut used across the app.
  */
-export default function LongPressMenu({ title, description, actions, disabled, children }: Props) {
+export default function LongPressMenu({ title, description, actions, disabled, allowInteractive, children }: Props) {
   const [open, setOpen] = useState(false);
   const visible = actions.filter((a) => !a.hidden);
   const inactive = disabled || visible.length === 0;
-  const bind = useLongPress(() => setOpen(true), { disabled: inactive });
+  const bind = useLongPress(() => setOpen(true), { disabled: inactive, allowInteractive });
 
   return (
     <>

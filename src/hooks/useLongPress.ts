@@ -16,6 +16,8 @@ interface Options {
   /** movement in px that cancels the press (scrolling) */
   moveTolerance?: number;
   disabled?: boolean;
+  /** allow the press to start on the element itself even if it is a button/link */
+  allowInteractive?: boolean;
 }
 
 /**
@@ -24,7 +26,7 @@ interface Options {
  * so the flow is identical on desktop.
  */
 export function useLongPress(onLongPress: () => void, options: Options = {}): LongPressBind {
-  const { delay = 480, moveTolerance = 10, disabled = false } = options;
+  const { delay = 480, moveTolerance = 10, disabled = false, allowInteractive = false } = options;
   const timer = useRef<number | null>(null);
   const origin = useRef<{ x: number; y: number } | null>(null);
   const fired = useRef(false);
@@ -41,7 +43,7 @@ export function useLongPress(onLongPress: () => void, options: Options = {}): Lo
     (e: React.PointerEvent) => {
       if (disabled) return;
       // ignore presses that start on an interactive control
-      const target = e.target as HTMLElement | null;
+      const target = allowInteractive ? null : (e.target as HTMLElement | null);
       if (target?.closest("button, a, input, textarea, select, [role='button'], [data-no-longpress]")) return;
       fired.current = false;
       origin.current = { x: e.clientX, y: e.clientY };
@@ -54,7 +56,7 @@ export function useLongPress(onLongPress: () => void, options: Options = {}): Lo
         onLongPress();
       }, delay);
     },
-    [delay, disabled, onLongPress]
+    [allowInteractive, delay, disabled, onLongPress]
   );
 
   const move = useCallback(
