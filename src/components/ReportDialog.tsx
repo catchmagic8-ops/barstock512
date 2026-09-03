@@ -6,8 +6,10 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from "@/components/ui/dialog";
 import {
-  buildReport, sortFlagged, type ReportScope, type ReportSort,
+  buildReport, sortFlagged, DEFAULT_REPORT_COLUMNS, REPORT_COLUMNS,
+  type ReportColumn, type ReportScope, type ReportSort,
 } from "@/lib/generateReport";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   CATEGORY_LABELS, groupByCountingLocation, UNASSIGNED_LOCATION, type InventoryItem,
 } from "@/lib/inventory";
@@ -40,6 +42,26 @@ export default function ReportDialog({ open, onOpenChange, items, deptLabel }: P
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
   const { department } = useDepartment();
+  const { user } = useAuth();
+  const isManager = user?.role === "admin";
+  const [columns, setColumns] = useState<ReportColumn[]>(() => {
+    try {
+      const raw = localStorage.getItem("report-columns");
+      const parsed = raw ? (JSON.parse(raw) as ReportColumn[]) : null;
+      if (Array.isArray(parsed) && parsed.length) return parsed;
+    } catch { /* ignore */ }
+    return DEFAULT_REPORT_COLUMNS;
+  });
+
+  const toggleColumn = (key: ReportColumn) => {
+    setColumns((prev) => {
+      const next = prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key];
+      const ordered = REPORT_COLUMNS.filter((c) => next.includes(c.key)).map((c) => c.key);
+      const final = ordered.length ? ordered : ["name" as ReportColumn];
+      try { localStorage.setItem("report-columns", JSON.stringify(final)); } catch { /* ignore */ }
+      return final;
+    });
+  };
   const { locations: rooms } = useCountingLocations(department);
   const previewFrameRef = useRef<HTMLIFrameElement>(null);
 
@@ -51,7 +73,7 @@ export default function ReportDialog({ open, onOpenChange, items, deptLabel }: P
   // Group low-stock items by physical counting location (walking order)
   const sections = useMemo(() => groupByCountingLocation(flagged, true, rooms), [flagged, rooms]);
 
-  const build = () => buildReport(items, { scope, sortBy, deptLabel });
+  const build = () => buildReport(items, { scope, sortBy, deptLabel, columns });
 
   const makeBlobUrl = () => {
     const blob = build().output("blob");
@@ -150,6 +172,42 @@ export default function ReportDialog({ open, onOpenChange, items, deptLabel }: P
               ))}
             </div>
           </div>
+
+          {isManager && (
+            <div className="space-y-1.5">
+              <p className="text-xs font-medium text-muted-foreground">
+                Kolumny w raporcie ({columns.length})
+              </p>
+              <div className="flex flex-wrap gap-1.5">
+                {REPORT_COLUMNS.map((c) => {
+                  const active = columns.includes(c.key);
+                  return (
+                    <button
+                      key={c.key}
+                      onClick={() => toggleColumn(c.key)}
+                      className={cn(
+                        "rounded-full px-3 py-1 text-xs font-medium transition-all",
+                        active
+                          ? "border border-primary/40 bg-primary/20 text-primary"
+                          : "border border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                      )}
+                    >
+                      {c.label}
+                    </button>
+                  );
+                })}
+              </div>
+              <button
+                onClick={() => {
+                  setColumns(DEFAULT_REPORT_COLUMNS);
+                  try { localStorage.setItem("report-columns", JSON.stringify(DEFAULT_REPORT_COLUMNS)); } catch { /* ignore */ }
+                }}
+                className="text-[11px] text-muted-foreground underline underline-offset-2"
+              >
+                Przywróć domyślne
+              </button>
+            </div>
+          )}
 
           <div className="space-y-1.5">
             <p className="text-xs font-medium text-muted-foreground">

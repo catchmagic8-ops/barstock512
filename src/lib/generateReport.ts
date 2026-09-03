@@ -5,10 +5,68 @@ import type { InventoryItem } from "./inventory";
 export type ReportScope = "full" | "low";
 export type ReportSort = "storehouse" | "category" | "name" | "qty-left";
 
+export type ReportColumn =
+  | "name"
+  | "category"
+  | "subcategory"
+  | "location"
+  | "storehouse"
+  | "unit"
+  | "qtyLeft"
+  | "qtyToOrder"
+  | "note"
+  | "flaggedBy"
+  | "flaggedAt"
+  | "updatedAt";
+
+export const REPORT_COLUMNS: { key: ReportColumn; label: string; header: string }[] = [
+  { key: "name", label: "Nazwa", header: "Pozycja" },
+  { key: "category", label: "Kategoria", header: "Kategoria" },
+  { key: "subcategory", label: "Podkategoria", header: "Podkategoria" },
+  { key: "location", label: "Lokalizacja", header: "Lokalizacja" },
+  { key: "storehouse", label: "Magazyn", header: "Magazyn" },
+  { key: "unit", label: "Jednostka", header: "Jedn." },
+  { key: "qtyLeft", label: "Aktualny stan", header: "Stan" },
+  { key: "qtyToOrder", label: "Do zamowienia", header: "Do zamowienia" },
+  { key: "note", label: "Notatka", header: "Notatka" },
+  { key: "flaggedBy", label: "Kto oznaczyl", header: "Oznaczyl" },
+  { key: "flaggedAt", label: "Kiedy oznaczono", header: "Data oznaczenia" },
+  { key: "updatedAt", label: "Ostatnia aktualizacja", header: "Aktualizacja" },
+];
+
+export const DEFAULT_REPORT_COLUMNS: ReportColumn[] = [
+  "name", "category", "location", "storehouse", "qtyLeft", "qtyToOrder", "note", "flaggedBy", "flaggedAt",
+];
+
+function fmtDate(iso?: string): string {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString("pl-PL");
+}
+
+function cellValue(i: InventoryItem, key: ReportColumn): string {
+  switch (key) {
+    case "name": return sanitize(i.name);
+    case "category": return sanitize(i.category.replace("-", " "));
+    case "subcategory": return sanitize(i.subcategory || "—");
+    case "location": return sanitize(locationLabel(i));
+    case "storehouse": return sanitize(i.storehouse || "—");
+    case "unit": return sanitize(i.unit);
+    case "qtyLeft": return i.qtyLeft != null ? `${i.qtyLeft} ${sanitize(i.unit)}` : "—";
+    case "qtyToOrder": return i.qtyToOrder != null ? String(i.qtyToOrder) : "—";
+    case "note": return sanitize(i.restockNote || "—");
+    case "flaggedBy": return sanitize(i.flaggedBy || "—");
+    case "flaggedAt": return sanitize(fmtDate(i.flaggedAt));
+    case "updatedAt": return sanitize(fmtDate(i.updatedAt ?? i.stockConfirmedAt));
+    default: return "—";
+  }
+}
+
 export interface ReportOptions {
   scope: ReportScope;
   sortBy: ReportSort;
   deptLabel?: string;
+  columns?: ReportColumn[];
 }
 
 // jsPDF's built-in fonts can't render Polish diacritics or symbols like ⚠ —
@@ -55,6 +113,8 @@ export function sortFlagged(flagged: InventoryItem[], sortBy: ReportSort): Inven
 
 export function buildReport(items: InventoryItem[], opts: ReportOptions): jsPDF {
   const { scope, sortBy, deptLabel } = opts;
+  const selected = opts.columns?.length ? opts.columns : DEFAULT_REPORT_COLUMNS;
+  const cols = REPORT_COLUMNS.filter((c) => selected.includes(c.key));
   const now = new Date().toLocaleString();
   const flagged = sortFlagged(items.filter((i) => i.needsRestock), sortBy);
   const doc = new jsPDF();
@@ -83,19 +143,11 @@ export function buildReport(items: InventoryItem[], opts: ReportOptions): jsPDF 
 
     autoTable(doc, {
       startY: y,
-      head: [["Pozycja", "Kategoria", "Lokalizacja", "Magazyn", "Pozostalo", "Do zamowienia", "Notatka"]],
-      body: flagged.map((i) => [
-        sanitize(i.name),
-        sanitize(i.category.replace("-", " ")),
-        sanitize(locationLabel(i)),
-        sanitize(i.storehouse || "—"),
-        i.qtyLeft != null ? String(i.qtyLeft) : "—",
-        i.qtyToOrder != null ? String(i.qtyToOrder) : "—",
-        sanitize(i.restockNote || "—"),
-      ]),
+      head: [cols.map((c) => c.header)],
+      body: flagged.map((i) => cols.map((c) => cellValue(i, c.key))),
       theme: "grid",
       headStyles: { fillColor: [215, 76, 90], textColor: 255 },
-      styles: { fontSize: 9 },
+      styles: { fontSize: 8, cellPadding: 1.5 },
       margin: { left: 14 },
     });
 
@@ -125,22 +177,14 @@ export function buildReport(items: InventoryItem[], opts: ReportOptions): jsPDF 
 
       autoTable(doc, {
         startY: y,
-        head: [["Pozycja", "Podkategoria", "Lokalizacja", "Jednostka", "Magazyn", "Aktualny stan", "Status"]],
-        body: catItems.map((i) => [
-          sanitize(i.name),
-          sanitize(i.subcategory || "—"),
-          sanitize(locationLabel(i)),
-          sanitize(i.unit),
-          sanitize(i.storehouse || "—"),
-          i.qtyLeft != null ? `${i.qtyLeft} ${sanitize(i.unit)}` : "—",
-          i.needsRestock ? "DO UZUPELNIENIA" : "OK",
-        ]),
+        head: [[...cols.map((c) => c.header), "Status"]],
+        body: catItems.map((i) => [...cols.map((c) => cellValue(i, c.key)), i.needsRestock ? "DO UZUPELNIENIA" : "OK"]),
         theme: "grid",
         headStyles: { fillColor: [40, 44, 58], textColor: 255 },
-        styles: { fontSize: 9 },
+        styles: { fontSize: 8, cellPadding: 1.5 },
         margin: { left: 14 },
         didParseCell: (data: any) => {
-          if (data.section === "body" && data.column.index === 6) {
+          if (data.section === "body" && data.column.index === cols.length) {
             if (typeof data.cell.raw === "string" && data.cell.raw.includes("UZUPELNIENIA")) {
               data.cell.styles.textColor = [215, 76, 90];
               data.cell.styles.fontStyle = "bold";
