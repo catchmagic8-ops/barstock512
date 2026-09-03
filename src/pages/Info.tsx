@@ -46,6 +46,7 @@ import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { useHandoverRealtime } from "@/hooks/useHandoverRealtime";
 import { getSettings, setSetting } from "@/lib/appSettings";
+import LongPressMenu from "@/components/LongPressMenu";
 import HandoverReactions, { type Reaction } from "@/components/HandoverReactions";
 
 
@@ -554,12 +555,51 @@ export default function Info() {
             {visible.map((n) => {
               const replies = repliesByParent.get(n.id) ?? [];
               return (
-                <article
+                <LongPressMenu
                   key={n.id}
+                  title={n.message.slice(0, 60)}
+                  description="Przytrzymaj, aby otworzyć opcje wiadomości"
+                  disabled={isViewer}
+                  actions={[
+                    {
+                      label: "Odpowiedz",
+                      icon: Reply,
+                      onSelect: () => { setReplyText(""); setReplyTo(n.id); },
+                      hidden: !canReply,
+                    },
+                    {
+                      label: "Edytuj",
+                      icon: Pencil,
+                      onSelect: () => { setEditing(n); setEditText(n.message); setEditCategory(n.category); },
+                      hidden: !canEdit(n),
+                    },
+                    {
+                      label: n.pinned ? "Odepnij" : "Przypnij",
+                      icon: n.pinned ? PinOff : Pin,
+                      onSelect: () => updateNote.mutate({ id: n.id, patch: { pinned: !n.pinned } }),
+                    },
+                    {
+                      label: n.resolved ? "Przywróć" : "Oznacz jako załatwione",
+                      icon: n.resolved ? RotateCcw : Check,
+                      onSelect: () => toggleResolved(n),
+                    },
+                    {
+                      label: "Usuń",
+                      icon: Trash2,
+                      destructive: true,
+                      onSelect: () => deleteNote.mutate(n),
+                      hidden: !canDelete(n),
+                    },
+                  ]}
+                >
+                  {(bind, menuOpen) => (
+                <article
+                  {...bind}
                   className={cn(
                     "rounded-2xl border border-border/40 bg-gradient-to-b from-foreground/[0.03] to-primary/[0.05] p-4 transition-colors",
                     n.pinned && "border-primary/40",
-                    n.resolved && "opacity-60"
+                    n.resolved && "opacity-60",
+                    menuOpen && "ring-1 ring-primary/50"
                   )}
                 >
                   <div className="flex flex-wrap items-center gap-2">
@@ -785,6 +825,8 @@ export default function Info() {
                     </div>
                   </div>
                 </article>
+                  )}
+                </LongPressMenu>
               );
             })}
           </div>

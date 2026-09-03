@@ -7,6 +7,7 @@ export interface LongPressBind {
   onPointerCancel: () => void;
   onPointerLeave: () => void;
   onContextMenu: (e: React.MouseEvent) => void;
+  onClickCapture: (e: React.MouseEvent) => void;
   style?: React.CSSProperties;
 }
 
@@ -16,6 +17,8 @@ interface Options {
   /** movement in px that cancels the press (scrolling) */
   moveTolerance?: number;
   disabled?: boolean;
+  /** allow the press to start on the element itself even if it is a button/link */
+  allowInteractive?: boolean;
 }
 
 /**
@@ -24,10 +27,11 @@ interface Options {
  * so the flow is identical on desktop.
  */
 export function useLongPress(onLongPress: () => void, options: Options = {}): LongPressBind {
-  const { delay = 480, moveTolerance = 10, disabled = false } = options;
+  const { delay = 480, moveTolerance = 10, disabled = false, allowInteractive = false } = options;
   const timer = useRef<number | null>(null);
   const origin = useRef<{ x: number; y: number } | null>(null);
   const fired = useRef(false);
+  const firedAt = useRef(0);
 
   const clear = useCallback(() => {
     if (timer.current !== null) {
@@ -41,12 +45,13 @@ export function useLongPress(onLongPress: () => void, options: Options = {}): Lo
     (e: React.PointerEvent) => {
       if (disabled) return;
       // ignore presses that start on an interactive control
-      const target = e.target as HTMLElement | null;
+      const target = allowInteractive ? null : (e.target as HTMLElement | null);
       if (target?.closest("button, a, input, textarea, select, [role='button'], [data-no-longpress]")) return;
       fired.current = false;
       origin.current = { x: e.clientX, y: e.clientY };
       timer.current = window.setTimeout(() => {
         fired.current = true;
+        firedAt.current = Date.now();
         timer.current = null;
         if (navigator.vibrate) {
           try { navigator.vibrate(12); } catch { /* ignore */ }
@@ -54,7 +59,7 @@ export function useLongPress(onLongPress: () => void, options: Options = {}): Lo
         onLongPress();
       }, delay);
     },
-    [delay, disabled, onLongPress]
+    [allowInteractive, delay, disabled, onLongPress]
   );
 
   const move = useCallback(
@@ -86,6 +91,13 @@ export function useLongPress(onLongPress: () => void, options: Options = {}): Lo
     onPointerUp: end,
     onPointerCancel: clear,
     onPointerLeave: clear,
+    onClickCapture: (e) => {
+      // swallow the click that a long press would otherwise trigger
+      if (Date.now() - firedAt.current < 700) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    },
     onContextMenu: (e) => {
       if (disabled) return;
       e.preventDefault();

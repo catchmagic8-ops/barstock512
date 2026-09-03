@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Package, Calendar, BookOpen, Phone, Shield, ArrowLeft, Utensils, LogOut, BookMarked, Sparkles, Settings, Moon, Sun, User, MessageSquare, FlaskConical, Palette , Bell, ClipboardList, LayoutGrid } from "lucide-react";
+import { Package, Calendar, BookOpen, Phone, Shield, ArrowLeft, Utensils, LogOut, BookMarked, Sparkles, Settings, Moon, Sun, User, MessageSquare, FlaskConical, Palette , Bell, ClipboardList, LayoutGrid, ArrowRight } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -23,6 +23,7 @@ import PersonalAccentDialog from "@/components/PersonalAccentDialog";
 import NotificationsDialog from "@/components/NotificationsDialog";
 import TileOrderDialog from "@/components/TileOrderDialog";
 import ViewerBadge from "@/components/ViewerBadge";
+import LongPressMenu from "@/components/LongPressMenu";
 import { useWeeklyTasksProgress } from "@/hooks/useWeeklyTasks";
 
 
@@ -517,8 +518,34 @@ export default function Home() {
           {visibleCards.map(({ title, icon: Icon, subtitle, sub, badge: Badge, size, tier }) => {
             const isPrimary = tier === "primary";
             return (
-              <button
+              <LongPressMenu
                 key={title}
+                title={title}
+                description="Przytrzymaj, aby otworzyć skróty"
+                allowInteractive
+                actions={[
+                  {
+                    label: `Otwórz ${title}`,
+                    icon: ArrowRight,
+                    onSelect: () => navigate(deptSubPath(department, sub)),
+                  },
+                  {
+                    label: "Ułóż kafelki",
+                    icon: LayoutGrid,
+                    hint: "Zmień kolejność kafelków",
+                    onSelect: () => setOrderOpen(true),
+                  },
+                  {
+                    label: "Panel administratora",
+                    icon: Settings,
+                    onSelect: () => navigate(deptSubPath(department, "admin")),
+                    hidden: !canAdmin,
+                  },
+                ]}
+              >
+                {(bind, menuOpen) => (
+              <button
+                {...bind}
                 onClick={() => navigate(deptSubPath(department, sub))}
                 className={cn(
                   "group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl border p-5 text-left sm:p-6",
@@ -557,6 +584,8 @@ export default function Home() {
                   </div>
                 </div>
               </button>
+                )}
+              </LongPressMenu>
             );
           })}
         </div>

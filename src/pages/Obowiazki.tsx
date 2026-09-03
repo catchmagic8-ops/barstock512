@@ -36,6 +36,7 @@ import { useDepartment } from "@/contexts/DepartmentContext";
 import { deptHomePath } from "@/lib/department";
 import { AmbientBackgroundForDepartment } from "@/components/AmbientBackground";
 import ViewerBadge from "@/components/ViewerBadge";
+import LongPressMenu from "@/components/LongPressMenu";
 import { useWeeklyTasks } from "@/hooks/useWeeklyTasks";
 import {
   PRIORITIES,
@@ -214,8 +215,35 @@ export default function Obowiazki() {
         ) : (
           <ul className="mt-4 space-y-3">
             {visible.map((task) => (
-              <li
+              <LongPressMenu
                 key={task.id}
+                title={task.title}
+                description="Przytrzymaj, aby otworzyć opcje zadania"
+                disabled={isViewer}
+                actions={[
+                  {
+                    label: "Oznacz jako wykonane",
+                    icon: Check,
+                    onSelect: () => setDoneTask(task),
+                    hidden: task.status !== "pending",
+                  },
+                  {
+                    label: "Nie wykonano",
+                    icon: SkipForward,
+                    onSelect: () => setSkipTask(task),
+                    hidden: task.status !== "pending",
+                  },
+                  {
+                    label: "Cofnij status",
+                    icon: RotateCcw,
+                    onSelect: () => reopen.mutate({ task }),
+                    hidden: task.status === "pending",
+                  },
+                ]}
+              >
+                {(bind, menuOpen) => (
+              <li
+                {...bind}
                 className={cn(
                   "rounded-2xl border p-4 transition-colors",
                   task.status === "done"
@@ -223,8 +251,10 @@ export default function Obowiazki() {
                     : task.status === "skipped"
                       ? "border-warning/30 bg-warning/[0.05]"
                       : "border-border/40 bg-gradient-to-b from-foreground/[0.03] to-primary/[0.05]",
+                  menuOpen && "ring-1 ring-primary/50",
                 )}
               >
+
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div className="min-w-0 flex-1">
 
@@ -313,7 +343,10 @@ export default function Obowiazki() {
 
                 </div>
               </li>
+                )}
+              </LongPressMenu>
             ))}
+
           </ul>
         )}
       </main>

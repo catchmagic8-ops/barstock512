@@ -364,8 +364,11 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
                     </div>
                   </td>
                 </tr>
+                  )}
+                </LongPressMenu>
               );
             })}
+
           </tbody>
         </table>
       </div>
@@ -459,6 +462,8 @@ export default function InventoryTable({ items, onFlag, onClear }: Props) {
       </Dialog>
 
       <InventoryHistoryDialog item={historyItem} onOpenChange={(o) => !o && setHistoryItem(null)} />
+      <InventoryItemEditDialog item={editingItem} onOpenChange={(o) => !o && setEditingItem(null)} />
+
     </>
 
   );
